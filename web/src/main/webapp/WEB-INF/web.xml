@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="3.1"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         metadata-complete="false">
+
+  <env-entry>
+    <description>The client id assigned to the developer github application</description>
+    <env-entry-name>java:global/GITHUB_CLIENT_ID</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>c3c3ec74379823dea3d7</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>The client secret assigned to the developer github application</description>
+    <env-entry-name>java:global/CLIENT_SECRET</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>284d925b55ab7e3931ea6b4325e0e6fbbf3c532b</env-entry-value>
+  </env-entry>
+
+</web-app>

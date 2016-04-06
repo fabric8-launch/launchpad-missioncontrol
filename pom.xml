@@ -29,6 +29,7 @@
         <module>services/openshift-service</module>
         <module>web</module>
         <module>ear</module>
+        <module>tests</module>
     </modules>
     <dependencyManagement>
         <dependencies>
