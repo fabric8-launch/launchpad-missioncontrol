@@ -11,15 +11,10 @@
    <artifactId>openshift-service</artifactId>
    <packaging>ejb</packaging>
 
-   <properties>
-      <version.io.fabric8_openshift-client>1.3.78</version.io.fabric8_openshift-client>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>io.fabric8</groupId>
          <artifactId>openshift-client</artifactId>
-         <version>${version.io.fabric8_openshift-client}</version>
       </dependency>
    </dependencies>
 

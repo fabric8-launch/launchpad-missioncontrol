@@ -11,21 +11,14 @@
    <artifactId>github-service</artifactId>
    <packaging>ejb</packaging>
 
-   <properties>
-      <version.org.kohsuke_github-api>1.73</version.org.kohsuke_github-api>
-      <version.com.squareup.okhttp_okhttp-urlconnection>2.0.0</version.com.squareup.okhttp_okhttp-urlconnection>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>org.kohsuke</groupId>
          <artifactId>github-api</artifactId>
-         <version>${version.org.kohsuke_github-api}</version>
       </dependency>
       <dependency>
          <groupId>com.squareup.okhttp</groupId>
          <artifactId>okhttp-urlconnection</artifactId>
-         <version>${version.com.squareup.okhttp_okhttp-urlconnection}</version>
       </dependency>
    </dependencies>
    <build>
