@@ -25,22 +25,11 @@ Prerequisites to Run Integration Tests
 
         $ echo $GITHUB_USERNAME
 
-    Associate the developer application client id/secret with webapp.
-        Edit `web/src/main/webapp/WEB-INF/web.xml` to configure the `GITHUB_CLIENT_ID` and `CLIENT_SECRET` entries:
-    
-    ```
-      <env-entry>  
-        <env-entry-name>java:global/GITHUB_CLIENT_ID</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>***</env-entry-value>
-      </env-entry>
-      
-      <env-entry>
-        <env-entry-name>java:global/CLIENT_SECRET</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>***</env-entry-value>
-      </env-entry>
-    ```
+    Associate the developer application client id/secret with webapp. This should be a developer app that has a callback url
+    configured to work with the testing environment, e.g., http://localhost:8080/katapult/api/github/callback.
+    Configure the `GITHUB_DEV_APP_CLIENT_ID` and `GITHUB_DEV_APP_SECRET` environment variables
+    to contain the id and secret for the github developer application you want to use. You can also specify system properties
+    of the same name to override any environment variable setting.
     
 2. A locally-running instance of OpenShift 
 
