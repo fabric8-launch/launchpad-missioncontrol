@@ -1,5 +1,9 @@
 package org.rhd.katapult.github.impl.kohsuke;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.kohsuke.github.GHRepository;
 import org.rhd.katapult.github.api.GitHubRepository;
 
@@ -36,5 +40,19 @@ class KohsukeGitHubRepositoryImpl implements GitHubRepository {
     @Override
     public String getFullName() {
         return delegate.getFullName();
+    }
+
+    public URI getHomepage() {
+        try {
+            return delegate.getHtmlUrl().toURI();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return delegate.getDescription();
     }
 }

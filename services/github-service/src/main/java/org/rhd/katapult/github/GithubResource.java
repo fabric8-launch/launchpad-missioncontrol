@@ -7,6 +7,7 @@
 
 package org.rhd.katapult.github;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.Base64;
@@ -30,6 +31,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
+import org.rhd.katapult.github.api.GitHubRepository;
+import org.rhd.katapult.github.api.GitHubService;
+import org.rhd.katapult.github.api.GitHubServiceFactory;
 
 /**
  * The type Github resource.
@@ -175,7 +180,7 @@ public class GithubResource
    public Response callback(@QueryParam("code") String code, @QueryParam("state") String state)
    {
       log.info(String.format("/callback: code=%s, state=%s", code, state));
-      String uri = "http://github.com";
+      URI uri = null;
       Client client = ClientBuilder.newClient();
       try
       {
@@ -195,20 +200,23 @@ public class GithubResource
          // Perform the action
          switch (action) {
             case NEW_ACTION:
-               createRepository(accessToken, repository, client);
+               createRepository(accessToken, repository);
                break;
             case FORK_ACTION:
-               JsonObject response = forkRepository(accessToken, repository, client);
-               uri = response.getString("html_url");
+               GitHubRepository gitHubRepository = forkRepository(accessToken, repository);
+               uri = gitHubRepository.getHomepage();
                break;
          }
+      }
+      catch (IOException e) {
+         throw new WebApplicationException(e);
       }
       finally
       {
          client.close();
       }
 
-      return Response.temporaryRedirect(URI.create(uri)).build();
+      return Response.temporaryRedirect(uri).build();
    }
 
    /**
@@ -236,51 +244,18 @@ public class GithubResource
       return obj;
    }
 
-   private JsonObject forkRepository(String accessToken, String repository, Client client)
+   private GitHubRepository forkRepository(String accessToken, String repository)
    {
-      Response response = client
-              .target("https://api.github.com/repos/" + repository + "/forks")
-              .request()
-              .accept(MediaType.APPLICATION_JSON_TYPE)
-              .header("Authorization", "token " + accessToken)
-              .header("User-Agent", HEADER_VALUE_USER_AGENT)
-              .post(Entity.text(""));
-      Response.StatusType status = response.getStatusInfo();
-      if (status == Response.Status.ACCEPTED)
-      {
-         return response.readEntity(JsonObject.class);
-      }
-      else
-      {
-         String msg = response.readEntity(String.class);
-         log.warning("Failed to fork repository: " + repository + ", msg: "+ msg);
-         throw new WebApplicationException(msg, status.getStatusCode());
-      }
+      GitHubService gitHubService = GitHubServiceFactory.INSTANCE.create(accessToken);
+      GitHubRepository gitHubRepository = gitHubService.fork(repository);
+      return gitHubRepository;
    }
 
-   private void createRepository(String accessToken, String repository, Client client)
-   {
-      JsonObjectBuilder json = Json.createObjectBuilder();
-      json.add("name", repository)
-              .add("description", "Created via Forge Online")
-              .add("homepage", "http://forge.jboss.org")
-              .add("private", false)
-              .add("has_issues", true)
-              .add("has_wiki", true)
-              .add("has_downloads", true);
-      Response response = client
-              .target("https://api.github.com/user/repos")
-              .request()
-              .accept(MediaType.APPLICATION_JSON_TYPE)
-              .header("Authorization", "token " + accessToken)
-              .header("User-Agent", HEADER_VALUE_USER_AGENT)
-              .post(Entity.json(json.build()));
-      int status = response.getStatus();
-      if (status != 201)
-      {
-         String msg = response.readEntity(String.class);
-         throw new WebApplicationException(msg, status);
-      }
+   private GitHubRepository createRepository(String accessToken, String repository) throws IOException {
+      GitHubService gitHubService = GitHubServiceFactory.INSTANCE.create(accessToken);
+      GitHubRepository gitHubRepository = gitHubService.create(repository, "Created via Forge Online",
+              "http://forge.jboss.org", true, true, true);
+      return gitHubRepository;
    }
 
 

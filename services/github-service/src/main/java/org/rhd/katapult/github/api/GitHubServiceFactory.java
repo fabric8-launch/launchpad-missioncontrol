@@ -18,9 +18,11 @@ public enum GitHubServiceFactory {
     private static final String MSG_MORE_THAN_ONE_IMPL = "Cannot have more than one implementation of " +
             GitHubServiceLoader.class.getName() + " defined as a " +
             ServiceLoader.class.getName() + " implementation";
+
     private static final String MSG_NEEDS_IMPL = "Must have one implementation of " +
             GitHubServiceLoader.class.getName() + " defined as a " +
             ServiceLoader.class.getName() + ".";
+
     private final ServiceLoader<GitHubServiceLoader> serviceLoader = ServiceLoader.load(GitHubServiceLoader.class);
 
 
@@ -33,11 +35,25 @@ public enum GitHubServiceFactory {
      * @throws IllegalArgumentException If either the username and/or password/token is not specified
      */
     public GitHubService create(final String githubUsername, final String githubToken) throws IllegalArgumentException {
-
         // Precondition checks
         if (githubUsername == null || githubUsername.isEmpty()) {
             throw new IllegalArgumentException("username is required");
         }
+        return internalCreate(githubUsername, githubToken);
+    }
+    public GitHubService create(final String githubToken) throws IllegalArgumentException {
+        return internalCreate(null, githubToken);
+    }
+
+    /**
+     *
+     * @param githubUsername - may be null if githubToken is not null and and not a password
+     * @param githubToken - the user password or authorization token
+     * @return
+     * @throws IllegalArgumentException If either the password/token is not specified
+     */
+    private GitHubService internalCreate(final String githubUsername, final String githubToken) {
+        // Precondition checks
         if (githubToken == null || githubToken.isEmpty()) {
             throw new IllegalArgumentException("password/token is required");
         }
@@ -58,5 +74,6 @@ public enum GitHubServiceFactory {
         final GitHubService gsh = ghsl.create(githubUsername, githubToken);
         return gsh;
     }
+
 
 }

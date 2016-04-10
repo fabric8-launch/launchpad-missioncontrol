@@ -21,4 +21,14 @@ public interface GitHubServiceLoader {
      */
     GitHubService create(String githubUsername, String githubToken) throws IllegalArgumentException;
 
+    /**
+     * Creates and returns a new instance of {@link GitHubService} initialized with
+     * authentication information from the required OAuth/ token
+     *
+     * @param githubToken
+     * @return
+     * @throws IllegalArgumentException If either the token is not specified
+     */
+    GitHubService create(String githubToken) throws IllegalArgumentException;
+
 }

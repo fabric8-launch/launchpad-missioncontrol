@@ -105,6 +105,36 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GitHubRepository create(String repositoryName, String description, String homepage,
+                                   boolean has_issues, boolean has_wiki, boolean has_downloads)
+            throws IOException, IllegalArgumentException {
+        // Precondition checks
+        if (repositoryName == null || repositoryName.isEmpty()) {
+            throw new IllegalArgumentException("repository name must be specified");
+        }
+
+        GHRepository newlyCreatedRepo = delegate.createRepository(repositoryName)
+                .description(description)
+                .private_(false)
+                .homepage(homepage)
+                .issues(has_issues)
+                .downloads(has_downloads)
+                .wiki(has_wiki)
+                .create();
+
+        // Wrap in our API view and return
+        final GitHubRepository wrapped = new KohsukeGitHubRepositoryImpl(newlyCreatedRepo);
+        if (log.isLoggable(Level.FINEST)) {
+            log.log(Level.FINEST, "Created " + newlyCreatedRepo.getFullName() + " available at "
+                    + newlyCreatedRepo.getGitTransportUrl());
+        }
+        return wrapped;
+    }
+
+    /**
      * Determines if the required {@link IOException} in question represents a repo
      * that can't be found
      *

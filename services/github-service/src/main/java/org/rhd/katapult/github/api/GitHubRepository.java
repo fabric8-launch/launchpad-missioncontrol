@@ -1,5 +1,8 @@
 package org.rhd.katapult.github.api;
 
+import java.net.URI;
+import java.net.URL;
+
 /**
  * Value object representing a repository in GitHub
  *
@@ -20,4 +23,10 @@ public interface GitHubRepository {
      * @return
      */
     String getFullName();
+
+    /**
+     * Obtains the github.com page for the repository
+     * @return
+     */
+    URI getHomepage();
 }

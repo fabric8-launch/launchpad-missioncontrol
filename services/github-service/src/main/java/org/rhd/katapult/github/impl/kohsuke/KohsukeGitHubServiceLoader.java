@@ -37,10 +37,14 @@ public final class KohsukeGitHubServiceLoader implements GitHubServiceLoader {
             // Use a cache for responses so we don't count HTTP 304 against our API quota
             final File githubCacheFolder = GitHubLocalCache.INSTANCE.getCacheFolder();
             final Cache cache = new Cache(githubCacheFolder, TENMB);
-            gitHub = new GitHubBuilder()
-                    .withConnector(new OkHttpConnector(new OkUrlFactory(new OkHttpClient().setCache(cache))))
-                    .withOAuthToken(githubToken, githubUsername)
-                    .build();
+            GitHubBuilder ghb = new GitHubBuilder()
+                    .withConnector(new OkHttpConnector(new OkUrlFactory(new OkHttpClient().setCache(cache))));
+            if(githubUsername == null) {
+                ghb.withOAuthToken(githubToken);
+            } else {
+                ghb.withOAuthToken(githubToken, githubUsername);
+            }
+            gitHub = ghb.build();
         } catch (final IOException ioe) {
             throw new RuntimeException("Could not create GitHub client", ioe);
         }
@@ -49,5 +53,13 @@ public final class KohsukeGitHubServiceLoader implements GitHubServiceLoader {
             log.log(Level.FINEST, "Created backing GitHub client for user " + githubUsername);
         }
         return ghs;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GitHubService create(String githubToken) throws IllegalArgumentException {
+        return create(null, githubToken);
     }
 }
