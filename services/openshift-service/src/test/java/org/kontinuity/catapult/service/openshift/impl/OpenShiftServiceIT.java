@@ -1,25 +1,31 @@
 package org.kontinuity.catapult.service.openshift.impl;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.kontinuity.catapult.service.openshift.api.*;
+import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftApiUrl;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftTemplate;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
+ * @author <a href="mailto:rmartine@redhat.com">Ricardo Martinelli de Oliveira</a>
  */
 public class OpenShiftServiceIT {
 
     private static final Logger log = Logger.getLogger(OpenShiftServiceIT.class.getName());
 
-;
     private static final String PREFIX_NAME_PROJECT = "test-project-";
 
     private static final Collection<OpenShiftProject> createdProjects = new ArrayList<>();
@@ -52,12 +58,41 @@ public class OpenShiftServiceIT {
 
     @Test(expected = DuplicateProjectException.class)
     public void duplicateProjectNameShouldFail() {
-        final String projectName = PREFIX_NAME_PROJECT + System.currentTimeMillis();
-        final OpenShiftProject project = service.createProject(projectName);
-        createdProjects.add(project);
+        OpenShiftProject project = triggerCreateProject();
         final String name = project.getName();
         service.createProject(name); // Using same name should fail with DPE here
         // Just in case the above doesn't fail
         createdProjects.add(project);
     }
+    
+    @Test
+    public void createApplicationFromTemplate() {
+    	final String templateName = "eap64-basic-s2i";
+        OpenShiftProject project = triggerCreateProject();
+		OpenShiftTemplate template = service.createApplicationFromTemplate(project.getName(), templateName, 
+        		new TemplateParameterImpl("APPLICATION_NAME", "test-app"));
+		log.log(Level.INFO, "Created application: \'test-app\' from template \'" + templateName + "\'");
+        
+        Assert.assertEquals(template.getName(), templateName);
+    }
+    
+    @Test
+    public void shouldGetWebhook() {
+    	final String templateName = "eap64-basic-s2i";
+    	OpenShiftProject project = triggerCreateProject();
+    	OpenShiftTemplate template = service.createApplicationFromTemplate(project.getName(), templateName, 
+        		new TemplateParameterImpl("APPLICATION_NAME", "test-app"));
+    	String webhookUrl = service.getGithubWebhook(project.getName(), "test-app");
+    	
+    	Assert.assertTrue(!webhookUrl.isEmpty());
+    }
+
+	private OpenShiftProject triggerCreateProject() {
+		final String projectName = PREFIX_NAME_PROJECT + System.currentTimeMillis();
+    	final OpenShiftProject project = service.createProject(projectName);
+    	log.log(Level.INFO, "Created project: \'" + projectName + "\'");
+    	createdProjects.add(project);
+    	
+    	return project;
+	}
 }

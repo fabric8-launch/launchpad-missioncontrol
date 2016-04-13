@@ -38,4 +38,15 @@ public interface GitHubService {
      */
     GitHubRepository create(String repositoryName, String description, String homepage,
         boolean has_issues, boolean has_wiki, boolean has_downloads) throws IOException, IllegalArgumentException;
+    
+    /**
+     * Create a webhook.
+     *
+     * @param repositoryName - the name if the repository
+     * @param webhookUrl - the URL of the webhook
+     * @param events - the events that trigger the webhook
+     * @return
+     */
+    GithubWebhook createWebHook(String repositoryName, String webhookUrl, GithubWebhookEvent... events) throws IOException;
+    
 }

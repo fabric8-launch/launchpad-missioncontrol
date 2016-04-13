@@ -1,14 +1,18 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
-import org.junit.*;
-import org.kontinuity.catapult.service.github.api.GitHubService;
-import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
-import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
-import org.kontinuity.catapult.service.github.api.GitHubRepository;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.kontinuity.catapult.service.github.api.GitHubRepository;
+import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
+import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
 
 /**
  * Tests for the {@link GitHubService}
@@ -44,11 +48,13 @@ public class GitHubServiceIT {
         gitHubService = GitHubServiceFactory.INSTANCE.create(GITHUB_PERSONAL_ACCESS_TOKEN, GITHUB_USERNAME);
     }
 
+    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void forkRepoCannotBeNull() {
         final GitHubRepository targetRepo = gitHubService.fork(null);
     }
 
+    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void forkRepoCannotBeEmpty() {
         final GitHubRepository targetRepo = gitHubService.fork("");
@@ -65,6 +71,15 @@ public class GitHubServiceIT {
     @Test(expected = NoSuchRepositoryException.class)
     public void cannotForkNonexistentRepo(){
         gitHubService.fork("ALRubinger/someRepoThatDoesNotAndWillNeverExist");
+    }
+   
+    @Test
+    public void createGithubWebHook() throws Exception{
+    	final GitHubRepository targetRepo = gitHubService.fork(NAME_GITHUB_SOURCE_REPO);
+    	gitHubService.createWebHook(
+    			targetRepo.getFullName(),
+    			"https://10.1.2.2",						// TODO Webhook URL
+    			new KohsukeGithubWebhookEvent("ALL"));
     }
 
 }

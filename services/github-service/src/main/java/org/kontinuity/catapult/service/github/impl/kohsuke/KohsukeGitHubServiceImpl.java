@@ -1,15 +1,24 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kontinuity.catapult.service.github.api.GitHubService;
-import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
-import org.kontinuity.catapult.service.github.api.GitHubRepository;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.kohsuke.github.GHEvent;
+import org.kohsuke.github.GHHook;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import org.kontinuity.catapult.service.github.api.GitHubRepository;
+import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.api.GithubWebhook;
+import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
+import org.kontinuity.catapult.service.github.api.GithubWebhookEvent;
 
 /**
  * Implementation of {@link GitHubService} backed by the Kohsuke GitHub Java Client
@@ -19,7 +28,9 @@ import java.util.logging.Logger;
  */
 final class KohsukeGitHubServiceImpl implements GitHubService {
 
-    private static final Logger log = Logger.getLogger(KohsukeGitHubServiceImpl.class.getName());
+    private static final String GITHUB_WEBHOOK_WEB = "web";
+
+	private static final Logger log = Logger.getLogger(KohsukeGitHubServiceImpl.class.getName());
 
     private static final String MSG_NOT_FOUND = "Not Found";
 
@@ -132,6 +143,27 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
                     + newlyCreatedRepo.getGitTransportUrl());
         }
         return wrapped;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public GithubWebhook createWebHook(String repository, String webhookUrl, GithubWebhookEvent... events) throws IOException {
+    	GHRepository repo = delegate.getRepository(repository);
+    	Map<String, String> configuration = new HashMap<>();
+    	configuration.put("url", webhookUrl);
+    	configuration.put("content_type", "json");
+    	
+    	List<GHEvent> githubEvents = Stream.of(events).map(event -> event.toGHEvent()).collect(Collectors.toList());
+    	
+    	GHHook webhook = repo.createHook(
+    			GITHUB_WEBHOOK_WEB,					// TODO consider other hook types?
+    			configuration,
+    			githubEvents,
+    			true);
+    	
+    	GithubWebhook githubWebhook = new KohsukeGithubWebhook(webhook.getName(), webhook.getUrl().toString(), events);
+    	return githubWebhook;
     }
 
     /**
