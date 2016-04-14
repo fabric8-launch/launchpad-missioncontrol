@@ -2,6 +2,7 @@ package org.kontinuity.catapult.service.github.impl.kohsuke;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,9 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
-import org.kontinuity.catapult.service.github.api.GithubWebhook;
+import org.kontinuity.catapult.service.github.api.GitHubWebhook;
 import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
-import org.kontinuity.catapult.service.github.api.GithubWebhookEvent;
+import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
 
 /**
  * Implementation of {@link GitHubService} backed by the Kohsuke GitHub Java Client
@@ -148,13 +149,13 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
     /**
      * {@inheritDoc}
      */
-    public GithubWebhook createWebHook(String repository, String webhookUrl, GithubWebhookEvent... events) throws IOException {
-    	GHRepository repo = delegate.getRepository(repository);
+    public GitHubWebhook createWebhook(GitHubRepository repository, URL webhookUrl, GitHubWebhookEvent... events) throws IOException {
+    	GHRepository repo = delegate.getRepository(repository.getFullName());
     	Map<String, String> configuration = new HashMap<>();
-    	configuration.put("url", webhookUrl);
+    	configuration.put("url", webhookUrl.toString());
     	configuration.put("content_type", "json");
     	
-    	List<GHEvent> githubEvents = Stream.of(events).map(event -> event.toGHEvent()).collect(Collectors.toList());
+    	List<GHEvent> githubEvents = Stream.of(events).map(event -> GHEvent.valueOf(event.getName())).collect(Collectors.toList());
     	
     	GHHook webhook = repo.createHook(
     			GITHUB_WEBHOOK_WEB,					// TODO consider other hook types?
@@ -162,7 +163,7 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
     			githubEvents,
     			true);
     	
-    	GithubWebhook githubWebhook = new KohsukeGithubWebhook(webhook.getName(), webhook.getUrl().toString(), events);
+    	GitHubWebhook githubWebhook = new KohsukeGitHubWebhook(webhook);
     	return githubWebhook;
     }
 

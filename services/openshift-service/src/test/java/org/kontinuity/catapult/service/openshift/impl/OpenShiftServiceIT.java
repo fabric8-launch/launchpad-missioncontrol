@@ -15,7 +15,6 @@ import org.kontinuity.catapult.service.openshift.api.OpenShiftApiUrl;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftTemplate;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
 
 /**
@@ -66,22 +65,8 @@ public class OpenShiftServiceIT {
     }
     
     @Test
-    public void createApplicationFromTemplate() {
-    	final String templateName = "eap64-basic-s2i";
-        OpenShiftProject project = triggerCreateProject();
-		OpenShiftTemplate template = service.createApplicationFromTemplate(project.getName(), templateName, 
-        		new TemplateParameterImpl("APPLICATION_NAME", "test-app"));
-		log.log(Level.INFO, "Created application: \'test-app\' from template \'" + templateName + "\'");
-        
-        Assert.assertEquals(template.getName(), templateName);
-    }
-    
-    @Test
     public void shouldGetWebhook() {
-    	final String templateName = "eap64-basic-s2i";
     	OpenShiftProject project = triggerCreateProject();
-    	OpenShiftTemplate template = service.createApplicationFromTemplate(project.getName(), templateName, 
-        		new TemplateParameterImpl("APPLICATION_NAME", "test-app"));
     	String webhookUrl = service.getGithubWebhook(project.getName(), "test-app");
     	
     	Assert.assertTrue(!webhookUrl.isEmpty());

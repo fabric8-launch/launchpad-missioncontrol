@@ -1,6 +1,7 @@
 package org.kontinuity.catapult.service.github.api;
 
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Defines the operations we support with the GitHub backend
@@ -40,13 +41,13 @@ public interface GitHubService {
         boolean has_issues, boolean has_wiki, boolean has_downloads) throws IOException, IllegalArgumentException;
     
     /**
-     * Create a webhook.
+     * Create a webhook in the GitHub repository.
      *
-     * @param repositoryName - the name if the repository
+     * @param repository - the value object that represents the GitHub repository
      * @param webhookUrl - the URL of the webhook
      * @param events - the events that trigger the webhook
      * @return
      */
-    GithubWebhook createWebHook(String repositoryName, String webhookUrl, GithubWebhookEvent... events) throws IOException;
+    GitHubWebhook createWebhook(GitHubRepository repository, URL webhookUrl, GitHubWebhookEvent... events) throws IOException;
     
 }

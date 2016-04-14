@@ -5,7 +5,7 @@ package org.kontinuity.catapult.service.github.api;
  *
  * @author <a href="mailto:rmartine@redhat.com">Ricardo Martinelli de Oliveira</a>
  */
-public interface GithubWebhook {
+public interface GitHubWebhook {
 	
 	/**
 	 * Obtains the name of the webhook.
@@ -26,6 +26,6 @@ public interface GithubWebhook {
 	 * 
 	 * @return
 	 */
-	GithubWebhookEvent[] getEvents();
+	GitHubWebhookEvent[] getEvents();
 
 }

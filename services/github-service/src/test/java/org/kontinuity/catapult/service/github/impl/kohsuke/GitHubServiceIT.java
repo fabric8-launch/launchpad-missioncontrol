@@ -1,6 +1,7 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
+import org.kontinuity.catapult.service.github.api.GitHubWebhook;
 import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
 
 /**
@@ -48,13 +50,11 @@ public class GitHubServiceIT {
         gitHubService = GitHubServiceFactory.INSTANCE.create(GITHUB_PERSONAL_ACCESS_TOKEN, GITHUB_USERNAME);
     }
 
-    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void forkRepoCannotBeNull() {
         final GitHubRepository targetRepo = gitHubService.fork(null);
     }
 
-    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void forkRepoCannotBeEmpty() {
         final GitHubRepository targetRepo = gitHubService.fork("");
@@ -75,11 +75,16 @@ public class GitHubServiceIT {
    
     @Test
     public void createGithubWebHook() throws Exception{
+    	final URL webhookUrl = new URL("https://10.1.2.2");
+    	
     	final GitHubRepository targetRepo = gitHubService.fork(NAME_GITHUB_SOURCE_REPO);
-    	gitHubService.createWebHook(
-    			targetRepo.getFullName(),
-    			"https://10.1.2.2",						// TODO Webhook URL
-    			new KohsukeGithubWebhookEvent("ALL"));
+		GitHubWebhook webhook = gitHubService.createWebhook(
+    			targetRepo,
+    			webhookUrl,
+    			new KohsukeGitHubWebhookEvent("ALL"));
+    	
+    	Assert.assertNotNull(webhook);
+    	Assert.assertEquals(webhookUrl.toString(), webhook.getUrl());
     }
 
 }
