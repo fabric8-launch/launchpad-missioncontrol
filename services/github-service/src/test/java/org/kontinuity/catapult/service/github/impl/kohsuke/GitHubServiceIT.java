@@ -14,6 +14,7 @@ import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
 import org.kontinuity.catapult.service.github.api.GitHubWebhook;
+import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
 import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
 
 /**
@@ -81,7 +82,7 @@ public class GitHubServiceIT {
 		GitHubWebhook webhook = gitHubService.createWebhook(
     			targetRepo,
     			webhookUrl,
-    			new KohsukeGitHubWebhookEvent("ALL"));
+    			GitHubWebhookEvent.ALL);
     	
     	Assert.assertNotNull(webhook);
     	Assert.assertEquals(webhookUrl.toString(), webhook.getUrl());

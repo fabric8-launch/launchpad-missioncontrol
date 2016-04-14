@@ -155,7 +155,7 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
     	configuration.put("url", webhookUrl.toString());
     	configuration.put("content_type", "json");
     	
-    	List<GHEvent> githubEvents = Stream.of(events).map(event -> GHEvent.valueOf(event.getName())).collect(Collectors.toList());
+    	List<GHEvent> githubEvents = Stream.of(events).map(event -> GHEvent.valueOf(event.name())).collect(Collectors.toList());
     	
     	GHHook webhook = repo.createHook(
     			GITHUB_WEBHOOK_WEB,					// TODO consider other hook types?

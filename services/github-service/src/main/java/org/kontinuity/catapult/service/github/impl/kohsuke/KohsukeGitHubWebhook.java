@@ -1,5 +1,7 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
+import java.util.stream.Collectors;
+
 import org.kohsuke.github.GHHook;
 import org.kontinuity.catapult.service.github.api.GitHubWebhook;
 import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
@@ -24,7 +26,12 @@ public class KohsukeGitHubWebhook implements GitHubWebhook {
 
 	@Override
 	public GitHubWebhookEvent[] getEvents() {
-		return null; //TODO fix this return
+		return delegate
+			.getEvents()
+			.stream()
+			.map(evt -> GitHubWebhookEvent.valueOf(evt.name()))
+			.collect(Collectors.toList())
+			.toArray(new GitHubWebhookEvent[delegate.getEvents().size()]);
 	}
 	
 }

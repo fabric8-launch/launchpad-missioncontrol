@@ -1,17 +1,34 @@
 package org.kontinuity.catapult.service.github.api;
 
-/**
- * Value object representing a webhook event in GitHub
- *
- * @author <a href="mailto:rmartine@redhat.com">Ricardo Martinelli de Oliveira</a>
- */
-public interface GitHubWebhookEvent {
-	
-	/**
-	 * Obtains the Github Webhook event.
-	 * 
-	 * @return
-	 */
-	String getName();
+public enum GitHubWebhookEvent {
+	COMMIT_COMMENT,
+    CREATE,
+    DELETE,
+    DEPLOYMENT,
+    DEPLOYMENT_STATUS,
+    DOWNLOAD,
+    FOLLOW,
+    FORK,
+    FORK_APPLY,
+    GIST,
+    GOLLUM,
+    ISSUE_COMMENT,
+    ISSUES,
+    MEMBER,
+    PAGE_BUILD,
+    PUBLIC,
+    PULL_REQUEST,
+    PULL_REQUEST_REVIEW_COMMENT,
+    PUSH,
+    RELEASE,
+    REPOSITORY, // only valid for org hooks
+    STATUS,
+    TEAM_ADD,
+    WATCH,
+    PING,
+    /**
+     * Special event type that means "every possible event"
+     */
+    ALL;
 	
 }
