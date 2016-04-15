@@ -16,7 +16,7 @@
     <!--
     These properties are read in by arquillian.xml
     -->
-    <browser>phantomjs</browser> <!-- PhantomJS will be our default browser if no profile is specified-->
+    <browser>htmlUnit</browser> <!-- htmlUnit will be our default browser if no profile is specified-->
     <runmode>managed</runmode> <!-- Default runmode if "server-managed" or "server-remote" is not specified -->
   </properties>
 

@@ -11,5 +11,7 @@
 
   <extension qualifier="webdriver">
     <property name="browser">${browser}</property>
+    <!-- Assumes the chromedriver binary has been placed into /Applications/Google Chrome.app/ -->
+    <property name="chromeDriverBinary">/Applications/Google Chrome.app/chromedriver</property>
   </extension>
 </arquillian>
