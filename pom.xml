@@ -29,8 +29,10 @@
         <module>base</module>
         <module>core/core-api</module>
         <module>core/core-impl</module>
-        <module>services/github-service</module>
-        <module>services/openshift-service</module>
+        <module>services/github-service-api</module>
+        <module>services/github-service-impl</module>
+        <module>services/openshift-service-api</module>
+        <module>services/openshift-service-impl</module>
         <module>web</module>
         <module>ear</module>
         <module>tests</module>
@@ -46,13 +48,23 @@
             </dependency>
             <dependency>
                 <groupId>org.kontinuity.catapult</groupId>
-                <artifactId>catapult-service-github</artifactId>
+                <artifactId>catapult-service-github-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kontinuity.catapult</groupId>
+                <artifactId>catapult-service-github-impl</artifactId>
                 <version>${project.version}</version>
                 <type>ejb</type>
             </dependency>
             <dependency>
                 <groupId>org.kontinuity.catapult</groupId>
-                <artifactId>catapult-service-openshift</artifactId>
+                <artifactId>catapult-service-openshift-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kontinuity.catapult</groupId>
+                <artifactId>catapult-service-openshift-impl</artifactId>
                 <version>${project.version}</version>
                 <type>ejb</type>
             </dependency>
@@ -75,7 +87,7 @@
             </dependency>
             <dependency>
                 <groupId>org.kontinuity.catapult</groupId>
-                <artifactId>catapult-service-github</artifactId>
+                <artifactId>catapult-service-github-impl</artifactId>
                 <type>test-jar</type>
                 <scope>test</scope>
                 <version>${project.version}</version>

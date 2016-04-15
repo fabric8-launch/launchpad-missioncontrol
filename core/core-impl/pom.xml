@@ -16,18 +16,18 @@
       </dependency>
       <dependency>
          <groupId>org.kontinuity.catapult</groupId>
-         <artifactId>catapult-service-github</artifactId>
+         <artifactId>catapult-service-github-impl</artifactId>
          <type>ejb</type>
       </dependency>
       <dependency>
          <groupId>org.kontinuity.catapult</groupId>
-         <artifactId>catapult-service-github</artifactId>
+         <artifactId>catapult-service-github-impl</artifactId>
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.kontinuity.catapult</groupId>
-         <artifactId>catapult-service-openshift</artifactId>
+         <artifactId>catapult-service-openshift-impl</artifactId>
          <type>ejb</type>
       </dependency>
    </dependencies>

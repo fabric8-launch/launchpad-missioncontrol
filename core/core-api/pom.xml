@@ -11,17 +11,13 @@
    <artifactId>catapult-core-api</artifactId>
 
    <dependencies>
-      <!-- TODO: https://github.com/redhat-kontinuity/catapult/issues/46 -->
       <dependency>
          <groupId>org.kontinuity.catapult</groupId>
-         <artifactId>catapult-service-github</artifactId>
-         <type>ejb</type>
+         <artifactId>catapult-service-github-api</artifactId>
       </dependency>
-      <!-- TODO: https://github.com/redhat-kontinuity/catapult/issues/47 -->
       <dependency>
          <groupId>org.kontinuity.catapult</groupId>
-         <artifactId>catapult-service-openshift</artifactId>
-         <type>ejb</type>
+         <artifactId>catapult-service-openshift-api</artifactId>
       </dependency>
    </dependencies>
 
