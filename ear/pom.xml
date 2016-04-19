@@ -18,12 +18,20 @@
         </dependency>
         <dependency>
             <groupId>org.kontinuity.catapult</groupId>
-            <artifactId>catapult-service-github</artifactId>
+            <artifactId>catapult-service-github-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kontinuity.catapult</groupId>
+            <artifactId>catapult-service-github-impl</artifactId>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>org.kontinuity.catapult</groupId>
-            <artifactId>catapult-service-openshift</artifactId>
+            <artifactId>catapult-service-openshift-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kontinuity.catapult</groupId>
+            <artifactId>catapult-service-openshift-impl</artifactId>
             <type>ejb</type>
         </dependency>
         <dependency>
@@ -45,11 +53,11 @@
                     <modules>
                         <ejbModule>
                             <groupId>org.kontinuity.catapult</groupId>
-                            <artifactId>catapult-service-github</artifactId>
+                            <artifactId>catapult-service-github-impl</artifactId>
                         </ejbModule>
                         <ejbModule>
                             <groupId>org.kontinuity.catapult</groupId>
-                            <artifactId>catapult-service-openshift</artifactId>
+                            <artifactId>catapult-service-openshift-impl</artifactId>
                         </ejbModule>
                         <webModule>
                             <groupId>org.kontinuity.catapult</groupId>
