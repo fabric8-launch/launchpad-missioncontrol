@@ -1,6 +1,7 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,7 +43,7 @@ public class GitHubServiceIT {
     public void initGithubService() {
         gitHubService = GitHubServiceFactory.INSTANCE.create(GITHUB_PERSONAL_ACCESS_TOKEN, GITHUB_USERNAME);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void forkRepoCannotBeNull() {
         final GitHubRepository targetRepo = gitHubService.fork(null);
@@ -67,7 +68,6 @@ public class GitHubServiceIT {
     }
 
     @Test
-    @Ignore("Github webhook must be cleaned up after the test to avoid errors in the subsequent tests.")
     public void createGithubWebHook() throws Exception{
     	final URL webhookUrl = new URL("https://10.1.2.2");
     	
@@ -79,6 +79,8 @@ public class GitHubServiceIT {
     	
     	Assert.assertNotNull(webhook);
     	Assert.assertEquals(webhookUrl.toString(), webhook.getUrl());
+    	// After the test removes all webhooks
+    	gitHubService.deleteWebhooks(targetRepo);    	
     }
 
 }

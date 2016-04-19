@@ -18,8 +18,8 @@ import org.kohsuke.github.GitHub;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubWebhook;
-import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
 import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
+import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
 
 /**
  * Implementation of {@link GitHubService} backed by the Kohsuke GitHub Java Client
@@ -189,6 +189,19 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
 
         final GitHubWebhook githubWebhook = new KohsukeGitHubWebhook(webhook);
     	return githubWebhook;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteWebhooks(final GitHubRepository repository) throws IOException, IllegalArgumentException {
+    	if(repository == null) {
+    		throw new IllegalArgumentException("repository must be specified");
+    	}
+    	final GHRepository repo = delegate.getRepository(repository.getFullName());
+    	for (GHHook hook: repo.getHooks()) {
+    		hook.delete();
+    	}
     }
 
     /**

@@ -41,7 +41,7 @@ public interface GitHubService {
         boolean has_issues, boolean has_wiki, boolean has_downloads) throws IOException, IllegalArgumentException;
     
     /**
-     * Create a webhook in the GitHub repository.
+     * Creates a webhook in the GitHub repository.
      *
      * @param repository - the value object that represents the GitHub repository
      * @param webhookUrl - the URL of the webhook
@@ -53,5 +53,14 @@ public interface GitHubService {
                                 URL webhookUrl,
                                 GitHubWebhookEvent... events)
             throws IllegalArgumentException;
+    
+    /**
+     * Deletes all webhooks in a specific GitHub repository
+     * 
+     * @param repository - the value object that represents the GitHub repository
+     * @throws IOException
+     * @throws IllegalArgumentException If the parameter is unspecified
+     */
+    void deleteWebhooks(final GitHubRepository repository) throws IOException, IllegalArgumentException;
     
 }

@@ -29,7 +29,7 @@ public class KohsukeGitHubWebhook implements GitHubWebhook {
 
 	@Override
 	public String getUrl() {
-		return delegate.getUrl().toString();
+		return delegate.getConfig().get("url");
 	}
 
 	@Override
