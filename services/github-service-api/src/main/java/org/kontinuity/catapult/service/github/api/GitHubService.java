@@ -61,6 +61,6 @@ public interface GitHubService {
      * @throws IOException
      * @throws IllegalArgumentException If the parameter is unspecified
      */
-    void deleteWebhooks(final GitHubRepository repository) throws IOException, IllegalArgumentException;
+    void deleteWebhooks(final GitHubRepository repository) throws IllegalArgumentException;
     
 }

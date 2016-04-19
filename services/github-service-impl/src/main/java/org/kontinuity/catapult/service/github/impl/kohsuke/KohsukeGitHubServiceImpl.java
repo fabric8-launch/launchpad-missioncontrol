@@ -194,14 +194,25 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
     /**
      * {@inheritDoc}
      */
-    public void deleteWebhooks(final GitHubRepository repository) throws IOException, IllegalArgumentException {
+    public void deleteWebhooks(final GitHubRepository repository) throws IllegalArgumentException {
     	if(repository == null) {
     		throw new IllegalArgumentException("repository must be specified");
     	}
-    	final GHRepository repo = delegate.getRepository(repository.getFullName());
-    	for (GHHook hook: repo.getHooks()) {
-    		hook.delete();
-    	}
+    	final GHRepository repo;
+    	try {
+    		repo = delegate.getRepository(repository.getFullName());
+    		
+    		for (GHHook hook: repo.getHooks()) {
+        		hook.delete();
+        	}
+        } catch (final IOException ioe) {
+            // Check for repo not found (this is how Kohsuke Java Client reports the error)
+            if (isRepoNotFound(ioe)) {
+                throw new NoSuchRepositoryException("Could not remove webhooks from specified repository "
+                        + repository.getFullName() + " because it could not be found or there is no webhooks for that repository.");
+            }
+            throw new RuntimeException("Could not remove webhooks from " + repository.getFullName(), ioe);
+        }
     }
 
     /**

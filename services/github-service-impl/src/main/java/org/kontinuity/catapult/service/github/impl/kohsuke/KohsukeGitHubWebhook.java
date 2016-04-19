@@ -8,6 +8,7 @@ import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
 
 public class KohsukeGitHubWebhook implements GitHubWebhook {
 	
+	private static final String CONFIG_URL = "url";
 	private final GHHook delegate;
 	private final GitHubWebhookEvent[] events;
 	
@@ -29,7 +30,7 @@ public class KohsukeGitHubWebhook implements GitHubWebhook {
 
 	@Override
 	public String getUrl() {
-		return delegate.getConfig().get("url");
+		return delegate.getConfig().get(CONFIG_URL);
 	}
 
 	@Override
