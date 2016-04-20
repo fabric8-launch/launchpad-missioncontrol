@@ -1,10 +1,3 @@
-/*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Eclipse Public License version 1.0, available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
-
 package org.kontinuity.catapult.service.github;
 
 import java.io.IOException;
@@ -19,6 +12,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -206,15 +200,18 @@ public class GithubResource
          JsonObject tokenObj = postToken(code, repository, client);
          String accessToken = tokenObj.getString("access_token");
          // Perform the action
-         switch (action) {
-            case NEW_ACTION:
-               createRepository(accessToken, repository);
-               break;
-            case FORK_ACTION:
-               GitHubRepository gitHubRepository = forkRepository(accessToken, repository);
-               uri = gitHubRepository.getHomepage();
-               break;
-         }
+		switch (action) {
+		case NEW_ACTION:
+			createRepository(accessToken, repository);
+			break;
+		case FORK_ACTION:
+			GitHubRepository gitHubRepository = forkRepository(accessToken, repository);
+			uri = gitHubRepository.getHomepage();
+			break;
+		default:
+			//FIXME: should we respond with an error ?
+			break;
+		}
       }
       catch (IOException e) {
          throw new WebApplicationException(e);
@@ -273,12 +270,12 @@ public class GithubResource
     * @param action - the action to peform
     * @return the response to the webflow request
     */
-   private Response startOauthWebFlow(String repo, String action) {
+   private Response startOauthWebFlow(final String repo, final String action) {
       // Create a unique state string to prevent unauthorized calls to our callback endpoint
-      String state = serializeState(repo, action);
+      final String state = serializeState(repo, action);
 
       // Create the ghithub authorize request
-      Client client = ClientBuilder.newClient();
+      final Client client = ClientBuilder.newClient();
       Response response = client.target(GITHUB_OAUTH_URL)
               .queryParam("repo", repo)
               .queryParam("client_id", GITHUB_DEV_APP_CLIENT_ID)
@@ -297,20 +294,22 @@ public class GithubResource
     * @param action - the action to peform
     * @return the base64 encoded json object
     */
-   private String serializeState(String repo, String action) {
-      JsonObject state = Json.createObjectBuilder().add("repository", repo).add("action", action).build();
-      String stateString = Base64.getEncoder().encodeToString(state.toString().getBytes());
-      return stateString;
-   }
+	private static String serializeState(final String repo, final String action) {
+		final JsonObject state = Json.createObjectBuilder().add("repository", repo).add("action", action).build();
+		return Base64.getEncoder().encodeToString(state.toString().getBytes());
+	}
 
-   /**
-    * Unserialize the request state as encoded by serializeState.
-    * @param base64State - the base64 encoded json object
-    * @return the unserialized json object
-     */
-   private JsonObject unserializeState(String base64State) {
-      String json = new String(Base64.getDecoder().decode(base64State.getBytes()));
-      JsonObject jsonObject = Json.createReader(new StringReader(json)).readObject();
-      return jsonObject;
-   }
+	/**
+	 * Unserialize the request state as encoded by serializeState.
+	 * 
+	 * @param base64State
+	 *            - the base64 encoded json object
+	 * @return the unserialized json object
+	 */
+	private static JsonObject unserializeState(final String base64State) {
+		final String json = new String(Base64.getDecoder().decode(base64State.getBytes()));
+		try(final JsonReader reader = Json.createReader(new StringReader(json))) {
+			return reader.readObject();
+		}
+	}
 }

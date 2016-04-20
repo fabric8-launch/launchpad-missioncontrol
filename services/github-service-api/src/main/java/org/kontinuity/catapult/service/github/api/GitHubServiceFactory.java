@@ -13,6 +13,7 @@ import java.util.ServiceLoader;
  */
 public enum GitHubServiceFactory {
 
+	/** The singleton instance of this factory. */
     INSTANCE;
 
     private static final String MSG_MORE_THAN_ONE_IMPL = "Cannot have more than one implementation of " +
@@ -32,7 +33,7 @@ public enum GitHubServiceFactory {
      *
      * @param githubToken
      * @param githubUsername
-     * @return
+     * @return the created {@link GitHubService}
      * @throws IllegalArgumentException If either the username and/or password/token is not specified
      */
     public GitHubService create(final String githubToken, final String githubUsername) throws IllegalArgumentException {
@@ -55,8 +56,7 @@ public enum GitHubServiceFactory {
         }
 
         // Create
-        final GitHubService gsh = ghsl.create(githubToken, githubUsername);
-        return gsh;
+        return ghsl.create(githubToken, githubUsername);
     }
 
     /**
@@ -64,7 +64,7 @@ public enum GitHubServiceFactory {
      * required OAuth token
      *
      * @param githubToken
-     * @return
+     * @return the created {@link GitHubService}
      * @throws IllegalArgumentException If the OAuth token is not specified
      */
     public GitHubService create(final String githubToken) throws IllegalArgumentException {

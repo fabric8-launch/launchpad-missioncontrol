@@ -22,6 +22,9 @@ public final class KohsukeGitHubServiceLoader implements GitHubServiceLoader {
     private static final Logger log = Logger.getLogger(KohsukeGitHubServiceLoader.class.getName());
     private static final int TENMB = 10 * 1024 * 1024; // 10MB
 
+    /**
+     * Constructor.
+     */
     public KohsukeGitHubServiceLoader() {
         //no-arg ctor required per ServiceLoader specification
     }
@@ -31,7 +34,7 @@ public final class KohsukeGitHubServiceLoader implements GitHubServiceLoader {
      */
     @Override
     public GitHubService create(final String githubToken, final String githubUsername) throws
-            IllegalArgumentException {
+    		IllegalArgumentException {
         final GitHub gitHub;
         try {
             // Use a cache for responses so we don't count HTTP 304 against our API quota

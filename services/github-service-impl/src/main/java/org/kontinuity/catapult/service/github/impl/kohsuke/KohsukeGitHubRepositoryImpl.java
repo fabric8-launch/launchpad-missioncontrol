@@ -14,7 +14,8 @@ import java.util.logging.Logger;
  */
 class KohsukeGitHubRepositoryImpl implements GitHubRepository {
 
-    private Logger log = Logger.getLogger(KohsukeGitHubRepositoryImpl.class.getName());
+    @SuppressWarnings("unused")
+	private Logger log = Logger.getLogger(KohsukeGitHubRepositoryImpl.class.getName());
 
     private final GHRepository delegate;
 

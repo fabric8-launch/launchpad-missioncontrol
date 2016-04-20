@@ -1,7 +1,6 @@
 package org.kontinuity.catapult.service.github.api;
 
 import java.net.URI;
-import java.net.URL;
 
 /**
  * Value object representing a repository in GitHub
@@ -11,22 +10,17 @@ import java.net.URL;
 public interface GitHubRepository {
 
     /**
-     * Obtains the "git" protocol transport URL
-     *
-     * @return
+     * @return the "git" protocol transport URL
      */
     String getGitTransportUrl();
 
     /**
-     * Obtains the full repository name in form "owner/repoName"
-     *
-     * @return
+     * @return the full repository name in form "owner/repoName"
      */
     String getFullName();
 
     /**
-     * Obtains the github.com page for the repository
-     * @return
+     * @return the github.com page for the repository
      */
     URI getHomepage();
 }

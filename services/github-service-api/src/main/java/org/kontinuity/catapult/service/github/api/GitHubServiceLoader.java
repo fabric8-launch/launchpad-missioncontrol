@@ -19,7 +19,7 @@ public interface GitHubServiceLoader {
      *
      * @param githubToken
      * @param githubUsername
-     * @return
+     * @return the created {@link GitHubService}
      * @throws IllegalArgumentException If the password/token is not specified
      */
     GitHubService create(String githubToken, String githubUsername) throws IllegalArgumentException;

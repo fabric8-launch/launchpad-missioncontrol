@@ -17,16 +17,14 @@ public class GitHubTestingCredentials {
     }
 
     /**
-     * Obtains the GitHub username
-     * @return
+     * @return the GitHub username
      */
     public static String getUsername(){
         return GitHubTestingCredentials.getEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_GITHUB_USERNAME);
     }
 
     /**
-     * Obtains the GitHub token
-     * @return
+     * @return the GitHub token
      */
     public static String getToken(){
         return GitHubTestingCredentials.getEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_GITHUB_TOKEN);

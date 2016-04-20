@@ -8,23 +8,17 @@ package org.kontinuity.catapult.service.github.api;
 public interface GitHubWebhook {
 	
 	/**
-	 * Obtains the name of the webhook.
-	 * 
-	 * @return
+	 * @return the name of the webhook.
 	 */
 	String getName();
 	
 	/**
-	 * Obtains the Webhook URL
-	 * 
-	 * @return
+	 * @return the Webhook URL
 	 */
 	String getUrl();
 	
 	/**
-	 * Obtains the events that will trigger the webhook.
-	 * 
-	 * @return
+	 * @return the events that will trigger the webhook.
 	 */
 	GitHubWebhookEvent[] getEvents();
 
