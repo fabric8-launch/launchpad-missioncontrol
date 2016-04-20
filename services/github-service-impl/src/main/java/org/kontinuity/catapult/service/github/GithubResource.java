@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
+import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 
 /**
@@ -261,7 +262,7 @@ public class GithubResource
 
    private GitHubRepository createRepository(String accessToken, String repository) throws IOException {
       GitHubService gitHubService = GitHubServiceFactory.INSTANCE.create(accessToken);
-      GitHubRepository gitHubRepository = gitHubService.create(repository, "Created via Forge Online",
+      GitHubRepository gitHubRepository = ((GitHubServiceSpi)gitHubService).createRepository(repository, "Created via Forge Online",
               "http://forge.jboss.org", true, true, true);
       return gitHubRepository;
    }

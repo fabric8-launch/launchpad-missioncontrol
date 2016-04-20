@@ -19,7 +19,7 @@ public interface GitHubServiceSpi extends GitHubService {
      * @throws IOException
      * @throws IllegalArgumentException
      */
-    GitHubRepository create(String repositoryName, String description, String homepage,
+    GitHubRepository createRepository(String repositoryName, String description, String homepage,
         boolean has_issues, boolean has_wiki, boolean has_downloads) throws IOException, IllegalArgumentException;
 
 
@@ -30,5 +30,14 @@ public interface GitHubServiceSpi extends GitHubService {
      * @throws IllegalArgumentException
      */
     void deleteRepository(final GitHubRepository repository) throws IllegalArgumentException;
+    
+    /**
+     * Deletes all webhooks in a specific GitHub repository
+     * 
+     * @param repository - the value object that represents the GitHub repository
+     * @throws IOException
+     * @throws IllegalArgumentException If the parameter is unspecified
+     */
+    void deleteWebhooks(final GitHubRepository repository) throws IllegalArgumentException;
     
 }

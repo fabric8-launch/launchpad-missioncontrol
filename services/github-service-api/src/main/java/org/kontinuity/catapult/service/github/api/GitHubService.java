@@ -25,22 +25,6 @@ public interface GitHubService {
 
 
     /**
-     * Creates a repository with the given information.
-     *
-     * @param repositoryName - the name of the repository
-     * @param description - the repository description
-     * @param homepage - the homepage url
-     * @param has_issues - flag for whether issue tracking should be created
-     * @param has_wiki - flag for whether a wiki should be created
-     * @param has_downloads - flag for whether downloads should be created
-     * @return
-     * @throws IOException
-     * @throws IllegalArgumentException
-     */
-    GitHubRepository create(String repositoryName, String description, String homepage,
-        boolean has_issues, boolean has_wiki, boolean has_downloads) throws IOException, IllegalArgumentException;
-    
-    /**
      * Creates a webhook in the GitHub repository.
      *
      * @param repository - the value object that represents the GitHub repository
@@ -53,14 +37,5 @@ public interface GitHubService {
                                 URL webhookUrl,
                                 GitHubWebhookEvent... events)
             throws IllegalArgumentException;
-    
-    /**
-     * Deletes all webhooks in a specific GitHub repository
-     * 
-     * @param repository - the value object that represents the GitHub repository
-     * @throws IOException
-     * @throws IllegalArgumentException If the parameter is unspecified
-     */
-    void deleteWebhooks(final GitHubRepository repository) throws IllegalArgumentException;
     
 }

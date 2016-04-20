@@ -121,7 +121,7 @@ final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServiceSpi 
      * {@inheritDoc}
      */
     @Override
-    public GitHubRepository create(String repositoryName, String description, String homepage,
+    public GitHubRepository createRepository(String repositoryName, String description, String homepage,
                                    boolean has_issues, boolean has_wiki, boolean has_downloads)
             throws IOException, IllegalArgumentException {
         // Precondition checks
