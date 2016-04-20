@@ -20,6 +20,7 @@ import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubWebhook;
 import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
 import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
+import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 
 /**
  * Implementation of {@link GitHubService} backed by the Kohsuke GitHub Java Client
@@ -27,11 +28,11 @@ import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-final class KohsukeGitHubServiceImpl implements GitHubService {
+final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServiceSpi {
 
     private static final String GITHUB_WEBHOOK_WEB = "web";
 
-	private static final Logger log = Logger.getLogger(KohsukeGitHubServiceImpl.class.getName());
+    private static final Logger log = Logger.getLogger(KohsukeGitHubServiceImpl.class.getName());
 
     private static final String MSG_NOT_FOUND = "Not Found";
 
@@ -212,6 +213,27 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
                         + repository.getFullName() + " because it could not be found or there is no webhooks for that repository.");
             }
             throw new RuntimeException("Could not remove webhooks from " + repository.getFullName(), ioe);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteRepository(final GitHubRepository repository) throws IllegalArgumentException {
+    	if(repository == null) {
+    		throw new IllegalArgumentException("repository must be specified");
+    	}
+    	final GHRepository repo;
+    	try {
+    		repo = delegate.getRepository(repository.getFullName());
+    		repo.delete();
+        } catch (final IOException ioe) {
+            // Check for repo not found (this is how Kohsuke Java Client reports the error)
+            if (isRepoNotFound(ioe)) {
+                throw new NoSuchRepositoryException("Could not remove repository "
+                        + repository.getFullName() + " because it could not be found.");
+            }
+            throw new RuntimeException("Could not remove " + repository.getFullName(), ioe);
         }
     }
 
