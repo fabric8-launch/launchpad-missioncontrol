@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<arquillian xmlns="http://jboss.org/schema/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
-   <container qualifier="arquillian-wildfly-managed" />
-   <container qualifier="arquillian-wildfly-remote" />
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+	<container qualifier="arquillian-wildfly-managed" default="true">
+		<configuration>
+			<property name="jbossHome">${JBOSS_HOME}</property>
+			<!-- pass the GitHub token and username system properties from Maven CLI (or Eclipse) to WildFly -->
+			<property name="javaVmArguments">-DGITHUB_TOKEN=${GITHUB_TOKEN} -DGITHUB_USERNAME=${GITHUB_USERNAME}</property>
+			<property name="outputToConsole">true</property>
+		</configuration>
+	</container>
+	<container qualifier="arquillian-wildfly-remote" />
 </arquillian>

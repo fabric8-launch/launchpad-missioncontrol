@@ -1,12 +1,18 @@
 package org.kontinuity.catapult.core.impl;
 
+import javax.inject.Inject;
+
 import org.kontinuity.catapult.core.api.Boom;
 import org.kontinuity.catapult.core.api.Catapult;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
-import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
-import org.kontinuity.catapult.service.openshift.api.*;
+import org.kontinuity.catapult.service.github.impl.kohsuke.GitHubServiceProducer;
+import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftUrl;
 
 /**
  * {@inheritDoc}
@@ -32,9 +38,9 @@ public abstract class CatapultBase implements Catapult {
         final String sourceRepoName = projectile.getSourceGitHubRepo();
 
         // Fork the repository for the user
-        final GitHubServiceFactory gitHubServiceFactory = GitHubServiceFactory.INSTANCE;
         final String gitHubAccessToken = projectile.getGitHubAccessToken();
-        final GitHubService gitHubService = gitHubServiceFactory.create(gitHubAccessToken);
+        // TODO: should we use the @Inject ? In which case, how do we pass the access token ?
+        final GitHubService gitHubService = new GitHubServiceProducer().create(gitHubAccessToken, null);
         final GitHubRepository forkedRepo = gitHubService.fork(sourceRepoName);
 
         final String openShiftApiUrl = OpenShiftUrl.get();

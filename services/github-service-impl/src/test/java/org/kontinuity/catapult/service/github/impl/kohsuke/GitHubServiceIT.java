@@ -1,20 +1,32 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.kontinuity.catapult.service.github.api.*;
-import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
-
-import java.io.IOException;
+import java.io.File;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.kontinuity.catapult.service.github.api.GitHubRepository;
+import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.api.GitHubWebhook;
+import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
+import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
+import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
+import org.kontinuity.catapult.service.github.utils.SystemUtils;
+
 /**
- * Tests for the {@link GitHubService}
+ * Integration Tests for the {@link GitHubService}
  *
  * Relies on having environment variables set for:
  * GITHUB_USERNAME
@@ -22,64 +34,36 @@ import java.util.logging.Logger;
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-public class GitHubServiceIT {
+@RunWith(Arquillian.class)
+public class GitHubServiceIT extends GitHubServiceTest {
 
     private static final Logger log = Logger.getLogger(GitHubServiceIT.class.getName());
-    private static final String NAME_GITHUB_SOURCE_REPO = "jboss-developer/jboss-eap-quickstarts";
 
-    private static String GITHUB_USERNAME;
-    private static String GITHUB_PERSONAL_ACCESS_TOKEN;
-
-    private GitHubService gitHubService;
-
-    @BeforeClass
-    public static void initGithubCredentials() throws IOException {
-        GITHUB_USERNAME = GitHubTestingCredentials.getUsername();
-        GITHUB_PERSONAL_ACCESS_TOKEN = GitHubTestingCredentials.getToken();
+    @Inject
+    private GitHubService githubService;
+    
+    /**
+     * @return a jar file containing all the required classes to test the {@link GitHubService}
+     */
+    @Deployment(testable = true)
+    public static WebArchive createDeployment() {
+        // Import Maven runtime dependencies
+        final File[] dependencies = Maven.resolver().loadPomFromFile("pom.xml")
+                .importRuntimeDependencies().resolve().withTransitivity().asFile();
+        // Create deploy file    
+        WebArchive war = ShrinkWrap.create(WebArchive.class)
+                .addPackage(KohsukeGitHubServiceImpl.class.getPackage())
+                .addClass(SystemUtils.class)
+                .addClass(GitHubServiceSpi.class)
+                .addAsLibraries(dependencies);
+        // Show the deployed structure
+        log.fine(war.toString(true)); 
+        return war;
     }
 
-    @Before
-    public void initGithubService() {
-        gitHubService = GitHubServiceFactory.INSTANCE.create(GITHUB_PERSONAL_ACCESS_TOKEN, GITHUB_USERNAME);
+    @Override
+    protected GitHubService getGitHubService() {
+        return githubService;
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void forkRepoCannotBeNull() {
-        final GitHubRepository targetRepo = gitHubService.fork(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void forkRepoCannotBeEmpty() {
-        final GitHubRepository targetRepo = gitHubService.fork("");
-    }
-
-    @Test
-    public void fork() {
-        final GitHubRepository targetRepo = gitHubService.fork(NAME_GITHUB_SOURCE_REPO);
-        Assert.assertNotNull("Got null result in forking " + NAME_GITHUB_SOURCE_REPO, targetRepo);
-        log.log(Level.INFO, "Forked " + NAME_GITHUB_SOURCE_REPO + " as " + targetRepo.getFullName() +
-                " available at " + targetRepo.getGitTransportUrl());
-    }
-
-    @Test(expected = NoSuchRepositoryException.class)
-    public void cannotForkNonexistentRepo(){
-        gitHubService.fork("ALRubinger/someRepoThatDoesNotAndWillNeverExist");
-    }
-
-    @Test
-    public void createGithubWebHook() throws Exception{
-    	final URL webhookUrl = new URL("https://10.1.2.2");
-    	
-    	final GitHubRepository targetRepo = gitHubService.fork(NAME_GITHUB_SOURCE_REPO);
-		GitHubWebhook webhook = gitHubService.createWebhook(
-    			targetRepo,
-    			webhookUrl,
-    			GitHubWebhookEvent.ALL);
-    	
-    	Assert.assertNotNull(webhook);
-    	Assert.assertEquals(webhookUrl.toString(), webhook.getUrl());
-    	// After the test removes all webhooks
-    	((GitHubServiceSpi)gitHubService).deleteWebhooks(targetRepo);    	
-    }
-
 }

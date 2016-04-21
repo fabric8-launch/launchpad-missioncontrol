@@ -1,6 +1,5 @@
 package org.kontinuity.catapult.service.github.api;
 
-import java.io.IOException;
 import java.net.URL;
 
 /**

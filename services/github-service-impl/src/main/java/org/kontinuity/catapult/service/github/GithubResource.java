@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -26,10 +27,9 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.kontinuity.catapult.service.github.api.GitHubService;
-import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
-import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
+import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 
 /**
  * The type Github resource.
@@ -65,6 +65,9 @@ public class GithubResource
    /** Name of the environment variable or system property for the GitHub OAuth Client Secret */
    private static String ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_SECRET = "KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET";
 
+   @Inject
+   private GitHubService githubService;
+   
    /**
     * Initialize the GITHUB_DEV_APP_CLIENT_ID and GITHUB_DEV_APP_SECRET values from the environment by first looking
     * to the system property by the same name, will fallback to the environment variable by the same name.  If not
@@ -252,14 +255,12 @@ public class GithubResource
 
    private GitHubRepository forkRepository(String accessToken, String repository)
    {
-      GitHubService gitHubService = GitHubServiceFactory.INSTANCE.create(accessToken);
-      GitHubRepository gitHubRepository = gitHubService.fork(repository);
+      GitHubRepository gitHubRepository = this.githubService.fork(repository);
       return gitHubRepository;
    }
 
    private GitHubRepository createRepository(String accessToken, String repository) throws IOException {
-      GitHubService gitHubService = GitHubServiceFactory.INSTANCE.create(accessToken);
-      GitHubRepository gitHubRepository = ((GitHubServiceSpi)gitHubService).createRepository(repository, "Created via Forge Online",
+      GitHubRepository gitHubRepository = ((GitHubServiceSpi)this.githubService).createRepository(repository, "Created via Forge Online",
               "http://forge.jboss.org", true, true, true);
       return gitHubRepository;
    }
