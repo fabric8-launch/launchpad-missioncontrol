@@ -29,7 +29,9 @@ import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
  */
 final class KohsukeGitHubServiceImpl implements GitHubService {
 
-    private static final String GITHUB_WEBHOOK_WEB = "web";
+    private static final String WEBHOOK_URL = "url";
+
+	private static final String GITHUB_WEBHOOK_WEB = "web";
 
 	private static final Logger log = Logger.getLogger(KohsukeGitHubServiceImpl.class.getName());
 
@@ -171,7 +173,7 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
             throw new RuntimeException(ioe);
         }
         Map<String, String> configuration = new HashMap<>();
-    	configuration.put("url", webhookUrl.toString());
+    	configuration.put(WEBHOOK_URL, webhookUrl.toString());
     	configuration.put("content_type", "json");
 
         List<GHEvent> githubEvents = Stream.of(events).map(event -> GHEvent.valueOf(event.name())).collect(Collectors.toList());
@@ -194,7 +196,7 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
     /**
      * {@inheritDoc}
      */
-    public void deleteWebhooks(final GitHubRepository repository) throws IllegalArgumentException {
+    public void deleteWebhook(final GitHubRepository repository, GitHubWebhook webhook) throws IllegalArgumentException {
     	if(repository == null) {
     		throw new IllegalArgumentException("repository must be specified");
     	}
@@ -203,7 +205,10 @@ final class KohsukeGitHubServiceImpl implements GitHubService {
     		repo = delegate.getRepository(repository.getFullName());
     		
     		for (GHHook hook: repo.getHooks()) {
-        		hook.delete();
+			if(hook.getConfig().get(WEBHOOK_URL).equals(webhook.getUrl())) {
+				hook.delete();
+				break;
+			}
         	}
         } catch (final IOException ioe) {
             // Check for repo not found (this is how Kohsuke Java Client reports the error)

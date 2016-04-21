@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kontinuity.catapult.service.github.api.*;
+import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 
 import java.io.IOException;
 import java.net.URL;
@@ -78,7 +79,7 @@ public class GitHubServiceIT {
     	Assert.assertNotNull(webhook);
     	Assert.assertEquals(webhookUrl.toString(), webhook.getUrl());
     	// After the test removes all webhooks
-    	gitHubService.deleteWebhooks(targetRepo);    	
+    	((GitHubServiceSpi)gitHubService).deleteWebhook(targetRepo, webhook);    	
     }
 
 }

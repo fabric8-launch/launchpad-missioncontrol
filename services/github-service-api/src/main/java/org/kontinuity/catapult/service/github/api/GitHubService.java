@@ -54,13 +54,4 @@ public interface GitHubService {
                                 GitHubWebhookEvent... events)
             throws IllegalArgumentException;
     
-    /**
-     * Deletes all webhooks in a specific GitHub repository
-     * 
-     * @param repository - the value object that represents the GitHub repository
-     * @throws IOException
-     * @throws IllegalArgumentException If the parameter is unspecified
-     */
-    void deleteWebhooks(final GitHubRepository repository) throws IllegalArgumentException;
-    
 }
