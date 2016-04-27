@@ -4,7 +4,7 @@ import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 
 /**
- * Value object containing the result of a {@link Catapult#fling(Projectile)}
+ * Value object containing the result of a {@link CatapultService#fling(Projectile)}
  * call.  Implementations should be immutable and therefore thread-safe.
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>

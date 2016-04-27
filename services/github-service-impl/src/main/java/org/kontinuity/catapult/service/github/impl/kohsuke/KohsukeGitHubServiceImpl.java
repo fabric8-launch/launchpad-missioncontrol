@@ -28,7 +28,7 @@ import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServiceSpi {
+public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServiceSpi {
 
     private static final String WEBHOOK_URL = "url";
 

@@ -7,10 +7,10 @@ package org.kontinuity.catapult.core.api;
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-public interface Catapult {
+public interface CatapultService {
 
     /**
-     * The {@link Catapult}, as the name suggests, is a launcher.  Its responsibility
+     * The {@link CatapultService}, as the name suggests, is a launcher.  Its responsibility
      * is to take the following inputs:
      * <ul>
      *   <li>A GitHub project</li>
@@ -34,7 +34,7 @@ public interface Catapult {
      * Jenkins Pipeline (https://github.com/jenkinsci/workflow-plugin/blob/master/README.md#introduction)
      * script called a Jenkinsfile.
      *
-     * This project launching process done by the {@link Catapult} is called a {@link Catapult#fling(Projectile)}.
+     * This project launching process done by the {@link CatapultService} is called a {@link CatapultService#fling(Projectile)}.
      * All inputs are encapsulated inside a {@link Projectile}.  The returned result is,
      * quite unsurprisingly, a {@link Boom}, which contains all information relevant to the caller.
      *

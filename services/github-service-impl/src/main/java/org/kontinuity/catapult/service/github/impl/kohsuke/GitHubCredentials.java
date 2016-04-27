@@ -5,7 +5,7 @@ package org.kontinuity.catapult.service.github.impl.kohsuke;
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-class GitHubCredentials {
+public class GitHubCredentials {
 
     private static final String NAME_ENV_VAR_SYSPROP_GITHUB_USERNAME = "GITHUB_USERNAME";
     private static final String NAME_ENV_VAR_SYSPROP_GITHUB_TOKEN = "GITHUB_TOKEN";

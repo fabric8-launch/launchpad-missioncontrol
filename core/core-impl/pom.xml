@@ -9,6 +9,7 @@
       <relativePath>../../pom.xml</relativePath>
    </parent>
    <artifactId>catapult-core-impl</artifactId>
+   <packaging>ejb</packaging>
    <dependencies>
       <dependency>
          <groupId>org.kontinuity.catapult</groupId>
@@ -21,14 +22,36 @@
       </dependency>
       <dependency>
          <groupId>org.kontinuity.catapult</groupId>
-         <artifactId>catapult-service-github-impl</artifactId>
-         <type>test-jar</type>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.kontinuity.catapult</groupId>
          <artifactId>catapult-service-openshift-impl</artifactId>
          <type>ejb</type>
       </dependency>
+      <dependency>
+        <groupId>org.arquillian.container</groupId>
+        <artifactId>arquillian-container-chameleon</artifactId>
+        <scope>test</scope>
+      </dependency>
    </dependencies>
+   
+   <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <configuration>
+                    <ejbVersion>3.0</ejbVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

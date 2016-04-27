@@ -26,7 +26,7 @@ public class ProjectileBuilder {
 
     /**
      * Creates and returns a new instance with uninitialized values
-     * @return
+     * @return a new instance of the {@link ProjectileBuilder}
      */
     public static ProjectileBuilder newInstance(){
         return new ProjectileBuilder();
@@ -37,14 +37,14 @@ public class ProjectileBuilder {
      * state of this builder; if any preconditions like missing properties
      * or improper values exist, an {@link IllegalStateException} will be thrown
      *
-     * @return
+     * @return the created {@link Projectile}
      * @throws IllegalStateException
      */
     public Projectile build() throws IllegalStateException {
 
         // Precondition checks
-        this.checkSpecified("sourceGitHubRepo", sourceGitHubRepo);
-        this.checkSpecified("gitHubAccessToken", gitHubAccessToken);
+    	ProjectileBuilder.checkSpecified("sourceGitHubRepo", sourceGitHubRepo);
+    	ProjectileBuilder.checkSpecified("gitHubAccessToken", gitHubAccessToken);
 
         // All good, so make a new instance
         final Projectile projectile = new Projectile(this);
@@ -59,7 +59,7 @@ public class ProjectileBuilder {
      * @param value
      * @throws IllegalStateException
      */
-    private void checkSpecified(final String name,
+    private static void checkSpecified(final String name,
                                 final String value) throws IllegalStateException {
         assert name != null && !name.isEmpty() : "name is required";
         if (value == null || value.isEmpty()) {
@@ -93,16 +93,19 @@ public class ProjectileBuilder {
         this.gitHubAccessToken = gitHubAccessToken;
         return this;
     }
-
+    
     /**
-     * Accessors
+     * @return source GitHub repository name in form "owner/repoName".
      */
-
     public String getSourceGitHubRepo() {
-        return sourceGitHubRepo;
+        return this.sourceGitHubRepo;
     }
 
+    /**
+     * @return the GitHub access token we have obtained from the user as part of
+     * the OAuth process
+     */
     public String getGitHubAccessToken() {
-        return gitHubAccessToken;
+        return this.gitHubAccessToken;
     }
 }

@@ -1,7 +1,6 @@
 package org.kontinuity.catapult.service.openshift.impl;
 
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
 import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.OpenShiftServiceProducer;
 
 /**
@@ -12,11 +11,8 @@ import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.O
  */
 public class OpenShiftServicePojoIT extends OpenShiftServiceTestBase {
 
-	private static final OpenShiftService openshiftService = new OpenShiftServiceProducer()
-			.create(OpenShiftSettings.getOpenShiftUrl());
-
 	@Override
 	protected OpenShiftService getOpenShiftService() {
-		return openshiftService;
+		return new OpenShiftServiceProducer().create();
 	}
 }

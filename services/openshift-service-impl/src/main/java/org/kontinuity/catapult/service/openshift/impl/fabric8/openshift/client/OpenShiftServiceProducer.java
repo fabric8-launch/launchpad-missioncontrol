@@ -28,28 +28,19 @@ public class OpenShiftServiceProducer {
 	 *             If the {@code openshiftUrl} is not specified
 	 */
 	@Produces
-	public OpenShiftService create(@OpenShiftUrl final String openshiftUrl) {
+	public OpenShiftService create() {
+		final String openShiftUrl = OpenShiftSettings.getOpenShiftUrl();
 
 		// Precondition checks
-		if (openshiftUrl == null) {
+		if (openShiftUrl == null) {
 			throw new IllegalArgumentException("openshiftUrl is required");
 		}
 
 		// Create and return
 		if (log.isLoggable(Level.FINEST)) {
-            log.log(Level.FINEST, "Created backing OpenShift client for " + openshiftUrl);
+            log.log(Level.FINEST, "Created backing OpenShift client for " + openShiftUrl);
         }
-		return new Fabric8OpenShiftClientServiceImpl(openshiftUrl);
-	}
-
-	/**
-	 * @return the OpenShift URL from the system properties or environment
-	 *         variables.
-	 */
-	@Produces
-	@OpenShiftUrl
-	public String getOpenShiftUrl() {
-		return OpenShiftSettings.getOpenShiftUrl();
+		return new Fabric8OpenShiftClientServiceImpl(openShiftUrl);
 	}
 
 }

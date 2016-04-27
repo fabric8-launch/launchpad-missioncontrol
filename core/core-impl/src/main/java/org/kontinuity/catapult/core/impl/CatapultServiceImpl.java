@@ -1,7 +1,9 @@
 package org.kontinuity.catapult.core.impl;
 
+import javax.inject.Inject;
+
 import org.kontinuity.catapult.core.api.Boom;
-import org.kontinuity.catapult.core.api.Catapult;
+import org.kontinuity.catapult.core.api.CatapultService;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
@@ -9,18 +11,17 @@ import org.kontinuity.catapult.service.github.impl.kohsuke.GitHubServiceProducer
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
-import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.OpenShiftServiceProducer;
 
 /**
- * {@inheritDoc}
- * <p>
- * May be extended to create managed components like EJBs or CDI beans
+ * Implementation of the {@link CatapultService} interface.
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-public abstract class CatapultBase implements Catapult {
+public class CatapultServiceImpl implements CatapultService {
 
+	@Inject
+	private OpenShiftService openShiftService; 
+	
     /**
      * {@inheritDoc}
      */
@@ -38,12 +39,11 @@ public abstract class CatapultBase implements Catapult {
         // Fork the repository for the user
         final String gitHubAccessToken = projectile.getGitHubAccessToken();
         // TODO: should we use the @Inject ? In which case, how do we pass the access token ?
+        // TODO: in other words, if the GitHubService cannot be injected, should we keep all the CDI enablement (beans.xml, producer, integration test with Arquillian, etc.) ?
+        // TODO: or maybe the gitHubAccessToken
         final GitHubService gitHubService = new GitHubServiceProducer().create(gitHubAccessToken, null);
         final GitHubRepository forkedRepo = gitHubService.fork(sourceRepoName);
 
-        // TODO: should we use the @Inject ? In which case, how do we pass the access token ?
-        final String openShiftApiUrl = OpenShiftSettings.getOpenShiftUrl();
-        final OpenShiftService openShiftService = new OpenShiftServiceProducer().create(openShiftApiUrl);
         //TODO
         // https://github.com/redhat-kontinuity/catapult/issues/18
         // Create a new OpenShift project for the user

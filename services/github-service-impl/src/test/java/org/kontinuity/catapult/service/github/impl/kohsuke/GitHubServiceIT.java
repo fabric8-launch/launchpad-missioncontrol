@@ -32,8 +32,9 @@ public final class GitHubServiceIT extends GitHubServiceTestBase {
     private GitHubService githubService;
     
     /**
-     * @return a jar file containing all the required classes to test the {@link GitHubService}
-     */
+	 * @return a war file containing all the required classes and dependencies
+	 *         to test the {@link GitHubService}
+	 */
     @Deployment(testable = true)
     public static WebArchive createDeployment() {
         // Import Maven runtime dependencies
