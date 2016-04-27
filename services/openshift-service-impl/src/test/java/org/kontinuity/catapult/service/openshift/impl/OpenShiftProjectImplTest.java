@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftUrl;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
 
 import java.net.MalformedURLException;
 import java.util.logging.Logger;
@@ -43,7 +43,7 @@ public class OpenShiftProjectImplTest {
 
    @Test
    public void consoleOverviewUrl() throws MalformedURLException {
-      final String expectedUrl = OpenShiftUrl.get() +
+      final String expectedUrl = OpenShiftSettings.getOpenShiftUrl() +
               "/console/project/" +
               PROJECT_NAME +
               "/overview/";

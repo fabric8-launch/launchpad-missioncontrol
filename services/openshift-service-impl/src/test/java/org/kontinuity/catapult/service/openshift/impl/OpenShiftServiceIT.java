@@ -1,73 +1,57 @@
 package org.kontinuity.catapult.service.openshift.impl;
 
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.kontinuity.catapult.service.openshift.api.*;
-import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
+import java.io.File;
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.runner.RunWith;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
+import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.Fabric8OpenShiftClientServiceImpl;
+import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
 
 /**
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
- * @author <a href="mailto:rmartine@redhat.com">Ricardo Martinelli de Oliveira</a>
+ * @author <a href="mailto:rmartine@redhat.com">Ricardo Martinelli de
+ *         Oliveira</a>
+ * @author <a href="mailto:xcoulon@redhat.com">Xavier Coulon</a>
  */
-public class OpenShiftServiceIT {
+@RunWith(Arquillian.class)
+public class OpenShiftServiceIT extends OpenShiftServiceTestBase {
 
-    private static final Logger log = Logger.getLogger(OpenShiftServiceIT.class.getName());
+	@Inject
+	private OpenShiftService openshiftService;
 
-    private static final String PREFIX_NAME_PROJECT = "test-project-";
-
-    private static final Collection<OpenShiftProject> createdProjects = new ArrayList<>();
-
-    private static OpenShiftService service;
-
-    @BeforeClass
-    public static void createService() {
-        service = OpenShiftServiceFactory.INSTANCE.create(OpenShiftUrl.get());
-    }
-
-    @AfterClass
-    public static void deleteCreatedProjects() {
-        createdProjects.forEach(project -> {
-            final String projectName = project.getName();
-            ((OpenShiftServiceSpi) service).deleteProject(project);
-            log.info("Deleted " + projectName);
-        });
-    }
-
-    @Test
-    public void createProject() {
-        final String projectName = getUniqueProjectName();
-        final OpenShiftProject project = service.createProject(projectName);
-        final String name = project.getName();
-        createdProjects.add(project);
-        Assert.assertEquals("returned project did not have expected name", projectName, name);
-    }
-
-    @Test(expected = DuplicateProjectException.class)
-    public void duplicateProjectNameShouldFail() {
-        final OpenShiftProject project = triggerCreateProject(getUniqueProjectName());
-        final String name = project.getName();
-        service.createProject(name); // Using same name should fail with DPE here
-        // Just in case the above doesn't fail
-        createdProjects.add(project);
-    }
-
-    private String getUniqueProjectName(){
-        return PREFIX_NAME_PROJECT + System.currentTimeMillis();
-    }
-
-	private OpenShiftProject triggerCreateProject(final String projectName) {
-    	final OpenShiftProject project = service.createProject(projectName);
-    	log.log(Level.INFO, "Created project: \'" + projectName + "\'");
-    	createdProjects.add(project);
-    	
-    	return project;
+	@Override
+	protected OpenShiftService getOpenShiftService() {
+		return this.openshiftService;
 	}
+	
+	private static final Logger log = Logger.getLogger(OpenShiftServiceIT.class.getName());
+
+    /**
+     * @return a jar file containing all the required classes to test the {@link GitHubService}
+     */
+    @Deployment(testable = true)
+    public static WebArchive createDeployment() {
+        // Import Maven runtime dependencies
+        final File[] dependencies = Maven.resolver().loadPomFromFile("pom.xml")
+                .importRuntimeDependencies().resolve().withTransitivity().asFile();
+        // Create deploy file    
+        WebArchive war = ShrinkWrap.create(WebArchive.class)
+                .addPackage(Fabric8OpenShiftClientServiceImpl.class.getPackage())
+                .addPackage(OpenShiftServiceIT.class.getPackage())
+                .addPackage(OpenShiftService.class.getPackage())
+                .addClass(OpenShiftServiceSpi.class)
+                .addAsLibraries(dependencies);
+        // Show the deployed structure
+        log.fine(war.toString(true)); 
+        return war;
+    }
+
 }

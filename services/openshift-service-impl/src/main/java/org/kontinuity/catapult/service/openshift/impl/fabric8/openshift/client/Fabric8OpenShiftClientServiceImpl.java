@@ -1,20 +1,22 @@
 package org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client;
 
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.openshift.api.model.BuildConfigList;
-import io.fabric8.openshift.api.model.ProjectRequest;
-import io.fabric8.openshift.client.DefaultOpenShiftClient;
-import io.fabric8.openshift.client.OpenShiftClient;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 import org.kontinuity.catapult.service.openshift.impl.OpenShiftProjectImpl;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.KubernetesClientException;
+import io.fabric8.openshift.api.model.ProjectRequest;
+import io.fabric8.openshift.client.DefaultOpenShiftClient;
+import io.fabric8.openshift.client.OpenShiftClient;
 
 /**
  * Implementation of the {@link OpenShiftService} using the Fabric8
@@ -22,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService, OpenShiftServiceSpi {
+public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService, OpenShiftServiceSpi {
 
     private static final Logger log = Logger.getLogger(Fabric8OpenShiftClientServiceImpl.class.getName());
 
@@ -37,6 +39,7 @@ final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService, OpenS
      *
      * @param apiUrl
      */
+    @Inject
     Fabric8OpenShiftClientServiceImpl(final String apiUrl) {
         assert apiUrl != null && !apiUrl.isEmpty() : "apiUrl is required";
 

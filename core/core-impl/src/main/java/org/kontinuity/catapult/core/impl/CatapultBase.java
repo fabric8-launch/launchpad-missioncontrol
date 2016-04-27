@@ -1,7 +1,5 @@
 package org.kontinuity.catapult.core.impl;
 
-import javax.inject.Inject;
-
 import org.kontinuity.catapult.core.api.Boom;
 import org.kontinuity.catapult.core.api.Catapult;
 import org.kontinuity.catapult.core.api.Projectile;
@@ -11,8 +9,8 @@ import org.kontinuity.catapult.service.github.impl.kohsuke.GitHubServiceProducer
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftUrl;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
+import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.OpenShiftServiceProducer;
 
 /**
  * {@inheritDoc}
@@ -43,9 +41,9 @@ public abstract class CatapultBase implements Catapult {
         final GitHubService gitHubService = new GitHubServiceProducer().create(gitHubAccessToken, null);
         final GitHubRepository forkedRepo = gitHubService.fork(sourceRepoName);
 
-        final String openShiftApiUrl = OpenShiftUrl.get();
-        final OpenShiftServiceFactory openShiftServiceFactory = OpenShiftServiceFactory.INSTANCE;
-        final OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftApiUrl);
+        // TODO: should we use the @Inject ? In which case, how do we pass the access token ?
+        final String openShiftApiUrl = OpenShiftSettings.getOpenShiftUrl();
+        final OpenShiftService openShiftService = new OpenShiftServiceProducer().create(openShiftApiUrl);
         //TODO
         // https://github.com/redhat-kontinuity/catapult/issues/18
         // Create a new OpenShift project for the user

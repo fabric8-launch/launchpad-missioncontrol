@@ -8,7 +8,7 @@ import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
  * {@inheritDoc}
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-final class BoomImpl implements Boom{
+public final class BoomImpl implements Boom{
 
     private final GitHubRepository gitHubRepository;
     private final OpenShiftProject openShiftProject;

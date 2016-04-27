@@ -1,7 +1,7 @@
 package org.kontinuity.catapult.service.openshift.impl;
 
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftUrl;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,7 +45,7 @@ public final class OpenShiftProjectImpl implements OpenShiftProject {
     @Override
     public URL getConsoleOverviewUrl() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(OpenShiftUrl.get());
+        sb.append(OpenShiftSettings.getOpenShiftUrl());
         sb.append(CONSOLE_OVERVIEW_URL_PREFIX);
         sb.append(this.getName());
         sb.append(CONSOLE_OVERVIEW_URL_SUFFIX);

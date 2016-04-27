@@ -7,20 +7,26 @@ import static org.kontinuity.catapult.service.openshift.api.OpenShiftEnvVarSysPr
  * <p>
  * 1) System Property {@link org.kontinuity.catapult.service.openshift.api.OpenShiftEnvVarSysPropNames#OPENSHIFT_URL}
  * 2) Environment Variable {@link org.kontinuity.catapult.service.openshift.api.OpenShiftEnvVarSysPropNames#OPENSHIFT_URL}
- * 3) {@link OpenShiftUrl#DEFAULT_OPENSHIFT_URL}
+ * 3) {@link OpenShiftSettings#DEFAULT_OPENSHIFT_URL}
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
-public class OpenShiftUrl {
+public class OpenShiftSettings {
 
+	private static final String DEFAULT_OPENSHIFT_URL = "https://localhost:8443";
+	
     /**
      * No instances
      */
-    private OpenShiftUrl(){}
+    private OpenShiftSettings(){}
 
-    private static final String DEFAULT_OPENSHIFT_URL = "https://localhost:8443";
-
-    public static String get() {
+    /**
+	 * @return the environment variable or system properties value for
+	 *         {@link OpenShiftEnvVarSysPropNames#OPENSHIFT_URL} or
+	 *         {@link OpenShiftSettings#DEFAULT_OPENSHIFT_URL} if no specific
+	 *         value was set.
+	 */
+    public static String getOpenShiftUrl() {
         if (isSystemPropertySet(OPENSHIFT_URL)) {
             return System.getProperty(OPENSHIFT_URL);
         } else if (isEnvVarSet(OPENSHIFT_URL)) {

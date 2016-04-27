@@ -1,5 +1,9 @@
 package org.kontinuity.catapult.core.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Logger;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -12,13 +16,9 @@ import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.impl.kohsuke.GitHubServiceProducer;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftUrl;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
+import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.OpenShiftServiceProducer;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Logger;
 
 /**
  * Test cases for the {@link org.kontinuity.catapult.core.api.Catapult}
@@ -41,7 +41,7 @@ public class CatapultIT {
     @AfterClass
     public static void cleanup() {
 
-        final OpenShiftService service = OpenShiftServiceFactory.INSTANCE.create(OpenShiftUrl.get());
+        final OpenShiftService service = new OpenShiftServiceProducer().create(OpenShiftSettings.getOpenShiftUrl());
 
         openshiftProjectsToDelete.forEach(projectName -> {
             final boolean deleted = ((OpenShiftServiceSpi) service).deleteProject(projectName);

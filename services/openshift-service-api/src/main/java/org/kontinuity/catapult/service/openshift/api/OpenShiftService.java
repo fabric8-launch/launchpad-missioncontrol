@@ -8,10 +8,10 @@ package org.kontinuity.catapult.service.openshift.api;
 public interface OpenShiftService {
 
     /**
-     * Creates a project with the specified, required name
+     * Creates a project with the specified, required name.
      *
-     * @param name
-     * @return
+     * @param name the name of the project to create
+     * @return the created {@link OpenShiftProject}
      * @throws DuplicateProjectException
      * @throws IllegalArgumentException  If the name is not specified
      */
