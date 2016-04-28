@@ -63,7 +63,7 @@ public class ProjectileBuilder {
                                 final String value) throws IllegalStateException {
         assert name != null && !name.isEmpty() : "name is required";
         if (value == null || value.isEmpty()) {
-            throw new IllegalArgumentException(name + " must be specified");
+            throw new IllegalStateException(name + " must be specified");
         }
     }
 
