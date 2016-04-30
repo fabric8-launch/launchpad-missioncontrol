@@ -8,6 +8,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.runner.RunWith;
 import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 
 import javax.inject.Inject;
@@ -29,7 +30,7 @@ public final class GitHubServiceCdiIT extends GitHubServiceTestBase {
     private static final Logger log = Logger.getLogger(GitHubServiceCdiIT.class.getName());
 
     @Inject
-    private GitHubService githubService;
+    private GitHubServiceFactory gitHubServiceFactory;
     
     /**
 	 * @return a war file containing all the required classes and dependencies
@@ -42,9 +43,10 @@ public final class GitHubServiceCdiIT extends GitHubServiceTestBase {
                 .importRuntimeDependencies().resolve().withTransitivity().asFile();
         // Create deploy file    
         WebArchive war = ShrinkWrap.create(WebArchive.class)
-                .addPackage(KohsukeGitHubServiceImpl.class.getPackage())
+                .addPackage(GitHubServiceFactoryImpl.class.getPackage())
                 .addClass(GitHubCredentials.class)
                 .addClass(GitHubServiceSpi.class)
+                // libraries will include all classes/interfaces from the API project.
                 .addAsLibraries(dependencies);
         // Show the deployed structure
         log.fine(war.toString(true)); 
@@ -53,6 +55,6 @@ public final class GitHubServiceCdiIT extends GitHubServiceTestBase {
 
     @Override
     protected GitHubService getGitHubService() {
-        return githubService;
+        return gitHubServiceFactory.create(GitHubCredentials.getToken());
     }
 }

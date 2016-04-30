@@ -7,7 +7,7 @@ import org.kontinuity.catapult.core.api.Catapult;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
-import org.kontinuity.catapult.service.github.impl.kohsuke.GitHubServiceProducer;
+import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
@@ -22,9 +22,8 @@ public class CatapultImpl implements Catapult {
 	@Inject
 	private OpenShiftService openShiftService;
 
-   //TODO https://github.com/redhat-kontinuity/catapult/issues/81
-   @Inject
-   private GitHubServiceProducer gitHubServiceProducer;
+	@Inject
+	private GitHubServiceFactory gitHubServiceFactory; 
 	
     /**
      * {@inheritDoc}
@@ -42,7 +41,7 @@ public class CatapultImpl implements Catapult {
 
         // Fork the repository for the user
         final String gitHubAccessToken = projectile.getGitHubAccessToken();
-        final GitHubService gitHubService = gitHubServiceProducer.create(gitHubAccessToken, null);
+        final GitHubService gitHubService = gitHubServiceFactory.create(gitHubAccessToken);
         final GitHubRepository forkedRepo = gitHubService.fork(sourceRepoName);
 
         //TODO

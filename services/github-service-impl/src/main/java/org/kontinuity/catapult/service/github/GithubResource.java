@@ -7,7 +7,6 @@ import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -28,7 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
-import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 
 /**
@@ -44,64 +43,31 @@ import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
  */
 @Path("/github")
 @ApplicationScoped
-public class GithubResource
-{
+public class GithubResource {
+   
    private static Logger log = Logger.getLogger(GithubResource.class.getName());
+   
    /** The OAuth2 webflow entry point url */
    private static final String GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
    /** */
    private static final String FORK_ACTION = "fork";
    private static final String NEW_ACTION = "new";
 
-   // Create a Third-party application in Github
-   /** The client ID received from GitHub when the developer app was registered */
-   private static String GITHUB_DEV_APP_CLIENT_ID;
-   /** The client secret received from GitHub when the developer app was registered */
-   private static String GITHUB_DEV_APP_SECRET;
    /** Our User-Agent HTTP header value (name of our app) */
    private static String HEADER_VALUE_USER_AGENT = "Kontinuity Catapult";
-   /** Name of the environment variable or system property for the GitHub OAuth Client ID */
-   private static String ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_ID = "KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID";
-   /** Name of the environment variable or system property for the GitHub OAuth Client Secret */
-   private static String ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_SECRET = "KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET";
-
+  
    @Inject
-   private GitHubService githubService;
+   private GitHubServiceFactory gitHubServiceFactory;
    
-   /**
-    * Initialize the GITHUB_DEV_APP_CLIENT_ID and GITHUB_DEV_APP_SECRET values from the environment by first looking
-    * to the system property by the same name, will fallback to the environment variable by the same name.  If not
-    * specified, fail to start this component with {@link IllegalStateException}.
-    */
-   @PostConstruct
-   private void init() {
-      // Try the system property first since this can be specified in the server configuration
-      GITHUB_DEV_APP_CLIENT_ID = System.getProperty(ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_ID);
-      if (GITHUB_DEV_APP_CLIENT_ID == null) {
-         GITHUB_DEV_APP_CLIENT_ID = System.getenv(ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_ID);
-      }
-      if (GITHUB_DEV_APP_CLIENT_ID == null) {
-         final String errorMessage =
-                 "Failed to find binding for " +
-                         ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_ID +
-                         " as env var or sysprop; cannot init";
-         log.severe(errorMessage);
-         throw new IllegalStateException(errorMessage);
-      }
-
-      GITHUB_DEV_APP_SECRET = System.getProperty(ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_SECRET);
-      if (GITHUB_DEV_APP_SECRET == null) {
-         GITHUB_DEV_APP_SECRET = System.getenv(ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_SECRET);
-      }
-      if (GITHUB_DEV_APP_SECRET == null) {
-         final String errorMessage =
-                 "Failed to find binding for " +
-                         ENV_VAR_SYS_PROP_NAME_GITHUB_CLIENT_SECRET +
-                         " as env var or sysprop; cannot init";
-         log.severe(errorMessage);
-         throw new IllegalStateException(errorMessage);
-      }
-   }
+   /** Id of the Catapult application on GitHub, used in the OAuth workflow. */
+   @Inject
+   @CatapultAppId
+   private String catapultAppId;
+   
+   /** Id of the Catapult application OAuth secret on GitHub. */
+   @Inject
+   @CatapultAppOAuthSecret
+   private String catapultAppOAuthSecret;
 
    /**
     * A simple verification endpoint that allows one to check if the GITHUB_DEV_APP_CLIENT_ID and GITHUB_DEV_APP_SECRET this
@@ -116,14 +82,16 @@ public class GithubResource
    @Produces("application/json")
    public Response verifyConfiguration(@QueryParam("clientID") String clientID, @QueryParam("secret") String secret) {
       JsonObjectBuilder builder = Json.createObjectBuilder();
-      if(clientID.equals(GITHUB_DEV_APP_CLIENT_ID))
+      if(clientID.equals(this.catapultAppId)) {
          builder.add("clientID", "valid");
-      else
+      } else {
          builder.add("clientID", "invalid");
-      if(clientID.equals(GITHUB_DEV_APP_CLIENT_ID))
+      }
+      if(clientID.equals(this.catapultAppOAuthSecret)) {
          builder.add("secret", "valid");
-      else
+      } else {
          builder.add("secret", "invalid");
+      }
 
       return Response.ok(builder.build()).build();
    }
@@ -240,8 +208,8 @@ public class GithubResource
    private JsonObject postToken(String code, String state, Client client)
    {
       MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
-      map.putSingle("client_id", GITHUB_DEV_APP_CLIENT_ID);
-      map.putSingle("client_secret", GITHUB_DEV_APP_SECRET);
+      map.putSingle("client_id", this.catapultAppId);
+      map.putSingle("client_secret", this.catapultAppOAuthSecret);
       map.putSingle("code", code);
       map.putSingle("state", state);
       // {"access_token":"3d4bf6b3ea93fba1dbfeeb5fa5afb5226e0cbec9","token_type":"bearer","scope":"public_repo,user:email"}
@@ -255,12 +223,12 @@ public class GithubResource
 
    private GitHubRepository forkRepository(String accessToken, String repository)
    {
-      GitHubRepository gitHubRepository = this.githubService.fork(repository);
+      GitHubRepository gitHubRepository = this.gitHubServiceFactory.create(accessToken).fork(repository);
       return gitHubRepository;
    }
 
    private GitHubRepository createRepository(String accessToken, String repository) throws IOException {
-      GitHubRepository gitHubRepository = ((GitHubServiceSpi)this.githubService).createRepository(repository, "Created via Forge Online",
+      GitHubRepository gitHubRepository = ((GitHubServiceSpi)this.gitHubServiceFactory.create(accessToken)).createRepository(repository, "Created via Forge Online",
               "http://forge.jboss.org", true, true, true);
       return gitHubRepository;
    }
@@ -280,7 +248,7 @@ public class GithubResource
       final Client client = ClientBuilder.newClient();
       Response response = client.target(GITHUB_OAUTH_URL)
               .queryParam("repo", repo)
-              .queryParam("client_id", GITHUB_DEV_APP_CLIENT_ID)
+              .queryParam("client_id", this.catapultAppId)
               .queryParam("scope", "user:email,public_repo")
               .queryParam("state", state)
               .request()

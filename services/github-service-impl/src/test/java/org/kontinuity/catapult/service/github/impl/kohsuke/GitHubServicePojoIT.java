@@ -13,7 +13,7 @@ public final class GitHubServicePojoIT extends GitHubServiceTestBase {
 
     @Override
     GitHubService getGitHubService() {
-        return new GitHubServiceProducer().create(
+        return new GitHubServiceFactoryImpl().create(
                 GitHubCredentials.getToken(),
                 GitHubCredentials.getUsername());
     }
