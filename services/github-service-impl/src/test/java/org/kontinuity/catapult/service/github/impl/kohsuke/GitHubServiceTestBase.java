@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.kontinuity.catapult.service.github.api.*;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
+import org.kontinuity.catapult.service.github.test.GitHubTestCredentials;
 
 import java.net.URL;
 import java.util.logging.Level;
@@ -18,6 +19,7 @@ abstract class GitHubServiceTestBase {
 
     private static final Logger log = Logger.getLogger(GitHubServiceTestBase.class.getName());
     private static final String NAME_GITHUB_SOURCE_REPO = "jboss-developer/jboss-eap-quickstarts";
+    private static final String MY_GITHUB_SOURCE_REPO = "my-test-repo";
 
     /**
      * @return The {@link GitHubService} used in testing
@@ -47,6 +49,26 @@ abstract class GitHubServiceTestBase {
     @Test(expected = NoSuchRepositoryException.class)
     public void cannotForkNonexistentRepo() {
         getGitHubService().fork("ALRubinger/someRepoThatDoesNotAndWillNeverExist");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void createGitHubRepositoryCannotBeNull() throws Exception {
+    	((GitHubServiceSpi)getGitHubService()).createRepository(null, null);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void createGitHubRepositoryCannotBeEmpty() throws Exception {
+    	((GitHubServiceSpi)getGitHubService()).createRepository("", "");
+    }
+    
+    @Test
+    public void createGitHubRepository() throws Exception {
+    	// given
+    	final GitHubRepository targetRepo = ((GitHubServiceSpi)getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO, "Test project created by Arquillian.");
+    	// then
+    	Assert.assertEquals(GitHubTestCredentials.getUsername() + "/" + MY_GITHUB_SOURCE_REPO, targetRepo.getFullName());
+    	// After the test remove the repository we created
+    	((GitHubServiceSpi)getGitHubService()).deleteRepository(targetRepo);
     }
 
     @Test

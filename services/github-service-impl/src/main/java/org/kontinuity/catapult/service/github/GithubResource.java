@@ -228,8 +228,7 @@ public class GithubResource {
    }
 
    private GitHubRepository createRepository(String accessToken, String repository) throws IOException {
-      GitHubRepository gitHubRepository = ((GitHubServiceSpi)this.gitHubServiceFactory.create(accessToken)).createRepository(repository, "Created via Forge Online",
-              "http://forge.jboss.org", true, true, true);
+      GitHubRepository gitHubRepository = ((GitHubServiceSpi)this.gitHubServiceFactory.create(accessToken)).createRepository(repository, "Created via Forge Online");
       return gitHubRepository;
    }
 

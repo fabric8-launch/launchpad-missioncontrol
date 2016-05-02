@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.resource.spi.IllegalStateException;
+
 import org.kohsuke.github.GHEvent;
 import org.kohsuke.github.GHHook;
 import org.kohsuke.github.GHRepository;
@@ -124,25 +126,26 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
      */
     @Override
     public GitHubRepository createRepository(String repositoryName,
-                                   String description,
-                                   String homepage,
-                                   boolean hasIssues,
-                                   boolean hasWiki,
-                                   boolean hasDownloads) throws IOException, IllegalArgumentException
+                                   String description) throws IllegalArgumentException
     {
         // Precondition checks
         if (repositoryName == null || repositoryName.isEmpty()) {
             throw new IllegalArgumentException("repository name must be specified");
         }
 
-        GHRepository newlyCreatedRepo = delegate.createRepository(repositoryName)
-                .description(description)
-                .private_(false)
-                .homepage(homepage)
-                .issues(hasIssues)
-                .downloads(hasDownloads)
-                .wiki(hasWiki)
-                .create();
+        GHRepository newlyCreatedRepo = null;
+		try {
+			newlyCreatedRepo = delegate.createRepository(repositoryName)
+			        .description(description)
+			        .private_(false)
+			        .homepage("http://developers.redhat.com") //TODO Should we provide a default URL for the homepage?
+			        .issues(false)
+			        .downloads(false)
+			        .wiki(false)
+			        .create();
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Could not create GitHub repository.", e);
+		}
 
         // Wrap in our API view and return
         final GitHubRepository wrapped = new KohsukeGitHubRepositoryImpl(newlyCreatedRepo);
