@@ -132,19 +132,22 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         if (repositoryName == null || repositoryName.isEmpty()) {
             throw new IllegalArgumentException("repository name must be specified");
         }
+        if (description == null || description.isEmpty()) {
+            throw new IllegalArgumentException("repository description must be specified");
+        }
 
         GHRepository newlyCreatedRepo = null;
 		try {
 			newlyCreatedRepo = delegate.createRepository(repositoryName)
 			        .description(description)
 			        .private_(false)
-			        .homepage("http://developers.redhat.com") //TODO Should we provide a default URL for the homepage?
+			        .homepage("")
 			        .issues(false)
 			        .downloads(false)
 			        .wiki(false)
 			        .create();
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Could not create GitHub repository.", e);
+			throw new RuntimeException("Could not create GitHub repository.", e);
 		}
 
         // Wrap in our API view and return

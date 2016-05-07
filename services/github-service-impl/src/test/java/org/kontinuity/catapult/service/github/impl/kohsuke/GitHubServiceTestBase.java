@@ -17,9 +17,10 @@ import java.util.logging.Logger;
  */
 abstract class GitHubServiceTestBase {
 
-    private static final Logger log = Logger.getLogger(GitHubServiceTestBase.class.getName());
+	private static final Logger log = Logger.getLogger(GitHubServiceTestBase.class.getName());
     private static final String NAME_GITHUB_SOURCE_REPO = "jboss-developer/jboss-eap-quickstarts";
     private static final String MY_GITHUB_SOURCE_REPO = "my-test-repo";
+    private static final String MY_GITHUB_REPO_DESCRIPTION = "Test project created by Arquillian.";
 
     /**
      * @return The {@link GitHubService} used in testing
@@ -57,14 +58,34 @@ abstract class GitHubServiceTestBase {
     }
     
     @Test(expected = IllegalArgumentException.class)
+    public void createGitHubRepositoryNameCannotBeNull() throws Exception {
+    	((GitHubServiceSpi)getGitHubService()).createRepository(null, MY_GITHUB_REPO_DESCRIPTION);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void createGitHubRepositoryDescriptionCannotBeNull() throws Exception {
+    	((GitHubServiceSpi)getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO, null);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
     public void createGitHubRepositoryCannotBeEmpty() throws Exception {
     	((GitHubServiceSpi)getGitHubService()).createRepository("", "");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void createGitHubRepositoryNameCannotBeEmpty() throws Exception {
+    	((GitHubServiceSpi)getGitHubService()).createRepository("", MY_GITHUB_REPO_DESCRIPTION);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void createGitHubRepositoryCannotDescriptionBeEmpty() throws Exception {
+    	((GitHubServiceSpi)getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO, "");
     }
     
     @Test
     public void createGitHubRepository() throws Exception {
     	// given
-    	final GitHubRepository targetRepo = ((GitHubServiceSpi)getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO, "Test project created by Arquillian.");
+    	final GitHubRepository targetRepo = ((GitHubServiceSpi)getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO, MY_GITHUB_REPO_DESCRIPTION);
     	// then
     	Assert.assertEquals(GitHubTestCredentials.getUsername() + "/" + MY_GITHUB_SOURCE_REPO, targetRepo.getFullName());
     	// After the test remove the repository we created

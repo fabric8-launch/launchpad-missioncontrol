@@ -1,7 +1,5 @@
 package org.kontinuity.catapult.service.github.spi;
 
-import java.io.IOException;
-
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubWebhook;
@@ -13,7 +11,8 @@ import org.kontinuity.catapult.service.github.api.GitHubWebhook;
 public interface GitHubServiceSpi extends GitHubService {
 
     /**
-     * Creates a repository with the given information.
+     * Creates a repository with the given information (name and description). The repository will be
+     * created by default with no homepage, issues, wiki downloads and will be public.
      *
      * @param repositoryName - the name of the repository
      * @param description - the repository description
