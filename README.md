@@ -124,4 +124,6 @@ Access to the CI environment has the following requirements:
 10.3.10.147 jenkins.master.distortion.example.com
 ```
 
-The CI environment should now be available at [http://jenkins.master.distortion.example.com](http://jenkins.master.distortion.example.com)
+ * The CI environment should now be available at [http://jenkins.master.distortion.example.com](http://jenkins.master.distortion.example.com)
+
+ * Alternatively you can use http://jenkins.master.10.3.10.147.xip.io/ and you don't have to modify `hosts` file.
