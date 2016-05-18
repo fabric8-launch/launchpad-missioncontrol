@@ -93,6 +93,12 @@ Prerequisites to Run Integration Tests
     You may take a binary built by the OpenShift team, build an instance locally, obtain through the CDK, or use Vagrant; any way that boots an `upstream/master` version of OpenShift locally should be fine.
     
     When running, this should give you a local API to execute against at https://localhost:8443, which is where the OpenShiftService tests currently look to make their calls (by default).  To override this, you may specify the environment variable or system property `KONTINUITY_CATAPULT_OPENSHIFT_URL`.
+    
+    Setting `KONTINUITY_CATAPULT_OPENSHIFT_URL` environment variable is mandatory when using Red Hat CDK:
+    
+    * export KONTINUITY_CATAPULT_OPENSHIFT_URL=https://10.1.2.2:8443
+    
+    *  http://developers.redhat.com/products/cdk/overview/
 
 
 Build and Run the Unit Tests
