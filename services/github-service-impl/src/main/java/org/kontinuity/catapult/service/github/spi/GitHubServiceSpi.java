@@ -25,10 +25,18 @@ public interface GitHubServiceSpi extends GitHubService {
     /**
      * Delete a repository specified by its value object representation.
      *
-     * @param repository - the value objct the represents the Gitub repository
+     * @param repository - the value object the represents the GitHub repository
      * @throws IllegalArgumentException
      */
     void deleteRepository(final GitHubRepository repository) throws IllegalArgumentException;
+    
+    /**
+     * Delete a repository specified by its full name.
+     *
+     * @param repositoryName - GitHub repository name
+     * @throws IllegalArgumentException
+     */
+    void deleteRepository(String repositoryName) throws IllegalArgumentException;
     
     /**
      * Deletes a webhook in a specific GitHub repository
@@ -38,5 +46,14 @@ public interface GitHubServiceSpi extends GitHubService {
      * @throws IllegalArgumentException If either parameter is unspecified
      */
     void deleteWebhook(final GitHubRepository repository, GitHubWebhook webhook) throws IllegalArgumentException;
-    
+
+
+    /**
+     * Checks if the repository with the given name exists
+     * @param repositoryName
+     * @return <code>true</code> if it exists, <code>false</code> otherwise.
+     */
+	boolean repositoryExists(String repositoryName);
+
+
 }

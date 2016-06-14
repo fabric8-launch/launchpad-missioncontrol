@@ -19,6 +19,9 @@ public class ProjectileBuilder {
     private String sourceGitHubRepo;
 
     private String gitHubAccessToken;
+    
+    /** the name of the file in the repo that contains the pipeline template. */
+	private String openshiftProjectTemplateFileName;
 
     private ProjectileBuilder(){
         // No external instances
@@ -45,6 +48,7 @@ public class ProjectileBuilder {
         // Precondition checks
     	ProjectileBuilder.checkSpecified("sourceGitHubRepo", sourceGitHubRepo);
     	ProjectileBuilder.checkSpecified("gitHubAccessToken", gitHubAccessToken);
+    	ProjectileBuilder.checkSpecified("projectTemplateFileName", openshiftProjectTemplateFileName);
 
         // All good, so make a new instance
         final Projectile projectile = new Projectile(this);
@@ -93,7 +97,19 @@ public class ProjectileBuilder {
         this.gitHubAccessToken = gitHubAccessToken;
         return this;
     }
-    
+
+	/**
+	 * Sets the name of the file that contains the template to apply on the
+	 * OpenShift project. Required
+	 *
+	 * @param openshiftProjectTemplateFileName
+	 * @return This builder
+	 */
+	public ProjectileBuilder openshiftProjectTemplateFileName(final String openshiftProjectTemplateFileName) {
+		this.openshiftProjectTemplateFileName = openshiftProjectTemplateFileName;
+		return this;
+	}
+
     /**
      * @return source GitHub repository name in form "owner/repoName".
      */
@@ -108,4 +124,12 @@ public class ProjectileBuilder {
     public String getGitHubAccessToken() {
         return this.gitHubAccessToken;
     }
+    
+    /**
+	 * @return the name of the file that contains the template to apply
+	 *         on the OpenShift project.
+	 */
+	public String getOpenShiftProjectTemplateFileName() {
+		return this.openshiftProjectTemplateFileName;
+	}
 }

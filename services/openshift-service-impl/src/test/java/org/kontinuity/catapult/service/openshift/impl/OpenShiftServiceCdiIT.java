@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.Fabric8OpenShiftClientServiceImpl;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
+import org.kontinuity.catapult.service.openshift.utils.DeleteOpenShiftProjectRule;
 
 /**
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
@@ -41,16 +42,19 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
     public static WebArchive createDeployment() {
         // Import Maven runtime dependencies
         final File[] dependencies = Maven.resolver().loadPomFromFile("pom.xml")
-                .importRuntimeDependencies().resolve().withTransitivity().asFile();
+                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
         // Create deploy file    
-        WebArchive war = ShrinkWrap.create(WebArchive.class)
+        final WebArchive war = ShrinkWrap.create(WebArchive.class)
                 .addPackage(Fabric8OpenShiftClientServiceImpl.class.getPackage())
                 .addPackage(OpenShiftServiceCdiIT.class.getPackage())
                 .addPackage(OpenShiftService.class.getPackage())
+                .addClass(DeleteOpenShiftProjectRule.class)
                 .addClass(OpenShiftServiceSpi.class)
+                .addAsResource("pipelinetemplate.json")
+                .addAsWebInfResource("META-INF/jboss-deployment-structure.xml", "jboss-deployment-structure.xml")
                 .addAsLibraries(dependencies);
         // Show the deployed structure
-        log.fine(war.toString(true)); 
+        log.info(war.toString(true)); 
         return war;
     }
 

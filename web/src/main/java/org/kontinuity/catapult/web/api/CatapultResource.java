@@ -41,6 +41,9 @@ public class CatapultResource {
     */
    private static final String QUERY_PARAM_SOURCE_REPO = "source_repo";
 
+   /** the name of the file containing the template to apply on the OpenShif project. */
+   private static final String OPENSHIFT_PROJECT_TEMPLATE = "openshift_template.json";
+   
    @Inject
    private Catapult catapult;
 
@@ -86,6 +89,7 @@ public class CatapultResource {
       final Projectile projectile = ProjectileBuilder.newInstance().
               sourceGitHubRepo(sourceGitHubRepo).
               gitHubAccessToken(gitHubAccessToken).
+              openshiftProjectTemplateFileName(OPENSHIFT_PROJECT_TEMPLATE).
               build();
 
       // Fling it

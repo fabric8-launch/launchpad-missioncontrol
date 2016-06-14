@@ -1,6 +1,7 @@
 package org.kontinuity.catapult.service.openshift.api;
 
 import java.net.URL;
+import java.util.List;
 
 /**
  * Represents a Project in OpenShift
@@ -18,5 +19,10 @@ public interface OpenShiftProject {
     * @return the URL of the console overview page for this project
     */
    URL getConsoleOverviewUrl();
+   
+   /**
+    * @return an unmodifiable copy of the list of {@link OpenShiftResource} for this project
+    */
+   public List<OpenShiftResource> getResources();
 
 }

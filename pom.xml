@@ -26,10 +26,13 @@
         <version.arquillian_universe>1.0.0.Alpha2</version.arquillian_universe>
         <version.org.arquillian.container_arquillian-container-chameleon>1.0.0.Alpha6</version.org.arquillian.container_arquillian-container-chameleon>
         <version.org.kohsuke_github-api>1.73</version.org.kohsuke_github-api>
-        <version.io.fabric8_openshift-client>1.3.78</version.io.fabric8_openshift-client>
+        <version.io.fabric8_openshift-client>1.3.96</version.io.fabric8_openshift-client>
+        <version.io.fabric8_kubernetes-api>2.2.131</version.io.fabric8_kubernetes-api>
         <version.com.fasterxml.jackson>2.7.0</version.com.fasterxml.jackson>
         <version.com.squareup.okhttp>2.7.2</version.com.squareup.okhttp>
         <version.org.jboss.arquillian.extension_arquillian-phantom-driver>1.2.1.Final</version.org.jboss.arquillian.extension_arquillian-phantom-driver>
+        <version.ch.qos.logback_logback-classic>1.0.13</version.ch.qos.logback_logback-classic>
+        <version.org.assertj_assertj-core>3.4.1</version.org.assertj_assertj-core>
 
     </properties>
     <modules>
@@ -130,6 +133,11 @@
                 <version>${version.io.fabric8_openshift-client}</version>
             </dependency>
             <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-api</artifactId>
+                <version>${version.io.fabric8_kubernetes-api}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.arquillian</groupId>
                 <artifactId>arquillian-universe</artifactId>
                 <version>${version.arquillian_universe}</version>
@@ -188,6 +196,18 @@
                 <version>${version.org.jboss.arquillian.extension_arquillian-phantom-driver}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${version.ch.qos.logback_logback-classic}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.org.assertj_assertj-core}</version>
+            <scope>test</scope>
+        </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
