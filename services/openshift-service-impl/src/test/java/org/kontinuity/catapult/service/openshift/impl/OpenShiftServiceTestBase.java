@@ -6,8 +6,10 @@ import org.junit.Test;
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,27 +43,29 @@ public abstract class OpenShiftServiceTestBase implements OpenShiftServiceContai
     }
 
     @Test
-    public void createProjectAndApplyTemplate() throws URISyntaxException {
-    	// given
-    	final String projectName = getUniqueProjectName();
-    	// when creating the project and then applying the template
-    	final OpenShiftProject project = triggerCreateProject(projectName);
-    	log.log(Level.INFO, "Created project: \'" + projectName + "\'");
+    public void createProjectAndApplyTemplate() throws URISyntaxException, MalformedURLException {
+		// given
+		final String projectName = getUniqueProjectName();
+		// when creating the project and then applying the template
+		final OpenShiftProject project = triggerCreateProject(projectName);
+		log.log(Level.INFO, "Created project: \'" + projectName + "\'");
 
-       //TODO Issue #135 This reliance on tnozicka has to be cleared up, introduced temporarily for testing as part of #134
-    	final URI projectGitHubRepoUri = new URI("https://github.com/tnozicka/jboss-eap-quickstarts.git");
-      final URI pipelineTemplateUri = new URI("https://raw.githubusercontent.com/tnozicka/jboss-eap-quickstarts/sync-WIP/helloworld/.openshift-ci_cd/pipeline-template.yaml");
-      final String gitRef = "sync-WIP";
+		// TODO Issue #135 This reliance on tnozicka has to be cleared up,
+		// introduced temporarily for testing as part of #134
+		final URI projectGitHubRepoUri = new URI("https://github.com/tnozicka/jboss-eap-quickstarts.git");
+		final URI pipelineTemplateUri = new URI(
+		        "https://raw.githubusercontent.com/tnozicka/jboss-eap-quickstarts/sync-WIP/helloworld/.openshift-ci_cd/pipeline-template.yaml");
+		final String gitRef = "sync-WIP";
 
-    	getOpenShiftService().configureProject(project,
-              projectGitHubRepoUri,
-              gitRef,
-              pipelineTemplateUri);
-    	// then
-    	final String actualName = project.getName();
-    	assertEquals("returned project did not have expected name", projectName, actualName);
+		getOpenShiftService().configureProject(project, projectGitHubRepoUri, gitRef, pipelineTemplateUri);
+		// then
+		final String actualName = project.getName();
+		assertEquals("returned project did not have expected name", projectName, actualName);
 		assertThat(project.getResources()).isNotNull().hasSize(1);
-      assertTrue(project.getResources().get(0).getKind().equals("BuildConfig"));
+		assertTrue(project.getResources().get(0).getKind().equals("BuildConfig"));
+		assertEquals(project.getWebhookUrl(getOpenShiftService().getApiUrl()),
+		        new URL(getOpenShiftService().getApiUrl().toExternalForm()
+		                + "/oapi/v1/namespaces/" + project.getName() + "/buildconfigs/helloworld-pipeline/webhooks/kontinu8/github"));
     }
     
     @Test(expected = DuplicateProjectException.class)

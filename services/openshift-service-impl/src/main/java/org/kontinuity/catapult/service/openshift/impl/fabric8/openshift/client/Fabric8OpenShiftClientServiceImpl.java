@@ -1,5 +1,22 @@
 package org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client;
 
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftResource;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
+import org.kontinuity.catapult.service.openshift.impl.OpenShiftProjectImpl;
+import org.kontinuity.catapult.service.openshift.impl.OpenShiftResourceImpl;
+import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
+
 import io.fabric8.kubernetes.api.Controller;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.client.Config;
@@ -9,17 +26,6 @@ import io.fabric8.openshift.api.model.ProjectRequest;
 import io.fabric8.openshift.api.model.Template;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
-import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.service.openshift.impl.OpenShiftProjectImpl;
-import org.kontinuity.catapult.service.openshift.impl.OpenShiftResourceImpl;
-import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Implementation of the {@link OpenShiftService} using the Fabric8
@@ -43,6 +49,7 @@ public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService
     
     private final OpenShiftClient client;
 
+    private final URL apiUrl;
     /**
      * Creates an {@link OpenShiftService} implementation communicating
      * with the backend service via the specified, required apiUrl
@@ -51,7 +58,11 @@ public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService
      */
     Fabric8OpenShiftClientServiceImpl(final String apiUrl) {
         assert apiUrl != null && !apiUrl.isEmpty() : "apiUrl is required";
-
+        try {
+			this.apiUrl = new URL(apiUrl);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
         final Config config = new ConfigBuilder().
                 withMasterUrl(apiUrl).
                 withUsername("admin"). //TODO externalize or account for this?
@@ -167,5 +178,10 @@ public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService
             }
         }
         return deleted;
+    }
+    
+    @Override
+    public URL getApiUrl() {
+    	return this.apiUrl;
     }
 }

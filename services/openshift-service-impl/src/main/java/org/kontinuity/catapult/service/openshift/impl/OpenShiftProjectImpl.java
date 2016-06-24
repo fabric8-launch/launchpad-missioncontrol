@@ -1,14 +1,15 @@
 package org.kontinuity.catapult.service.openshift.impl;
 
-import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftResource;
-import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
+import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftResource;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
 
 /**
  * Implementation of a value object representing a project in OpenShift
@@ -65,8 +66,39 @@ public final class OpenShiftProjectImpl implements OpenShiftProject {
         return url;
     }
     
+	/**
+	 * Adds a existing resource on the project
+	 * @param resource the resource to add
+	 */
 	public void addResource(final OpenShiftResource resource) {
 		this.resources.add(resource);
+	}
+	
+	@Override
+	public URL getWebhookUrl(final URL openshiftApiUrl) {
+		final Optional<OpenShiftResource> optionalBuildConfig = getResources().stream().filter(r -> r.getKind().equals("BuildConfig")).findFirst();
+		if(optionalBuildConfig.isPresent()) {
+			final OpenShiftResource buildConfig = optionalBuildConfig.get();
+			// create a webhook on
+			// https://<OS_IP>:<OS_PORT>/oapi/v1/namespaces/<project>/buildconfigs/<BC-name/webhooks/<secret>/github
+			// FIXME: assuming that the webhook secret is
+			// 'Kontinu8' as specified in
+			// https://github.com/redhat-kontinuity/jboss-eap-quickstarts/blob/kontinu8/helloworld/.openshift-ci_cd/pipeline-template.yaml#L18
+			final String secret = "kontinu8";
+			final String webhookContext = new StringBuilder().append("/oapi/v1/namespaces/")
+					.append(getName()).append("/buildconfigs/")
+					.append(buildConfig.getName()).append("/webhooks/").append(secret).append("/github")
+					.toString();
+			try {
+				return new URL(openshiftApiUrl.getProtocol(), openshiftApiUrl.getHost(),
+						openshiftApiUrl.getPort(), webhookContext);
+			} catch (MalformedURLException e) {
+				throw new RuntimeException("Failed to create Webhook URL for project '" + getName()
+				        + "' using the OpenShift API URL '" + openshiftApiUrl.toExternalForm()
+				        + "' and the webhook context '" + webhookContext + "'", e);
+			}
+		}
+		return null;
 	}
     
     @Override

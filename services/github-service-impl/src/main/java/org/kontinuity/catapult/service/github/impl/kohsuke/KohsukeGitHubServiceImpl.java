@@ -176,7 +176,8 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         if (events == null || events.length == 0) {
             throw new IllegalArgumentException("at least one event must be specified");
         }
-
+        log.info("Adding webhook at '" + webhookUrl.toExternalForm()+ "' on repository '" + repository.getFullName() + "'");
+		
     	final GHRepository repo;
         try {
             repo = delegate.getRepository(repository.getFullName());

@@ -1,6 +1,7 @@
 package org.kontinuity.catapult.service.openshift.api;
 
 import java.net.URI;
+import java.net.URL;
 
 /**
  * Defines the operations we support with the OpenShift backend
@@ -34,5 +35,10 @@ public interface OpenShiftService {
                           URI sourceRepositoryUri,
                           String gitRef,
                           URI pipelineTemplateUri);
+
+    /**
+     * @return the URL of the OpenShift API 
+     */
+	URL getApiUrl();
 
 }

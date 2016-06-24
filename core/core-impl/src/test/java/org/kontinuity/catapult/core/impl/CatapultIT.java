@@ -141,7 +141,7 @@ public class CatapultIT {
 		  // checking that the Build Config was created.
         assertThat(createdProject.getResources()).isNotNull().hasSize(1);
         assertTrue(createdProject.getResources().get(0).getKind().equals("BuildConfig"));
-
+        assertThat(boom.getGitHubWebhook()).isNotNull();
         /*
            Can't really assert on any of the properties of the
            new repo because they could change in GitHub and

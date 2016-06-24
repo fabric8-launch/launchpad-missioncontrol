@@ -1,5 +1,9 @@
 package org.kontinuity.catapult.core.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import javax.inject.Inject;
 
 import org.kontinuity.catapult.core.api.Boom;
@@ -8,12 +12,11 @@ import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
+import org.kontinuity.catapult.service.github.api.GitHubWebhook;
+import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Implementation of the {@link Catapult} interface.
@@ -52,6 +55,7 @@ public class CatapultImpl implements Catapult {
         // Create a new OpenShift project for the user
         final String projectName = projectile.getOpenShiftProjectName();
         final OpenShiftProject createdProject;
+        final GitHubWebhook webhook;
         try {
             createdProject = openShiftService.createProject(projectName);
 
@@ -72,12 +76,18 @@ public class CatapultImpl implements Catapult {
             } catch (final URISyntaxException urise) {
                 throw new RuntimeException("Could not create URI for pipeline template path", urise);
             }
-
             // Configure the OpenShift project
             openShiftService.configureProject(createdProject,
                     forkedRepo.getGitCloneUri(),
                     projectile.getGitRef(),
                     pipelineTemplateUri);
+            final URL webhookUrl = createdProject.getWebhookUrl(openShiftService.getApiUrl());
+			if(webhookUrl != null) {
+				webhook = gitHubService.createWebhook(forkedRepo, webhookUrl, GitHubWebhookEvent.PUSH);
+			} else {
+				webhook = null;
+			}
+
         } catch (final DuplicateProjectException dpe) {
             //TODO
             /*
@@ -94,7 +104,7 @@ public class CatapultImpl implements Catapult {
         */
 
         // Return information needed to continue flow to the user
-        final Boom boom = new BoomImpl(forkedRepo, createdProject);
+        final Boom boom = new BoomImpl(forkedRepo, createdProject, webhook);
         return boom;
     }
 }
