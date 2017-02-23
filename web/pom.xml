@@ -29,4 +29,25 @@
          <artifactId>catapult-core-impl</artifactId>
       </dependency>
    </dependencies>
+    <profiles>
+        <profile>
+            <id>wildfly-swarm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.swarm</groupId>
+                        <artifactId>wildfly-swarm-plugin</artifactId>
+                        <version>2017.3.2</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
