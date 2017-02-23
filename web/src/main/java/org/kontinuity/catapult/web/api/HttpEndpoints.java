@@ -33,6 +33,11 @@ public class HttpEndpoints extends Application
       singletons.add(catapultResource);
       singletons.add(gitHubResource);
       singletons.add(appStoreResource);
+
+      CorsFilter corsFilter = new CorsFilter();
+      corsFilter.getAllowedOrigins().add("*");
+      corsFilter.setExposedHeaders("Content-Disposition");
+      singletons.add(corsFilter);
       return singletons;
    }
 }

@@ -54,8 +54,6 @@ public class GitHubResource
    public static final String MSG_UNMATCHED_STATE = "Expected state does not match specified; potential in-the-middle attack";
    public static final String MSG_NO_REDIRECT = "No redirect found in the state after OAuth";
 
-   private static final String MIME_JSON = "application/json";
-
    /*
     Paths
     */
@@ -124,7 +122,7 @@ public class GitHubResource
     */
    @GET
    @Path(GitHubResource.PATH_VERIFY)
-   @Produces(MIME_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    public Response verify(
            @Context final HttpServletRequest request) {
       final boolean hasTokenInSession = request.getSession().
@@ -132,7 +130,7 @@ public class GitHubResource
       final JsonObject json = Json.createObjectBuilder().
               add(VERIFY_ATTR_ACCESS_TOKEN, hasTokenInSession).
               build();
-      return Response.ok(json, MIME_JSON).build();
+      return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    /**
