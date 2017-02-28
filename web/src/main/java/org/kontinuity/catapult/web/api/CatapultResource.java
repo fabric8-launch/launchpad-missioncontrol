@@ -1,5 +1,8 @@
 package org.kontinuity.catapult.web.api;
 
+import org.apache.commons.io.IOUtils;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.kontinuity.catapult.core.api.Boom;
 import org.kontinuity.catapult.core.api.Catapult;
 import org.kontinuity.catapult.core.api.Projectile;
@@ -9,18 +12,30 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Endpoint exposing the {@link org.kontinuity.catapult.core.api.Catapult} over HTTP
@@ -37,6 +52,7 @@ public class CatapultResource {
     */
    public static final String PATH_CATAPULT = "/catapult";
    public static final String PATH_FLING = "/fling";
+   public static final String PATH_UPLOAD = "/upload";
 
    /*
     Catapult Query Parameters
@@ -121,5 +137,62 @@ public class CatapultResource {
          return Response.serverError().entity(urise).build();
       }
       return Response.temporaryRedirect(consoleOverviewUri).build();
+   }
+
+   @POST
+   @Path(PATH_UPLOAD)
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   public Response upload(
+           @Context final HttpServletRequest request,
+           MultipartFormDataInput uploaded) {
+      List<InputPart> inputParts = uploaded.getFormDataMap().get("file");
+      for (InputPart inputPart : inputParts) {
+         final String fileName = getFileName(inputPart.getHeaders());
+
+         try(InputStream inputStream = inputPart.getBody(InputStream.class,null)) {
+            final java.nio.file.Path tempFile = Files.createTempDirectory(fileName);
+            final File zipFileName = new File(tempFile.toFile(), fileName);
+            try (FileOutputStream output = new FileOutputStream(zipFileName)) {
+               IOUtils.write(IOUtils.toByteArray(inputStream), output);
+               unzip(zipFileName);
+               //catapult.fling(new File(tempFile.toFile(), fileName.substring(0, fileName.lastIndexOf('.'))));
+            }
+         } catch (final IOException e) {
+            return Response.serverError().entity(e).build();
+         }
+      }
+      return Response.status(Response.Status.OK).build();
+   }
+
+   private void unzip(File zipFile) throws IOException {
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while(zipEntry != null) {
+                String fileName = zipEntry.getName();
+                File file = new File(zipFile.getParent(), fileName);
+                if (!zipEntry.isDirectory()) {
+                    IOUtils.copy(zis, new FileOutputStream(file));
+                } else {
+                    file.mkdir();
+                }
+                zipEntry = zis.getNextEntry();
+            }
+        }
+   }
+
+   private String getFileName(MultivaluedMap<String, String> headers) {
+      String[] contentDisposition = headers.getFirst("Content-Disposition").split(";");
+
+      for (String filename : contentDisposition) {
+         if ((filename.trim().startsWith("filename"))) {
+            String[] name = filename.split("=");
+            return sanitizeFilename(name[1]);
+         }
+      }
+      return "unknown";
+   }
+
+   private String sanitizeFilename(String s) {
+      return s.trim().replaceAll("\"", "");
    }
 }
