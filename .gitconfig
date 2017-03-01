@@ -1,0 +1,7 @@
+[apply]
+	whitespace = nowarn
+[branch]  
+ 	autosetuprebase = always
+[commit]
+	gpgsign = true
+	template = .github/gitcommit.txt

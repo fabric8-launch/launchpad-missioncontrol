@@ -158,3 +158,18 @@ Access to the CI environment has the following requirements:
  * The CI environment should now be available at [http://jenkins.master.distortion.example.com](http://jenkins.master.distortion.example.com)
 
  * Alternatively you can use http://jenkins.master.10.3.10.147.xip.io/ and you don't have to modify `hosts` file.
+
+
+Contributing
+------------
+
+* Clone the repository
+```
+	git clone https://github.com/redhat-kontinuity/catapult.git
+```
+
+* In the cloned repository, run the following commands to have your git configuration for this repository all set up: 
+```
+git config commit.template .github/gitcommit.txt --local
+git config commit.gpgsign true --local
+```
