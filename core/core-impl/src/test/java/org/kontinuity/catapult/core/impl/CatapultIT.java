@@ -120,10 +120,11 @@ public class CatapultIT {
     	final String expectedName = getUniqueProjectName();
         final Projectile projectile = ProjectileBuilder.newInstance()
                 .gitHubAccessToken(GitHubTestCredentials.getToken())
+                .openShiftProjectName(expectedName)
+                .forkType()
                 .sourceGitHubRepo(GITHUB_SOURCE_REPO_FULLNAME)
                 .gitRef(GIT_REF)
                 .pipelineTemplatePath(PIPELINE_TEMPLATE_PATH)
-                .openShiftProjectName(expectedName)
                 .build();
 
         // Fling

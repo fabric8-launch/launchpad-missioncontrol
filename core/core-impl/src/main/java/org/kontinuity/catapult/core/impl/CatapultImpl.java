@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import org.kontinuity.catapult.core.api.Boom;
 import org.kontinuity.catapult.core.api.Catapult;
+import org.kontinuity.catapult.core.api.ForkProjectile;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.service.github.api.*;
 import org.kontinuity.catapult.service.github.impl.kohsuke.KohsukeGitHubServiceImpl;
@@ -31,19 +32,20 @@ public class CatapultImpl implements Catapult {
 	private OpenShiftService openShiftService;
 
 	@Inject
-	private GitHubServiceFactory gitHubServiceFactory; 
-	
+	private GitHubServiceFactory gitHubServiceFactory;
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public Boom fling(final Projectile projectile) throws IllegalArgumentException {
+    public Boom fling(final Projectile projectile1) throws IllegalArgumentException {
 
         // Preconditions
-        if (projectile == null) {
+        if (projectile1 == null) {
             throw new IllegalArgumentException("projectile must be specified");
         }
 
+        final ForkProjectile projectile = (ForkProjectile)projectile1;
         // Get properties
         final String sourceRepoName = projectile.getSourceGitHubRepo();
 
