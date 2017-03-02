@@ -37,7 +37,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
 
    @Override
    String createDefaultProjectName() {
-      return projectLocation.substring(projectLocation.lastIndexOf(File.separator));
+      return projectLocation.substring(projectLocation.lastIndexOf(File.separator) + 1);
    }
 
    /**
