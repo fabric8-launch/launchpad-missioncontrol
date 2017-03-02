@@ -11,8 +11,6 @@ public enum EnvironmentSupport {
 
    INSTANCE;
 
-   private final String MESSAGE_PATTERN = "Could not find required env var or sys prop {0}";
-
    /**
     * Obtains the environment variable or system property, with preference to the system
     * property in the case both are defined.  Returns null if not found.
@@ -39,6 +37,36 @@ public enum EnvironmentSupport {
    }
 
    /**
+    * Obtains the environment variable or system property, with preference to the system
+    * property in the case both are defined.  Returns null if not found.
+    *
+    * @param envVarOrSysProp the environment variable or system property name
+    * @param defaultValue    the default value to be returned if not available
+    * @return the environment variable or system property, with preference to the system
+    * property in the case both are defined; null if not found.
+    * @throws IllegalArgumentException If the env var or sysprop name is not specified
+    * @throws IllegalArgumentException If the defaultValue is not specified
+    */
+   public String getEnvVarOrSysProp(final String envVarOrSysProp, String defaultValue) throws IllegalArgumentException {
+      if (envVarOrSysProp == null || envVarOrSysProp.isEmpty()) {
+         throw new IllegalArgumentException("env var or sysprop name is required");
+      }
+      if (defaultValue == null || defaultValue.isEmpty()) {
+         throw new IllegalArgumentException("default value for " + envVarOrSysProp + " is required");
+      }
+      String value = System.getProperty(envVarOrSysProp);
+      if (value == null || value.isEmpty()) {
+         value = System.getenv(envVarOrSysProp);
+      }
+      // Set null or empty strings to default value
+      if (value == null || value.isEmpty()) {
+         value = defaultValue;
+      }
+
+      return value;
+   }
+
+   /**
     * Obtains the required environment variable or system property, with preference to the system
     * property in the case both are defined.
     *
@@ -51,7 +79,7 @@ public enum EnvironmentSupport {
            throws IllegalStateException, IllegalArgumentException {
       String value = getEnvVarOrSysProp(envVarOrSysProp);
       if (value == null || value.isEmpty()) {
-         final String errorMessage = MessageFormat.format(MESSAGE_PATTERN, envVarOrSysProp);
+         final String errorMessage = MessageFormat.format("Could not find required env var or sys prop {0}", envVarOrSysProp);
          throw new IllegalStateException(errorMessage);
       }
       return value;
