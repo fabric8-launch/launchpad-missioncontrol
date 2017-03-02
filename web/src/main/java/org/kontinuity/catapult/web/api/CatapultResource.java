@@ -194,14 +194,14 @@ public class CatapultResource {
            @Context final HttpServletRequest request,
            MultipartFormDataInput uploaded) {
       InputPart inputPart = uploaded.getFormDataMap().get("file").get(0);
-      final String fileName = getFileName(inputPart.getHeaders());
+      final String fileName = FileUploadHelper.getFileName(inputPart.getHeaders());
 
       try(InputStream inputStream = inputPart.getBody(InputStream.class,null)) {
          final java.nio.file.Path tempFile = Files.createTempDirectory(fileName);
          final File zipFileName = new File(tempFile.toFile(), fileName);
          try (FileOutputStream output = new FileOutputStream(zipFileName)) {
             IOUtils.write(IOUtils.toByteArray(inputStream), output);
-            unzip(zipFileName);
+            FileUploadHelper.unzip(zipFileName);
 
             String path = new File(tempFile.toFile(), FilenameUtils.getBaseName(fileName)).getPath();
             final ProjectileOrResponse result = createProjectileForCreateRequest(request, path);
@@ -227,38 +227,6 @@ public class CatapultResource {
       }
 
       return fling(result.getProjectile());
-   }
-
-   private void unzip(File zipFile) throws IOException {
-      try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
-         ZipEntry zipEntry = zis.getNextEntry();
-         while(zipEntry != null) {
-            String fileName = zipEntry.getName();
-            File file = new File(zipFile.getParent(), fileName);
-            if (!zipEntry.isDirectory()) {
-               IOUtils.copy(zis, new FileOutputStream(file));
-            } else {
-               FileUtils.forceMkdir(file);
-            }
-            zipEntry = zis.getNextEntry();
-         }
-      }
-   }
-
-   private String getFileName(MultivaluedMap<String, String> headers) {
-      String[] contentDisposition = headers.getFirst("Content-Disposition").split(";");
-
-      for (String filename : contentDisposition) {
-         if ((filename.trim().startsWith("filename"))) {
-            String[] name = filename.split("=");
-            return sanitizeFilename(name[1]);
-         }
-      }
-      return "unknown";
-   }
-
-   private String sanitizeFilename(String s) {
-      return s.trim().replaceAll("\"", "");
    }
 
    private class ProjectileOrResponse {
