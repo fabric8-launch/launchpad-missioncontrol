@@ -68,8 +68,7 @@ public class CatapultImpl implements Catapult {
         } else {
             gitHubRepository = gitHubService.createRepository(projectile.getOpenShiftProjectName(), "quickstart");
             String projectLocation = ((CreateProjectile) projectile).getProjectLocation();
-            try {
-                Git repo = Git.init().setDirectory(new File(projectLocation)).call();
+            try (Git repo = Git.init().setDirectory(new File(projectLocation)).call()) {
                 repo.add().addFilepattern(".").call();
                 repo.commit().setMessage("initial version").call();
                 RemoteAddCommand add = repo.remoteAdd();
