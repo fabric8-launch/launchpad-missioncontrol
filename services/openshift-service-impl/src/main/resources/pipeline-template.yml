@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: pipeline
+parameters:
+- name: PROJECT
+  description: The name assigned to all of the application objects defined in this template.
+  displayName: Application Name
+  required: true
+- name: SOURCE_REPOSITORY_URL
+  description: The source URL for the application
+  displayName: Source URL
+  required: true
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: ${PROJECT}
+  spec:
+    source:
+      git:
+        ref: master
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: Jenkinsfile
+      type: JenkinsPipeline

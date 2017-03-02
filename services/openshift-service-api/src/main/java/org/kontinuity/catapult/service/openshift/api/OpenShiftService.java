@@ -36,7 +36,16 @@ public interface OpenShiftService {
                           String gitRef,
                           URI pipelineTemplateUri);
 
-    /**
+   /**
+    * Creates all resources for the given {@code project}, using a standard project template.
+    * The project template creates a pipeline build for the passed {@code sourceRepositoryUri}
+    *
+    * @param project the project in which the pipeline will be created
+    * @param sourceRepositoryUri the location of the source repository to build the OpenShift application from
+    */
+   void configureProject(OpenShiftProject project, URI sourceRepositoryUri);
+
+   /**
      * @param project The project for which to construct a webhook URL
      * @return the webhook URL associated with the Build Configuration, which
      * GitHub can use to trigger a build upon change pushes.

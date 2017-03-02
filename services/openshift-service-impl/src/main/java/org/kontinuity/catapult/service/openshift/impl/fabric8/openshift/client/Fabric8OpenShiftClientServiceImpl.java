@@ -1,15 +1,17 @@
 package org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+import io.fabric8.openshift.api.model.Parameter;
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftResource;
@@ -118,47 +120,72 @@ public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService
         
         return project;
     }
-    
-    @Override
-    public void configureProject(final OpenShiftProject project,
-                                 final URI sourceRepositoryUri,
-                                 final String gitRef,
-                                 final URI pipelineTemplateUri) {
-		try {
-			// look-up the OpenShift project template in this module
-			try (final InputStream pipelineTemplateStream = pipelineTemplateUri.toURL().openStream()) {
-				// apply template
-				final Template template = client.templates().load(pipelineTemplateStream).get();
-				if (sourceRepositoryUri != null) {
-					// 'GIT_URL' parameter
-					log.info("Setting the 'GIT_URL' parameter value to '" + sourceRepositoryUri + "'.");
-					template.getParameters().stream().filter(p -> p.getName().equals("GIT_URL"))
-					        .forEach(p -> p.setValue(sourceRepositoryUri.toString()));
-               // 'GIT_REF' parameter
-               log.info("Setting the 'GIT_REF' parameter value to '" + gitRef + "'.");
-               template.getParameters().stream().filter(p -> p.getName().equals("GIT_REF"))
-                       .forEach(p -> p.setValue(gitRef));
-				}
-				log.info("Deploying template '" + template.getMetadata().getName() + "' with parameters:");
-				template.getParameters().forEach(p -> log.info("\t" + p.getDisplayName() + '=' + p.getValue()));
-				final Controller controller = new Controller(client);
-				controller.setNamespace(project.getName());
-				final KubernetesList processedTemplate = (KubernetesList) controller.processTemplate(template,
-						OPENSHIFT_PROJECT_TEMPLATE);
-				controller.apply(processedTemplate, OPENSHIFT_PROJECT_TEMPLATE);
-				// add all template resources into the project
-				processedTemplate.getItems().stream()
-				        .map(item -> new OpenShiftResourceImpl(item.getMetadata().getName(), item.getKind(), project))
-				        .forEach(resource -> {
-					        log.info("Adding resource '" + resource.getName() + "' (" + resource.getKind()
-					                + ") to project '" + project.getName() + "'");
-					        ((OpenShiftProjectImpl) project).addResource(resource);
-				        });
-			}
-		} catch (final Exception e) {
-			throw new RuntimeException("Could not create OpenShift pipeline", e);
-		}
-    }
+
+   @Override
+   public void configureProject(final OpenShiftProject project,
+                                final URI sourceRepositoryUri,
+                                final String gitRef,
+                                final URI pipelineTemplateUri) {
+      final InputStream pipelineTemplateStream;
+      try {
+         pipelineTemplateStream = pipelineTemplateUri.toURL().openStream();
+      } catch (IOException e) {
+         throw new RuntimeException("Could not create OpenShift pipeline", e);
+      }
+      List<Parameter> parameters = Arrays.asList(
+            createParameter("GIT_URL", sourceRepositoryUri.toString()),
+            createParameter("GIT_REF", gitRef));
+      configureProject(project, pipelineTemplateStream, parameters);
+   }
+
+   @Override
+   public void configureProject(final OpenShiftProject project, final URI sourceRepositoryUri) {
+      final InputStream pipelineTemplateStream = getClass().getResourceAsStream("/pipeline-template.yml");
+      List<Parameter> parameters = Arrays.asList(
+            createParameter("SOURCE_REPOSITORY_URL", sourceRepositoryUri.toString()),
+            createParameter("PROJECT", project.getName()));
+      configureProject(project, pipelineTemplateStream, parameters);
+   }
+
+   private Parameter createParameter(final String name, final String value) {
+      Parameter parameter = new Parameter();
+      parameter.setName(name);
+      parameter.setValue(value);
+      return parameter;
+   }
+
+   private void configureProject(final OpenShiftProject project, final InputStream templateStream,
+                                 List<Parameter> parameters) {
+      try {
+         try (final InputStream pipelineTemplateStream = templateStream) {
+            final Template template = client.templates().load(pipelineTemplateStream).get();
+            for (Parameter parameter : parameters) {
+               if (parameter.getValue() != null) {
+                  log.info("Setting the '" + parameter.getName() + "' parameter value to '" + parameter.getValue() + "'.");
+                  template.getParameters().stream().filter(p -> p.getName().equals(parameter.getName()))
+                        .forEach(p -> p.setValue(parameter.getValue()));
+               }
+            }
+            log.info("Deploying template '" + template.getMetadata().getName() + "' with parameters:");
+            template.getParameters().forEach(p -> log.info("\t" + p.getDisplayName() + '=' + p.getValue()));
+            final Controller controller = new Controller(client);
+            controller.setNamespace(project.getName());
+            final KubernetesList processedTemplate = (KubernetesList) controller.processTemplate(template,
+                  OPENSHIFT_PROJECT_TEMPLATE);
+            controller.apply(processedTemplate, OPENSHIFT_PROJECT_TEMPLATE);
+            // add all template resources into the project
+            processedTemplate.getItems().stream()
+                  .map(item -> new OpenShiftResourceImpl(item.getMetadata().getName(), item.getKind(), project))
+                  .forEach(resource -> {
+                     log.info("Adding resource '" + resource.getName() + "' (" + resource.getKind()
+                           + ") to project '" + project.getName() + "'");
+                     ((OpenShiftProjectImpl) project).addResource(resource);
+                  });
+         }
+      } catch (Exception e) {
+         throw new RuntimeException("Could not create OpenShift pipeline", e);
+      }
+   }
 
 
    /**
