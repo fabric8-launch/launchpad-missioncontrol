@@ -2,6 +2,7 @@ package org.kontinuity.catapult.core.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.kontinuity.catapult.core.api.ForkProjectileBuilder;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.core.api.ProjectileBuilder;
 
@@ -65,13 +66,13 @@ public class ProjectileBuilderTest {
 
 	@Test
 	public void createsProjectileWithDefaultedOpenShiftProjectName(){
-		final Projectile projectile = ((ProjectileBuilder.ForkProjectileBuilder)this.getPopulatedBuilder().openShiftProjectName(null)).build();
+		final Projectile projectile = ((ForkProjectileBuilder)this.getPopulatedBuilder().openShiftProjectName(null)).build();
 		Assert.assertEquals("openshiftProjectName was not defaulted correctly", "testrepo", projectile.getOpenShiftProjectName());
 	}
 
 	@Test
 	public void createsProjectileWithExplicitOpenShiftProjectName(){
-		final Projectile projectile = ((ProjectileBuilder.ForkProjectileBuilder)this.getPopulatedBuilder().openShiftProjectName("changedfromtest")).build();
+		final Projectile projectile = ((ForkProjectileBuilder)this.getPopulatedBuilder().openShiftProjectName("changedfromtest")).build();
 		Assert.assertEquals("openshiftProjectName was not set correctly", "changedfromtest", projectile.getOpenShiftProjectName());
 	}
 
@@ -104,9 +105,9 @@ public class ProjectileBuilderTest {
 
 	/**
 	 * @return A builder with all properties set so we can manually
-	 * set one property to empty and test {@link ProjectileBuilder.ForkProjectileBuilder#build()}
+	 * set one property to empty and test {@link ForkProjectileBuilder#build()}
 	 */
-	private ProjectileBuilder.ForkProjectileBuilder getPopulatedBuilder(){
+	private ForkProjectileBuilder getPopulatedBuilder(){
 		return ProjectileBuilder.newInstance()
 				.openShiftProjectName(SOME_VALUE)
 				.gitHubAccessToken(SOME_VALUE)

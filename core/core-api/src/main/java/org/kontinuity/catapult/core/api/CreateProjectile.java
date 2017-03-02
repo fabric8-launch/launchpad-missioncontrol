@@ -15,7 +15,7 @@ public class CreateProjectile extends Projectile {
     *
     * @param builder
     */
-   CreateProjectile(ProjectileBuilder.CreateProjectileBuilder builder) {
+   CreateProjectile(CreateProjectileBuilder builder) {
       super(builder);
       this.projectLocation = builder.getProjectLocation();
    }

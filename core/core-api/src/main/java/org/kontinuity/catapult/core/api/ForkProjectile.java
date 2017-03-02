@@ -22,7 +22,7 @@ public class ForkProjectile extends Projectile {
     *
     * @param builder
     */
-   ForkProjectile(ProjectileBuilder.ForkProjectileBuilder builder) {
+   ForkProjectile(ForkProjectileBuilder builder) {
       super(builder);
       this.sourceGitHubRepo = builder.getSourceGitHubRepo();
       this.pipelineTemplatePath = builder.getPipelineTemplatePath();
