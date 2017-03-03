@@ -1,6 +1,5 @@
 package org.kontinuity.catapult.web.api;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
@@ -19,12 +18,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,8 +34,6 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import static org.kontinuity.catapult.core.api.Projectile.Type.CREATE;
 import static org.kontinuity.catapult.core.api.Projectile.Type.FORK;
@@ -109,49 +106,38 @@ public class CatapultResource {
       final String gitHubAccessToken = (String) request
               .getSession().getAttribute(GitHubResource.SESSION_ATTRIBUTE_GITHUB_ACCESS_TOKEN);
 
-      try {
-         if (gitHubAccessToken == null) {
-            // We've got no token yet; forward back to the GitHub OAuth service to get it
-            // Define the path to hit for the GitHub OAuth
-            final String gitHubOAuthPath = GitHubResource.PATH_GITHUB +
-                    GitHubResource.PATH_AUTHORIZE;
-            // Define the redirect to come back to (here) once OAuth is done
-            final String redirectAfterOAuthPath;
-            if (type == FORK) {
-               redirectAfterOAuthPath = PATH_CATAPULT +
-                     PATH_FLING +
-                     '?' +
-                     CatapultResource.QUERY_PARAM_SOURCE_REPO +
-                     '=' + value + '&' +
-                     CatapultResource.QUERY_PARAM_GIT_REF +
-                     '=' + gitRef + '&' +
-                     CatapultResource.QUERY_PARAM_PIPELINE_TEMPLATE_PATH +
-                     '=' + pipelineTemplatePath;
-            } else {
-               redirectAfterOAuthPath = PATH_CATAPULT +
-                     PATH_UPLOAD +
-                     '?' + QUERY_PARAM_PROJECT_LOCATION +
-                     '=' + value;
-            }
-
-            final String urlEncodedRedirectAfterOauthPath;
-            try {
-               urlEncodedRedirectAfterOauthPath = URLEncoder.encode(redirectAfterOAuthPath, UTF_8);
-            } catch (final UnsupportedEncodingException uee) {
-               throw new RuntimeException(uee);
-            }
-            // Create the full path
-            final String fullPath = gitHubOAuthPath +
-                    '?' +
-                    GitHubResource.QUERY_PARAM_REDIRECT_URL +
-                    '=' +
-                    urlEncodedRedirectAfterOauthPath;
-            // Forward to request an access token, noting we'll redirect back to here
-            // after the OAuth process sets the token in the user session
-            return new ProjectileOrResponse(Response.temporaryRedirect(new URI(fullPath)).build());
+      if (gitHubAccessToken == null) {
+         // We've got no token yet; forward back to the GitHub OAuth service to get it
+         // Define the path to hit for the GitHub OAuth
+         final String gitHubOAuthPath = GitHubResource.PATH_GITHUB +
+                 GitHubResource.PATH_AUTHORIZE;
+         // Define the redirect to come back to (here) once OAuth is done
+         final String redirectAfterOAuthPath;
+         if (type == FORK) {
+            redirectAfterOAuthPath = UriBuilder.fromPath(PATH_CATAPULT + PATH_FLING)
+                  .queryParam(QUERY_PARAM_SOURCE_REPO, value)
+                  .queryParam(QUERY_PARAM_GIT_REF, gitRef)
+                  .queryParam(QUERY_PARAM_PIPELINE_TEMPLATE_PATH, pipelineTemplatePath)
+                  .build().toString();
+         } else {
+            redirectAfterOAuthPath = UriBuilder.fromPath(PATH_CATAPULT + PATH_UPLOAD)
+                  .queryParam(QUERY_PARAM_PROJECT_LOCATION, value)
+                  .build().toString();
          }
-      } catch (URISyntaxException urise) {
-         return new ProjectileOrResponse(Response.serverError().entity(urise).build());
+
+         final String urlEncodedRedirectAfterOauthPath;
+         try {
+            urlEncodedRedirectAfterOauthPath = URLEncoder.encode(redirectAfterOAuthPath, UTF_8);
+         } catch (final UnsupportedEncodingException uee) {
+            throw new RuntimeException(uee);
+         }
+         // Create the full path
+         final URI fullPath = UriBuilder.fromPath(gitHubOAuthPath)
+               .queryParam(GitHubResource.QUERY_PARAM_REDIRECT_URL, urlEncodedRedirectAfterOauthPath)
+               .build();
+         // Forward to request an access token, noting we'll redirect back to here
+         // after the OAuth process sets the token in the user session
+         return new ProjectileOrResponse(Response.temporaryRedirect(fullPath).build());
       }
 
       if (type == FORK) {
@@ -182,7 +168,7 @@ public class CatapultResource {
             log.finest("Redirect issued to: " + consoleOverviewUri.toString());
          }
       } catch (final URISyntaxException urise) {
-         return Response.serverError().entity(urise).build();
+         throw new WebApplicationException("couldn't get console location do you have the environment variable set", urise);
       }
       return Response.temporaryRedirect(consoleOverviewUri).build();
    }
@@ -212,7 +198,7 @@ public class CatapultResource {
             return fling(result.getProjectile());
          }
       } catch (final IOException e) {
-         return Response.serverError().entity(e).build();
+         throw new WebApplicationException("could not unpack zip file into temp folder", e);
       }
    }
 
