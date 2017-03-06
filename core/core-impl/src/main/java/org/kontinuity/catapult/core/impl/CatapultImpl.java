@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.RemoteAddCommand;
@@ -96,19 +97,11 @@ public class CatapultImpl implements Catapult {
                  * Construct the full URI for the pipeline template file,
                  * relative to the repository root
                  */
-                final StringBuilder sb = new StringBuilder();
-                sb.append("https://raw.githubusercontent.com/");
-                sb.append(forkProjectile.getSourceGitHubRepo());
-                sb.append('/');
-                sb.append(forkProjectile.getGitRef());
-                sb.append('/');
-                sb.append(forkProjectile.getPipelineTemplatePath());
-                final URI pipelineTemplateUri;
-                try {
-                    pipelineTemplateUri = new URI(sb.toString());
-                } catch (final URISyntaxException urise) {
-                    throw new RuntimeException("Could not create URI for pipeline template path", urise);
-                }
+                final URI pipelineTemplateUri = UriBuilder.fromUri("https://raw.githubusercontent.com/")
+                      .path(forkProjectile.getSourceGitHubRepo())
+                      .path(forkProjectile.getGitRef())
+                      .path(forkProjectile.getPipelineTemplatePath()).build();
+
                 // Configure the OpenShift project
                 openShiftService.configureProject(createdProject,
                       gitHubRepository.getGitCloneUri(),
