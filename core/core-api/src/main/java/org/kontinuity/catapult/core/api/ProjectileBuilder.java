@@ -114,7 +114,7 @@ public class ProjectileBuilder {
       return openShiftProjectName;
    }
 
-   public CreateProjectileBuilder createTye() {
+   public CreateProjectileBuilder createType() {
       return new CreateProjectileBuilder(getGitHubAccessToken(), getOpenShiftProjectName());
    }
 

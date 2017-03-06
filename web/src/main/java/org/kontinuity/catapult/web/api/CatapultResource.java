@@ -151,7 +151,7 @@ public class CatapultResource {
       } else {
          return new ProjectileOrResponse(ProjectileBuilder.newInstance()
                .gitHubAccessToken(gitHubAccessToken)
-               .createTye()
+               .createType()
                .projectLocation(value)
                .build());
       }

@@ -100,7 +100,7 @@ public class ProjectileBuilderTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void requiresProjectLocation(){
-		ProjectileBuilder.newInstance().createTye().projectLocation(null).build();
+		ProjectileBuilder.newInstance().createType().projectLocation(null).build();
 	}
 
 	/**
