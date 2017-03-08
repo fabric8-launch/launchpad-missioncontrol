@@ -1,5 +1,6 @@
 package org.kontinuity.catapult.core.impl;
 
+import com.google.common.io.Files;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -115,7 +116,7 @@ public class CatapultIT {
     }
 
     @Test
-    public void fling() {
+    public void flingFork() {
         // Define the projectile with a custom, unique OpenShift project name.
     	final String expectedName = getUniqueProjectName();
         final Projectile projectile = ProjectileBuilder.newInstance()
@@ -131,24 +132,47 @@ public class CatapultIT {
         final Boom boom = catapult.fling(projectile);
 
         // Assertions
-        final GitHubRepository createdRepo = boom.getCreatedRepository();
-        Assert.assertNotNull("repo can not be null", createdRepo);
-        final OpenShiftProject createdProject = boom.getCreatedProject();
-        Assert.assertNotNull("project can not be null", createdProject);
-        final String foundName = createdProject.getName();
-        log.info("Created OpenShift project: " + foundName);
-        openshiftProjectsToDelete.add(foundName);
-        Assert.assertEquals(expectedName, foundName);
-		  // checking that the Build Config was created.
-        assertThat(createdProject.getResources()).isNotNull().hasSize(1);
-        assertTrue(createdProject.getResources().get(0).getKind().equals("BuildConfig"));
-        assertThat(boom.getGitHubWebhook()).isNotNull();
+       assertions(expectedName, boom);
+    }
+
+   @Test
+   public void flingCreate() {
+      // Define the projectile with a custom, unique OpenShift project name.
+      final String expectedName = getUniqueProjectName();
+      File tempDir = Files.createTempDir();
+      final Projectile projectile = ProjectileBuilder.newInstance()
+            .gitHubAccessToken(GitHubTestCredentials.getToken())
+            .openShiftProjectName(expectedName)
+            .createType()
+            .projectLocation(tempDir.getPath())
+            .build();
+
+      // Fling
+      final Boom boom = catapult.fling(projectile);
+
+      // Assertions
+      assertions(expectedName, boom);
+   }
+
+   private void assertions(String expectedName, Boom boom) {
         /*
            Can't really assert on any of the properties of the
            new repo because they could change in GitHub and
            break our tests
          */
-    }
+      final GitHubRepository createdRepo = boom.getCreatedRepository();
+      Assert.assertNotNull("repo can not be null", createdRepo);
+      final OpenShiftProject createdProject = boom.getCreatedProject();
+      Assert.assertNotNull("project can not be null", createdProject);
+      final String foundName = createdProject.getName();
+      log.info("Created OpenShift project: " + foundName);
+      openshiftProjectsToDelete.add(foundName);
+      Assert.assertEquals(expectedName, foundName);
+      // checking that the Build Config was created.
+      assertThat(createdProject.getResources()).isNotNull().hasSize(1);
+      assertTrue(createdProject.getResources().get(0).getKind().equals("BuildConfig"));
+      assertThat(boom.getGitHubWebhook()).isNotNull();
+   }
 
     private String getUniqueProjectName() {
         return PREFIX_NAME_PROJECT + System.currentTimeMillis();
