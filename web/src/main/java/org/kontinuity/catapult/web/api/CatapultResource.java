@@ -100,7 +100,7 @@ public class CatapultResource {
          return Response.temporaryRedirect(gitHubOAuthUri).build();
       }
       // Construct the projectile based on input query param and the access token from the session
-      final Projectile projectile = ProjectileBuilder.newInstance()
+      final Projectile projectile = catapult.newProjectileBuilder()
               .sourceGitHubRepo(sourceGitHubRepo)
               .gitHubAccessToken(gitHubAccessToken)
               .gitRef(gitRef)
