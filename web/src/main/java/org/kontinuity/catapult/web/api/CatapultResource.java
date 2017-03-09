@@ -50,6 +50,9 @@ public class CatapultResource {
    @Inject
    private Catapult catapult;
 
+   @Inject
+   private ProjectileBuilder projectileBuilder;
+
    @GET
    @Path(PATH_FLING)
    public Response fling(
@@ -100,7 +103,7 @@ public class CatapultResource {
          return Response.temporaryRedirect(gitHubOAuthUri).build();
       }
       // Construct the projectile based on input query param and the access token from the session
-      final Projectile projectile = catapult.newProjectileBuilder()
+      final Projectile projectile = projectileBuilder
               .sourceGitHubRepo(sourceGitHubRepo)
               .gitHubAccessToken(gitHubAccessToken)
               .gitRef(gitRef)

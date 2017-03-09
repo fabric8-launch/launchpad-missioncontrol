@@ -32,12 +32,6 @@ public class CatapultImpl implements Catapult {
 	@Inject
 	private GitHubServiceFactory gitHubServiceFactory;
 
-
-    @Override
-    public org.kontinuity.catapult.core.api.ProjectileBuilder newProjectileBuilder() {
-        return new ProjectileBuilderImpl();
-    }
-
     /**
      * {@inheritDoc}
      */

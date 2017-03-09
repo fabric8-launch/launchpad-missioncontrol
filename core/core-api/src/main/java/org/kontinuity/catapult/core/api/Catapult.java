@@ -10,12 +10,6 @@ package org.kontinuity.catapult.core.api;
 public interface Catapult {
 
     /**
-     * Creates a {@link ProjectileBuilder} to be flinged in the {@link #fling(Projectile)} method
-     * @return A {@link ProjectileBuilder} instance
-     */
-    ProjectileBuilder newProjectileBuilder();
-
-    /**
      * The {@link Catapult}, as the name suggests, is a launcher.  Its responsibility
      * is to take the following inputs:
      * <ul>
