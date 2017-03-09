@@ -14,18 +14,6 @@ import java.net.URL;
 public interface GitHubServiceSpi extends GitHubService {
 
     /**
-     * Creates a repository with the given information (name and description). The repository will be
-     * created by default with no homepage, issues, wiki downloads and will be public.
-     *
-     * @param repositoryName - the name of the repository
-     * @param description - the repository description
-     * @return the created {@link GitHubRepository}
-     * @throws IllegalArgumentException
-     */
-    GitHubRepository createRepository(String repositoryName, String description) throws IllegalArgumentException;
-
-
-    /**
      * Delete a repository specified by its value object representation.
      *
      * @param repository - the value object the represents the GitHub repository

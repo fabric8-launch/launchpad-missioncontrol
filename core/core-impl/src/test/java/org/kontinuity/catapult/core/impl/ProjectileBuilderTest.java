@@ -1,8 +1,8 @@
 package org.kontinuity.catapult.core.impl;
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.junit.Assert;
 import org.junit.Test;
+import org.kontinuity.catapult.core.api.ForkProjectileBuilder;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.core.api.ProjectileBuilder;
 
@@ -30,12 +30,12 @@ public class ProjectileBuilderTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void requiresGitHubAccessToken() {
-		this.getPopulatedBuilder().gitHubAccessToken(null).build();
+		this.getPopulatedBuilder().gitHubAccessToken(null).forkType().build();
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void requiresGitHubAccessTokenNotEmpty() {
-		this.getPopulatedBuilder().gitHubAccessToken(EMPTY).build();
+		this.getPopulatedBuilder().gitHubAccessToken(EMPTY).forkType().build();
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -66,19 +66,19 @@ public class ProjectileBuilderTest {
 
 	@Test
 	public void createsProjectileWithDefaultedOpenShiftProjectName(){
-		final Projectile projectile = this.getPopulatedBuilder().openShiftProjectName(null).build();
+		final Projectile projectile = ((ForkProjectileBuilder)this.getPopulatedBuilder().openShiftProjectName(null)).build();
 		Assert.assertEquals("openshiftProjectName was not defaulted correctly", "testrepo", projectile.getOpenShiftProjectName());
 	}
 
 	@Test
 	public void createsProjectileWithExplicitOpenShiftProjectName(){
-		final Projectile projectile = this.getPopulatedBuilder().openShiftProjectName("changedfromtest").build();
+		final Projectile projectile = ((ForkProjectileBuilder)this.getPopulatedBuilder().openShiftProjectName("changedfromtest")).build();
 		Assert.assertEquals("openshiftProjectName was not set correctly", "changedfromtest", projectile.getOpenShiftProjectName());
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void sourceRepoMustBeInCorrectForm(){
-		ProjectileBuilder.newInstance().sourceGitHubRepo("doesntFollowForm").build();
+		ProjectileBuilder.newInstance().forkType().sourceGitHubRepo("doesntFollowForm").build();
 	}
 
 	@Test
@@ -98,15 +98,21 @@ public class ProjectileBuilderTest {
 		Assert.assertNotNull("projectile should have been created", projectile);
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void requiresProjectLocation(){
+		ProjectileBuilder.newInstance().createType().projectLocation(null).build();
+	}
+
 	/**
 	 * @return A builder with all properties set so we can manually
-	 * set one property to empty and test {@link ProjectileBuilder#build()}
+	 * set one property to empty and test {@link ForkProjectileBuilder#build()}
 	 */
-	private ProjectileBuilder getPopulatedBuilder(){
+	private ForkProjectileBuilder getPopulatedBuilder(){
 		return ProjectileBuilder.newInstance()
-				.sourceGitHubRepo(REPO_VALUE)
-				.gitHubAccessToken(SOME_VALUE)
 				.openShiftProjectName(SOME_VALUE)
+				.gitHubAccessToken(SOME_VALUE)
+				.forkType()
+				.sourceGitHubRepo(REPO_VALUE)
 				.gitRef(SOME_VALUE)
 				.pipelineTemplatePath(SOME_VALUE);
 	}
