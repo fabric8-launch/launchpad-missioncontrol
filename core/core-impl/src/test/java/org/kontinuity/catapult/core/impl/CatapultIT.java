@@ -118,7 +118,7 @@ public class CatapultIT {
     public void fling() {
         // Define the projectile with a custom, unique OpenShift project name.
     	final String expectedName = getUniqueProjectName();
-        final Projectile projectile = ProjectileBuilder.newInstance()
+        final Projectile projectile = new ProjectileBuilderImpl()
                 .gitHubAccessToken(GitHubTestCredentials.getToken())
                 .sourceGitHubRepo(GITHUB_SOURCE_REPO_FULLNAME)
                 .gitRef(GIT_REF)

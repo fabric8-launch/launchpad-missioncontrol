@@ -78,7 +78,7 @@ public class ProjectileBuilderTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void sourceRepoMustBeInCorrectForm(){
-		ProjectileBuilder.newInstance().sourceGitHubRepo("doesntFollowForm").build();
+		new ProjectileBuilderImpl().sourceGitHubRepo("doesntFollowForm").build();
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class ProjectileBuilderTest {
 	 * set one property to empty and test {@link ProjectileBuilder#build()}
 	 */
 	private ProjectileBuilder getPopulatedBuilder(){
-		return ProjectileBuilder.newInstance()
+		return new ProjectileBuilderImpl()
 				.sourceGitHubRepo(REPO_VALUE)
 				.gitHubAccessToken(SOME_VALUE)
 				.openShiftProjectName(SOME_VALUE)

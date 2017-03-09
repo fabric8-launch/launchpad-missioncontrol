@@ -12,7 +12,6 @@ import org.kontinuity.catapult.core.api.Boom;
 import org.kontinuity.catapult.core.api.Catapult;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.service.github.api.*;
-import org.kontinuity.catapult.service.github.impl.kohsuke.KohsukeGitHubServiceImpl;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
@@ -31,8 +30,8 @@ public class CatapultImpl implements Catapult {
 	private OpenShiftService openShiftService;
 
 	@Inject
-	private GitHubServiceFactory gitHubServiceFactory; 
-	
+	private GitHubServiceFactory gitHubServiceFactory;
+
     /**
      * {@inheritDoc}
      */

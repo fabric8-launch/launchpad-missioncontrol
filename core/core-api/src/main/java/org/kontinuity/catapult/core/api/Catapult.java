@@ -42,6 +42,5 @@ public interface Catapult {
      * @return The result of the operation encapsulated in a {@link Boom}
      * @throws IllegalArgumentException If the {@link Projectile} is not specified
      */
-    public Boom fling(final Projectile projectile) throws IllegalArgumentException;
-
+    Boom fling(final Projectile projectile) throws IllegalArgumentException;
 }
