@@ -154,16 +154,13 @@ public class GitHubResource
       final String state = GitHubResource.serializeState(uuid, redirectUrl);
 
       // Create the GitHub authorize request
-      final Client client = ClientBuilder.newClient();
-      final Response response = client.target(GITHUB_OAUTH_AUTH_URL)
-              .queryParam(QUERY_PARAM_CLIENT_ID_NAME, this.catapultAppId)
+      URI target = UriBuilder.fromUri(GITHUB_OAUTH_AUTH_URL)
+              .queryParam(QUERY_PARAM_CLIENT_ID_NAME, catapultAppId)
               .queryParam(QUERY_PARAM_SCOPE_NAME, QUERY_PARAM_SCOPE_VALUE)
               .queryParam(QUERY_PARAM_STATE_NAME, state)
-              .request()
-              .accept(MediaType.APPLICATION_JSON_TYPE)
-              .get();
-      client.close();
-      return response;
+              .queryParam(QUERY_PARAM_REDIRECT_URL, redirectUrl)
+              .build();
+      return Response.temporaryRedirect(target).build();
    }
 
    /**
@@ -224,12 +221,7 @@ public class GitHubResource
       if (redirectUrl == null || redirectUrl.isEmpty()) {
          return Response.serverError().entity(new IllegalStateException(MSG_NO_REDIRECT)).build();
       }
-      final URI redirectUri;
-      try {
-         redirectUri = new URI(redirectUrl);
-      } catch (final URISyntaxException urise) {
-         return Response.serverError().entity(urise).build();
-      }
+      final URI redirectUri = UriBuilder.fromUri(redirectUrl).build();
       return Response.temporaryRedirect(redirectUri).build();
    }
 
