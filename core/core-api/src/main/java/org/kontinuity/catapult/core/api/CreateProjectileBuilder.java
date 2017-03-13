@@ -15,47 +15,47 @@ import java.io.File;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class CreateProjectileBuilder extends ProjectileBuilder {
-   private String projectLocation;
+    CreateProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
+        super(gitHubAccessToken, openShiftProjectName);
+    }
 
-   CreateProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
-      super(gitHubAccessToken, openShiftProjectName);
-   }
+    private String projectLocation;
 
-   /**
-    * Creates and returns a new {@link CreateProjectile} instance based on the
-    * state of this builder; if any preconditions like missing properties
-    * or improper values exist, an {@link IllegalStateException} will be thrown
-    *
-    * @return the created {@link Projectile}
-    * @throws IllegalStateException
-    */
-   public Projectile build() {
-      super.build(this);
-      ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
-      return new CreateProjectile(this);
-   }
+    /**
+     * Creates and returns a new {@link CreateProjectile} instance based on the
+     * state of this builder; if any preconditions like missing properties
+     * or improper values exist, an {@link IllegalStateException} will be thrown
+     *
+     * @return the created {@link Projectile}
+     * @throws IllegalStateException
+     */
+    public Projectile build() {
+        super.build(this);
+        ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
+        return new CreateProjectile(this);
+    }
 
-   @Override
-   String createDefaultProjectName() {
-      return projectLocation.substring(projectLocation.lastIndexOf(File.separator) + 1);
-   }
+    /**
+     * Sets the projectLocation of the repository this
+     * is what will be "uploaded" for the user.  Required.
+     *
+     * @param projectLocation
+     * @return This builder
+     */
+    public org.kontinuity.catapult.core.api.CreateProjectileBuilder projectLocation(final String projectLocation) {
+        this.projectLocation = projectLocation;
+        return this;
+    }
 
-   /**
-    * Sets the projectLocation of the repository this
-    * is what will be "uploaded" for the user.  Required.
-    *
-    * @param projectLocation
-    * @return This builder
-    */
-   public org.kontinuity.catapult.core.api.CreateProjectileBuilder projectLocation(final String projectLocation) {
-      this.projectLocation = projectLocation;
-      return this;
-   }
+    /**
+     * @return the location of the project to "upload" to GitHub.
+     */
+    public String getProjectLocation() {
+        return projectLocation;
+    }
 
-   /**
-    * @return the location of the project to "upload" to GitHub.
-    */
-   public String getProjectLocation() {
-      return projectLocation;
-   }
+    @Override
+    String createDefaultProjectName() {
+        return projectLocation.substring(projectLocation.lastIndexOf(File.separator) + 1);
+    }
 }

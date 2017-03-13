@@ -13,46 +13,48 @@ import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
  */
 public class DeleteOpenShiftProjectRule extends ExternalResource {
 
-	private static final Logger log = Logger.getLogger(DeleteOpenShiftProjectRule.class.getName());
+    /**
+     * Constructor
+     *
+     * @param test the test base which contains an OpenShift service to call to delete the projects.
+     */
+    public DeleteOpenShiftProjectRule(final OpenShiftServiceContainer test) {
+        this.test = test;
+    }
 
-	/** the projects to delete. */
-	private final Collection<OpenShiftProject> createdProjects = new ArrayList<>();
+    private static final Logger log = Logger.getLogger(DeleteOpenShiftProjectRule.class.getName());
 
-	/** hook to the OpenShift service to call to delete the projects. */
-	private final OpenShiftServiceContainer test;
+    /**
+     * the projects to delete.
+     */
+    private final Collection<OpenShiftProject> createdProjects = new ArrayList<>();
 
-	/**
-	 * Constructor
-	 * 
-	 * @param test
-	 *            the test base which contains an OpenShift service to call to delete the projects.
-	 */
-	public DeleteOpenShiftProjectRule(final OpenShiftServiceContainer test) {
-		this.test = test;
-	}
+    /**
+     * hook to the OpenShift service to call to delete the projects.
+     */
+    private final OpenShiftServiceContainer test;
 
-	/**
-	 * Adds a project in the list of projects to delete at the end of the test.
-	 * 
-	 * @param project
-	 *            the project to delete
-	 */
-	public void add(final OpenShiftProject project) {
-		createdProjects.add(project);
-	}
+    /**
+     * Adds a project in the list of projects to delete at the end of the test.
+     *
+     * @param project the project to delete
+     */
+    public void add(final OpenShiftProject project) {
+        createdProjects.add(project);
+    }
 
-	@Override
-	protected void before() throws Throwable {
-		createdProjects.clear();
-	}
+    @Override
+    protected void before() throws Throwable {
+        createdProjects.clear();
+    }
 
-	@Override
-	protected void after() {
-		createdProjects.forEach(project -> {
-			final String projectName = project.getName();
-			final boolean deleted = ((OpenShiftServiceSpi) test.getOpenShiftService()).deleteProject(project);
-			log.info("Deleted " + projectName + ": " + deleted);
-		});
-	}
+    @Override
+    protected void after() {
+        createdProjects.forEach(project -> {
+            final String projectName = project.getName();
+            final boolean deleted = ((OpenShiftServiceSpi) test.getOpenShiftService()).deleteProject(project);
+            log.info("Deleted " + projectName + ": " + deleted);
+        });
+    }
 
 }

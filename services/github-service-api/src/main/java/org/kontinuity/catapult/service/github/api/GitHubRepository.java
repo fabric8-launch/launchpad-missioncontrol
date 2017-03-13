@@ -1,7 +1,6 @@
 package org.kontinuity.catapult.service.github.api;
 
 import java.net.URI;
-import java.net.URL;
 
 /**
  * Value object representing a repository in GitHub
@@ -20,8 +19,8 @@ public interface GitHubRepository {
      */
     URI getHomepage();
 
-	/**
-	 * @return the {@link URI} to use to clone the project from GitHub
-	 */
-	URI getGitCloneUri();
+    /**
+     * @return the {@link URI} to use to clone the project from GitHub
+     */
+    URI getGitCloneUri();
 }

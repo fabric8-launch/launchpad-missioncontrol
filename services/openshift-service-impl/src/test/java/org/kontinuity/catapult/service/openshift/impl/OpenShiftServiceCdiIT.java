@@ -24,15 +24,10 @@ import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
 @RunWith(Arquillian.class)
 public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
 
-	@Inject
-	private OpenShiftService openshiftService;
+    private static final Logger log = Logger.getLogger(OpenShiftServiceCdiIT.class.getName());
 
-	@Override
-	public OpenShiftService getOpenShiftService() {
-		return this.openshiftService;
-	}
-	
-	private static final Logger log = Logger.getLogger(OpenShiftServiceCdiIT.class.getName());
+    @Inject
+    private OpenShiftService openshiftService;
 
     /**
      * @return a jar file containing all the required classes to test the {@link OpenShiftService}
@@ -42,7 +37,7 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
         // Import Maven runtime dependencies
         final File[] dependencies = Maven.resolver().loadPomFromFile("pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
-        // Create deploy file    
+        // Create deploy file
         final WebArchive war = ShrinkWrap.create(WebArchive.class)
                 .addPackage(Fabric8OpenShiftClientServiceImpl.class.getPackage())
                 .addPackage(OpenShiftServiceCdiIT.class.getPackage())
@@ -53,8 +48,13 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
                 .addAsWebInfResource("META-INF/jboss-deployment-structure.xml", "jboss-deployment-structure.xml")
                 .addAsLibraries(dependencies);
         // Show the deployed structure
-        log.info(war.toString(true)); 
+        log.info(war.toString(true));
         return war;
+    }
+
+    @Override
+    public OpenShiftService getOpenShiftService() {
+        return this.openshiftService;
     }
 
 }

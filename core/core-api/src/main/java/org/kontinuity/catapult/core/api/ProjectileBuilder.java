@@ -16,110 +16,110 @@ package org.kontinuity.catapult.core.api;
  */
 public class ProjectileBuilder {
 
-   private String gitHubAccessToken;
+    private ProjectileBuilder() {
+        // No external instances
+    }
 
-   /**
-    * the name of OpenShift project to create.
-    */
-   private String openShiftProjectName;
+    ProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
+        this.gitHubAccessToken = gitHubAccessToken;
+        this.openShiftProjectName = openShiftProjectName;
+    }
 
-   private ProjectileBuilder() {
-      // No external instances
-   }
+    private String gitHubAccessToken;
 
-   ProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
-      this.gitHubAccessToken = gitHubAccessToken;
-      this.openShiftProjectName = openShiftProjectName;
-   }
+    /**
+     * the name of OpenShift project to create.
+     */
+    private String openShiftProjectName;
 
-   /**
-    * Creates and returns a new instance with uninitialized values
-    *
-    * @return a new instance of the {@link ProjectileBuilder}
-    */
-   public static ProjectileBuilder newInstance() {
-      return new ProjectileBuilder();
-   }
+    /**
+     * Creates and returns a new instance with uninitialized values
+     *
+     * @return a new instance of the {@link ProjectileBuilder}
+     */
+    public static ProjectileBuilder newInstance() {
+        return new ProjectileBuilder();
+    }
 
-   /**
-    * Ensures the specified value is not null or empty, else throws
-    * an {@link IllegalArgumentException} citing the specified name
-    * (which is also required ;) )
-    *
-    * @param value
-    * @throws IllegalStateException
-    */
-   static void checkSpecified(final String name,
-                                      final String value) throws IllegalStateException {
-      assert name != null && !name.isEmpty() : "name is required";
-      if (value == null || value.isEmpty()) {
-         throw new IllegalStateException(name + " must be specified");
-      }
-   }
+    /**
+     * Sets the name of the OpenShift project to create. By default, the name is derived from
+     * the GitHub repository to fork. Optional.
+     *
+     * @param openShiftProjectName
+     * @return This builder
+     */
+    public ProjectileBuilder openShiftProjectName(final String openShiftProjectName) {
+        this.openShiftProjectName = openShiftProjectName;
+        return this;
+    }
 
     /*
      * Builder methods
      */
 
-   void build(ProjectileBuilder builder) {
-      ProjectileBuilder.checkSpecified("gitHubAccessToken", this.gitHubAccessToken);
-      // Default the openshiftProjectName if need be
-      try {
-         ProjectileBuilder.checkSpecified("openshiftProjectName", this.openShiftProjectName);
-      } catch (final IllegalStateException ise) {
-         this.openShiftProjectName(builder.createDefaultProjectName());
-      }
-   }
+    /**
+     * Sets the GitHub access token we have obtained from the user as part of
+     * the OAuth process. Required.
+     *
+     * @param gitHubAccessToken
+     * @return This builder
+     */
+    public ProjectileBuilder gitHubAccessToken(final String gitHubAccessToken) {
+        this.gitHubAccessToken = gitHubAccessToken;
+        return this;
+    }
 
-   String createDefaultProjectName() {
-      throw new IllegalStateException("needs to be called on specific type");
-   }
+    /**
+     * @return the GitHub access token we have obtained from the user as part of
+     * the OAuth process
+     */
+    public String getGitHubAccessToken() {
+        return this.gitHubAccessToken;
+    }
 
-   /**
-    * Sets the name of the OpenShift project to create. By default, the name is derived from
-    * the GitHub repository to fork. Optional.
-    *
-    * @param openShiftProjectName
-    * @return This builder
-    */
-   public ProjectileBuilder openShiftProjectName(final String openShiftProjectName) {
-      this.openShiftProjectName = openShiftProjectName;
-      return this;
-   }
+    /**
+     * @return The name to use in creating the new OpenShift project
+     */
+    public String getOpenShiftProjectName() {
+        return openShiftProjectName;
+    }
 
-   /**
-    * Sets the GitHub access token we have obtained from the user as part of
-    * the OAuth process. Required.
-    *
-    * @param gitHubAccessToken
-    * @return This builder
-    */
-   public ProjectileBuilder gitHubAccessToken(final String gitHubAccessToken) {
-      this.gitHubAccessToken = gitHubAccessToken;
-      return this;
-   }
+    public CreateProjectileBuilder createType() {
+        return new CreateProjectileBuilder(getGitHubAccessToken(), getOpenShiftProjectName());
+    }
 
-   /**
-    * @return the GitHub access token we have obtained from the user as part of
-    * the OAuth process
-    */
-   public String getGitHubAccessToken() {
-      return this.gitHubAccessToken;
-   }
+    public ForkProjectileBuilder forkType() {
+        return new ForkProjectileBuilder(getGitHubAccessToken(), getOpenShiftProjectName());
+    }
 
-   /**
-    * @return The name to use in creating the new OpenShift project
-    */
-   public String getOpenShiftProjectName() {
-      return openShiftProjectName;
-   }
+    /**
+     * Ensures the specified value is not null or empty, else throws
+     * an {@link IllegalArgumentException} citing the specified name
+     * (which is also required ;) )
+     *
+     * @param value
+     * @throws IllegalStateException
+     */
+    static void checkSpecified(final String name,
+                               final String value) throws IllegalStateException {
+        assert name != null && !name.isEmpty() : "name is required";
+        if (value == null || value.isEmpty()) {
+            throw new IllegalStateException(name + " must be specified");
+        }
+    }
 
-   public CreateProjectileBuilder createType() {
-      return new CreateProjectileBuilder(getGitHubAccessToken(), getOpenShiftProjectName());
-   }
+    void build(ProjectileBuilder builder) {
+        ProjectileBuilder.checkSpecified("gitHubAccessToken", this.gitHubAccessToken);
+        // Default the openshiftProjectName if need be
+        try {
+            ProjectileBuilder.checkSpecified("openshiftProjectName", this.openShiftProjectName);
+        } catch (final IllegalStateException ise) {
+            this.openShiftProjectName(builder.createDefaultProjectName());
+        }
+    }
 
-   public ForkProjectileBuilder forkType() {
-      return new ForkProjectileBuilder(getGitHubAccessToken(), getOpenShiftProjectName());
-   }
+    String createDefaultProjectName() {
+        throw new IllegalStateException("needs to be called on specific type");
+    }
 
 }

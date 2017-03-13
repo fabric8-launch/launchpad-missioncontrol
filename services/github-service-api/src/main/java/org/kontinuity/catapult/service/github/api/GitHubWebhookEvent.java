@@ -1,7 +1,7 @@
 package org.kontinuity.catapult.service.github.api;
 
 public enum GitHubWebhookEvent {
-	COMMIT_COMMENT,
+    COMMIT_COMMENT,
     CREATE,
     DELETE,
     DEPLOYMENT,
@@ -30,5 +30,5 @@ public enum GitHubWebhookEvent {
      * Special event type that means "every possible event"
      */
     ALL;
-	
+
 }

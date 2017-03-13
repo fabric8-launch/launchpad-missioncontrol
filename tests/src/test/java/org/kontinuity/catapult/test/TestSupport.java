@@ -1,11 +1,11 @@
 package org.kontinuity.catapult.test;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.junit.Assert;
-
-import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * Support used in testing
@@ -14,38 +14,39 @@ import java.util.logging.Logger;
  */
 class TestSupport {
 
-   private static final Logger log = Logger.getLogger(TestSupport.class.getName());
+    private TestSupport() {
+        // No instances
+    }
 
-   private TestSupport(){
-      // No instances
-   }
+    private static final Logger log = Logger.getLogger(TestSupport.class.getName());
 
-   /**
-    * Ensures that an expected HTTP client error status is generated when we
-    * request the specified URL, else fail with the specified message
-    * @param url
-    * @param expectedErrorStatus
-    * @param failMessage
-    * @throws IOException
-    */
-   static void assertHttpClientErrorStatus(final String url,
-                                           final int expectedErrorStatus,
-                                           final String failMessage)
-           throws IOException {
-      assert url != null && !url.isEmpty() : "url is required";
-      assert expectedErrorStatus >= 400 && expectedErrorStatus < 500 :
-              "expected error status must be in the 400 range";
-      assert failMessage != null && !failMessage.isEmpty() : "failMessage must be specified";
-      final WebClient webClient = new WebClient();
-      try {
-         webClient.getPage(url);
-      } catch (final FailingHttpStatusCodeException fhsce) {
-         final int httpStatus = fhsce.getStatusCode();
-         log.info("Got HTTP status: " + httpStatus);
-         Assert.assertEquals(expectedErrorStatus, httpStatus);
-         return;
-      }
-      Assert.fail(failMessage);
-   }
+    /**
+     * Ensures that an expected HTTP client error status is generated when we
+     * request the specified URL, else fail with the specified message
+     *
+     * @param url
+     * @param expectedErrorStatus
+     * @param failMessage
+     * @throws IOException
+     */
+    static void assertHttpClientErrorStatus(final String url,
+                                            final int expectedErrorStatus,
+                                            final String failMessage)
+            throws IOException {
+        assert url != null && !url.isEmpty() : "url is required";
+        assert expectedErrorStatus >= 400 && expectedErrorStatus < 500 :
+                "expected error status must be in the 400 range";
+        assert failMessage != null && !failMessage.isEmpty() : "failMessage must be specified";
+        final WebClient webClient = new WebClient();
+        try {
+            webClient.getPage(url);
+        } catch (final FailingHttpStatusCodeException fhsce) {
+            final int httpStatus = fhsce.getStatusCode();
+            log.info("Got HTTP status: " + httpStatus);
+            Assert.assertEquals(expectedErrorStatus, httpStatus);
+            return;
+        }
+        Assert.fail(failMessage);
+    }
 
 }

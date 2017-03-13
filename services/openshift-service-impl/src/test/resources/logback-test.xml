@@ -7,9 +7,9 @@
     </encoder>
   </appender>
 
-  <logger name="org.kontinuity" level="TRACE" />
+  <logger name="org.kontinuity" level="TRACE"/>
 
   <root level="DEBUG">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDOUT"/>
   </root>
 </configuration>

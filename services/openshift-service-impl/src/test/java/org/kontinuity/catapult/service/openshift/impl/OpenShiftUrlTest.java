@@ -19,8 +19,11 @@ import static org.kontinuity.catapult.service.openshift.api.OpenShiftSettings.ge
 public class OpenShiftUrlTest {
 
     private static final String ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL = "CATAPULT_OPENSHIFT_API_URL";
+
     private static final String ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL = "CATAPULT_OPENSHIFT_CONSOLE_URL";
+
     private static final String TEST_OPENSHIFT_URL = "https://katapult-it-test:8443";
+
     private static final String DEFAULT_OPENSHIFT_URL = "https://localhost:8443";
 
     @Test

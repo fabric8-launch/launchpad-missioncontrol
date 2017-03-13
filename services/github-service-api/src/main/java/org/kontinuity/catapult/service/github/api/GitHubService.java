@@ -27,7 +27,7 @@ public interface GitHubService {
      * created by default with no homepage, issues, wiki downloads and will be public.
      *
      * @param repositoryName - the name of the repository
-     * @param description - the repository description
+     * @param description    - the repository description
      * @return the created {@link GitHubRepository}
      * @throws IllegalArgumentException
      */
@@ -38,14 +38,14 @@ public interface GitHubService {
      *
      * @param repository - the value object that represents the GitHub repository
      * @param webhookUrl - the URL of the webhook
-     * @param events - the events that trigger the webhook; at least one is required
-     * @throws IllegalArgumentException If any of the parameters are unspecified
-     * @throws DuplicateWebhookException If the webhook alreday exists
+     * @param events     - the events that trigger the webhook; at least one is required
      * @return the created {@link GitHubWebhook}
+     * @throws IllegalArgumentException  If any of the parameters are unspecified
+     * @throws DuplicateWebhookException If the webhook alreday exists
      */
     GitHubWebhook createWebhook(GitHubRepository repository,
                                 URL webhookUrl,
                                 GitHubWebhookEvent... events)
             throws IllegalArgumentException, DuplicateWebhookException;
-    
+
 }

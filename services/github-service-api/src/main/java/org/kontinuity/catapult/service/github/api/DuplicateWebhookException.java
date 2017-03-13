@@ -9,21 +9,21 @@ import java.net.URL;
  */
 public class DuplicateWebhookException extends RuntimeException {
 
-   // Use factory method
-   private DuplicateWebhookException(final URL url) throws IllegalArgumentException {
-      super("Could not create webhook as it already exists: " + url.toString());
-   }
+    // Use factory method
+    private DuplicateWebhookException(final URL url) throws IllegalArgumentException {
+        super("Could not create webhook as it already exists: " + url.toString());
+    }
 
-   /**
-    * @param url The URL of the webhook that could not be created because one
-    *            equal by value to it exists
-    * @throws IllegalArgumentException If the webhook is not specified
-    */
-   public static DuplicateWebhookException getInstance(final URL url) throws IllegalArgumentException {
-      if (url == null) {
-         throw new IllegalArgumentException("url is required");
-      }
-      final DuplicateWebhookException dpe = new DuplicateWebhookException(url);
-      return dpe;
-   }
+    /**
+     * @param url The URL of the webhook that could not be created because one
+     *            equal by value to it exists
+     * @throws IllegalArgumentException If the webhook is not specified
+     */
+    public static DuplicateWebhookException getInstance(final URL url) throws IllegalArgumentException {
+        if (url == null) {
+            throw new IllegalArgumentException("url is required");
+        }
+        final DuplicateWebhookException dpe = new DuplicateWebhookException(url);
+        return dpe;
+    }
 }

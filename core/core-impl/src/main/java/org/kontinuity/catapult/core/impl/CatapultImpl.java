@@ -3,7 +3,6 @@ package org.kontinuity.catapult.core.impl;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,11 +40,11 @@ public class CatapultImpl implements Catapult {
 
     private static final Logger log = Logger.getLogger(CatapultImpl.class.getName());
 
-	@Inject
-	private OpenShiftService openShiftService;
+    @Inject
+    private OpenShiftService openShiftService;
 
-	@Inject
-	private GitHubServiceFactory gitHubServiceFactory;
+    @Inject
+    private GitHubServiceFactory gitHubServiceFactory;
 
     /**
      * {@inheritDoc}
@@ -92,21 +91,21 @@ public class CatapultImpl implements Catapult {
             createdProject = openShiftService.createProject(projectName);
 
             if (projectile instanceof ForkProjectile) {
-                ForkProjectile forkProjectile = (ForkProjectile)projectile;
+                ForkProjectile forkProjectile = (ForkProjectile) projectile;
                 /*
                  * Construct the full URI for the pipeline template file,
                  * relative to the repository root
                  */
                 final URI pipelineTemplateUri = UriBuilder.fromUri("https://raw.githubusercontent.com/")
-                      .path(forkProjectile.getSourceGitHubRepo())
-                      .path(forkProjectile.getGitRef())
-                      .path(forkProjectile.getPipelineTemplatePath()).build();
+                        .path(forkProjectile.getSourceGitHubRepo())
+                        .path(forkProjectile.getGitRef())
+                        .path(forkProjectile.getPipelineTemplatePath()).build();
 
                 // Configure the OpenShift project
                 openShiftService.configureProject(createdProject,
-                      gitHubRepository.getGitCloneUri(),
-                      forkProjectile.getGitRef(),
-                      pipelineTemplateUri);
+                                                  gitHubRepository.getGitCloneUri(),
+                                                  forkProjectile.getGitRef(),
+                                                  pipelineTemplateUri);
             } else {
                 openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());
             }

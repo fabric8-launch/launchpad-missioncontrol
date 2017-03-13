@@ -16,7 +16,13 @@ import org.kohsuke.github.GHEvent;
 import org.kohsuke.github.GHHook;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import org.kontinuity.catapult.service.github.api.*;
+import org.kontinuity.catapult.service.github.api.DuplicateWebhookException;
+import org.kontinuity.catapult.service.github.api.GitHubRepository;
+import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.api.GitHubWebhook;
+import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
+import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
+import org.kontinuity.catapult.service.github.api.NoSuchWebhookException;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 
 /**
@@ -27,18 +33,7 @@ import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
  */
 public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServiceSpi {
 
-    private static final String WEBHOOK_URL = "url";
-
-   private static final String WEBHOOK_CONFIG_PROP_INSECURE_SSL_NAME = "insecure_ssl";
-   private static final String WEBHOOK_CONFIG_PROP_INSECURE_SSL_VALUE = "1";
-
-	public static final String GITHUB_WEBHOOK_WEB = "web";
-
-    private static final Logger log = Logger.getLogger(KohsukeGitHubServiceImpl.class.getName());
-
-    private static final String MSG_NOT_FOUND = "Not Found";
-
-    private final GitHub delegate;
+    public static final String GITHUB_WEBHOOK_WEB = "web";
 
     /**
      * Creates a new instance with the specified, required delegate
@@ -50,15 +45,28 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         this.delegate = delegate;
     }
 
+    private static final String WEBHOOK_URL = "url";
+
+    private static final String WEBHOOK_CONFIG_PROP_INSECURE_SSL_NAME = "insecure_ssl";
+
+    private static final String WEBHOOK_CONFIG_PROP_INSECURE_SSL_VALUE = "1";
+
+    private static final Logger log = Logger.getLogger(KohsukeGitHubServiceImpl.class.getName());
+
+    private static final String MSG_NOT_FOUND = "Not Found";
+
+    private final GitHub delegate;
+
     /**
      * {@inheritDoc}
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     @Override
     public boolean repositoryExists(String repositoryName) {
-    	try {
-    		return this.delegate.getRepository(repositoryName) != null;
-    	} catch (final IOException ioe) {
+        try {
+            return this.delegate.getRepository(repositoryName) != null;
+        } catch (final IOException ioe) {
             // Check for repo not found (this is how Kohsuke Java Client reports the error)
             if (KohsukeGitHubServiceImpl.isRepoNotFound(ioe)) {
                 return false;
@@ -72,7 +80,7 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
      */
     @Override
     public GitHubRepository fork(final String repositoryFullName) throws NoSuchRepositoryException,
-    		IllegalArgumentException {
+            IllegalArgumentException {
         // Precondition checks
         if (repositoryFullName == null || repositoryFullName.isEmpty()) {
             throw new IllegalArgumentException("repository name must be specified");
@@ -86,31 +94,31 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
             // Check for repo not found (this is how Kohsuke Java Client reports the error)
             if (KohsukeGitHubServiceImpl.isRepoNotFound(ioe)) {
                 throw new NoSuchRepositoryException("Could not fork specified repository "
-                        + repositoryFullName + " because it could not be found.");
+                                                            + repositoryFullName + " because it could not be found.");
             }
             throw new RuntimeException("Could not fork " + repositoryFullName, ioe);
         }
 
         // Fork (with retries as something is wonky here)
-       GHRepository newlyCreatedRepo = null;
-       final int maxRetries = 10;
-       for (int i = 0; i < maxRetries; i++) {
-          try {
-             newlyCreatedRepo = source.fork();
-             break;
-          } catch (final IOException ioe) {
-             log.info("Trying fork operation again: " + i + " due to: " + ioe.getMessage());
-             try {
-                Thread.sleep(3000);
-             } catch (final InterruptedException e) {
-                Thread.interrupted();
-                throw new RuntimeException("Interrupted while waiting for fork retry", e);
-             }
-          }
-       }
-       if (newlyCreatedRepo == null) {
-          throw new IllegalStateException("Newly created repo must be assigned; programming error");
-       }
+        GHRepository newlyCreatedRepo = null;
+        final int maxRetries = 10;
+        for (int i = 0; i < maxRetries; i++) {
+            try {
+                newlyCreatedRepo = source.fork();
+                break;
+            } catch (final IOException ioe) {
+                log.info("Trying fork operation again: " + i + " due to: " + ioe.getMessage());
+                try {
+                    Thread.sleep(3000);
+                } catch (final InterruptedException e) {
+                    Thread.interrupted();
+                    throw new RuntimeException("Interrupted while waiting for fork retry", e);
+                }
+            }
+        }
+        if (newlyCreatedRepo == null) {
+            throw new IllegalStateException("Newly created repo must be assigned; programming error");
+        }
 
         // Wrap in our API view and return
         final GitHubRepository wrapped = new KohsukeGitHubRepositoryImpl(newlyCreatedRepo);
@@ -126,7 +134,7 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
      */
     @Override
     public GitHubRepository createRepository(String repositoryName,
-                                   String description) throws IllegalArgumentException {
+                                             String description) throws IllegalArgumentException {
         // Precondition checks
         if (repositoryName == null || repositoryName.isEmpty()) {
             throw new IllegalArgumentException("repository name must be specified");
@@ -136,18 +144,18 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         }
 
         GHRepository newlyCreatedRepo = null;
-		try {
-			newlyCreatedRepo = delegate.createRepository(repositoryName)
-			        .description(description)
-			        .private_(false)
-			        .homepage("")
-			        .issues(false)
-			        .downloads(false)
-			        .wiki(false)
-			        .create();
-		} catch (IOException e) {
-			throw new RuntimeException("Could not create GitHub repository named '" + repositoryName + "'", e);
-		}
+        try {
+            newlyCreatedRepo = delegate.createRepository(repositoryName)
+                    .description(description)
+                    .private_(false)
+                    .homepage("")
+                    .issues(false)
+                    .downloads(false)
+                    .wiki(false)
+                    .create();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create GitHub repository named '" + repositoryName + "'", e);
+        }
 
         // Wrap in our API view and return
         final GitHubRepository wrapped = new KohsukeGitHubRepositoryImpl(newlyCreatedRepo);
@@ -176,18 +184,18 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         if (events == null || events.length == 0) {
             throw new IllegalArgumentException("at least one event must be specified");
         }
-        log.info("Adding webhook at '" + webhookUrl.toExternalForm()+ "' on repository '" + repository.getFullName() + "'");
-		
-    	final GHRepository repo;
+        log.info("Adding webhook at '" + webhookUrl.toExternalForm() + "' on repository '" + repository.getFullName() + "'");
+
+        final GHRepository repo;
         try {
             repo = delegate.getRepository(repository.getFullName());
         } catch (final IOException ioe) {
             throw new RuntimeException(ioe);
         }
         Map<String, String> configuration = new HashMap<>();
-    	configuration.put(WEBHOOK_URL, webhookUrl.toString());
-    	configuration.put("content_type", "json");
-       configuration.put(WEBHOOK_CONFIG_PROP_INSECURE_SSL_NAME, WEBHOOK_CONFIG_PROP_INSECURE_SSL_VALUE);
+        configuration.put(WEBHOOK_URL, webhookUrl.toString());
+        configuration.put("content_type", "json");
+        configuration.put(WEBHOOK_CONFIG_PROP_INSECURE_SSL_NAME, WEBHOOK_CONFIG_PROP_INSECURE_SSL_VALUE);
 
         List<GHEvent> githubEvents = Stream.of(events).map(event -> GHEvent.valueOf(event.name())).collect(Collectors.toList());
 
@@ -199,84 +207,83 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
                     githubEvents,
                     true);
         } catch (final IOException ioe) {
-           if(ioe instanceof FileNotFoundException)
-           {
-              final FileNotFoundException fnfe = (FileNotFoundException)ioe;
-              fnfe.getMessage().contains("Hook already exists on this repository");
-              throw DuplicateWebhookException.getInstance(webhookUrl);
-           }
+            if (ioe instanceof FileNotFoundException) {
+                final FileNotFoundException fnfe = (FileNotFoundException) ioe;
+                fnfe.getMessage().contains("Hook already exists on this repository");
+                throw DuplicateWebhookException.getInstance(webhookUrl);
+            }
             throw new RuntimeException(ioe);
         }
 
         final GitHubWebhook githubWebhook = new KohsukeGitHubWebhook(webhook);
-    	return githubWebhook;
+        return githubWebhook;
     }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public GitHubWebhook getWebhook(final GitHubRepository repository,
-                                   final URL url)
-           throws IllegalArgumentException, NoSuchWebhookException {
-      if(repository==null){
-         throw new IllegalArgumentException("repository must be specified");
-      }
-      if(url==null){
-         throw new IllegalArgumentException("url must be specified");
-      }
-      final List<GHHook> hooks;
-      try{
-         hooks = delegate.getRepository(repository.getFullName()).getHooks();
-      }catch(final IOException ioe){
-         throw new RuntimeException("Could not get webhooks for repository " + repository.getFullName(), ioe);
-      }
-      final GHHook found;
-      try {
-         found = hooks.stream().filter(hook -> hook.getConfig().get(WEBHOOK_URL).equals(url.toString())).findFirst().get();
-      } catch (final NoSuchElementException snee) {
-         throw NoSuchWebhookException.getInstance(repository, url);
-      }
-      return new KohsukeGitHubWebhook(found);
-   }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GitHubWebhook getWebhook(final GitHubRepository repository,
+                                    final URL url)
+            throws IllegalArgumentException, NoSuchWebhookException {
+        if (repository == null) {
+            throw new IllegalArgumentException("repository must be specified");
+        }
+        if (url == null) {
+            throw new IllegalArgumentException("url must be specified");
+        }
+        final List<GHHook> hooks;
+        try {
+            hooks = delegate.getRepository(repository.getFullName()).getHooks();
+        } catch (final IOException ioe) {
+            throw new RuntimeException("Could not get webhooks for repository " + repository.getFullName(), ioe);
+        }
+        final GHHook found;
+        try {
+            found = hooks.stream().filter(hook -> hook.getConfig().get(WEBHOOK_URL).equals(url.toString())).findFirst().get();
+        } catch (final NoSuchElementException snee) {
+            throw NoSuchWebhookException.getInstance(repository, url);
+        }
+        return new KohsukeGitHubWebhook(found);
+    }
 
-   /**
+    /**
      * {@inheritDoc}
      */
     @Override
     public void deleteWebhook(final GitHubRepository repository, GitHubWebhook webhook) throws IllegalArgumentException {
-    	if(repository == null) {
-    		throw new IllegalArgumentException("repository must be specified");
-    	}
-        if(webhook == null) {
+        if (repository == null) {
+            throw new IllegalArgumentException("repository must be specified");
+        }
+        if (webhook == null) {
             throw new IllegalArgumentException("webhook must be specified");
         }
-    	final GHRepository repo;
-    	try {
-    		repo = delegate.getRepository(repository.getFullName());
-    		
-    		for (GHHook hook: repo.getHooks()) {
-			if(hook.getConfig().get(WEBHOOK_URL).equals(webhook.getUrl())) {
-				hook.delete();
-				break;
-			}
-        	}
+        final GHRepository repo;
+        try {
+            repo = delegate.getRepository(repository.getFullName());
+
+            for (GHHook hook : repo.getHooks()) {
+                if (hook.getConfig().get(WEBHOOK_URL).equals(webhook.getUrl())) {
+                    hook.delete();
+                    break;
+                }
+            }
         } catch (final IOException ioe) {
             // Check for repo not found (this is how Kohsuke Java Client reports the error)
             if (isRepoNotFound(ioe)) {
                 throw new NoSuchRepositoryException("Could not remove webhooks from specified repository "
-                        + repository.getFullName() + " because it could not be found or there is no webhooks for that repository.");
+                                                            + repository.getFullName() + " because it could not be found or there is no webhooks for that repository.");
             }
             throw new RuntimeException("Could not remove webhooks from " + repository.getFullName(), ioe);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void deleteRepository(final GitHubRepository repository) throws IllegalArgumentException {
-    	deleteRepository(repository.getFullName());
+        deleteRepository(repository.getFullName());
     }
 
     /**
@@ -284,22 +291,23 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
      */
     @Override
     public void deleteRepository(final String repositoryName) throws IllegalArgumentException {
-    	if(repositoryName == null) {
-    		throw new IllegalArgumentException("repositoryName must be specified");
-    	}
-    	try {
-			final GHRepository repo = delegate.getRepository(repositoryName);
-			log.fine("Deleting repo at " + repo.gitHttpTransportUrl());
-			repo.delete();
+        if (repositoryName == null) {
+            throw new IllegalArgumentException("repositoryName must be specified");
+        }
+        try {
+            final GHRepository repo = delegate.getRepository(repositoryName);
+            log.fine("Deleting repo at " + repo.gitHttpTransportUrl());
+            repo.delete();
         } catch (final IOException ioe) {
             // Check for repo not found (this is how Kohsuke Java Client reports the error)
             if (isRepoNotFound(ioe)) {
                 throw new NoSuchRepositoryException("Could not remove repository "
-                        + repositoryName + " because it could not be found.");
+                                                            + repositoryName + " because it could not be found.");
             }
             throw new RuntimeException("Could not remove " + repositoryName, ioe);
         }
     }
+
     /**
      * Determines if the required {@link IOException} in question represents a repo
      * that can't be found
@@ -308,14 +316,14 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
      * @return
      */
     private static boolean isRepoNotFound(final IOException ioe) {
-       assert ioe != null : "ioe is required";
-       final boolean notFound = ioe.getClass() == FileNotFoundException.class &&
-               ioe.getMessage().contains(MSG_NOT_FOUND);
-       final Throwable cause = ioe.getCause();
-       if (!notFound && cause != null && cause instanceof IOException) {
-          return isRepoNotFound((IOException) cause);
-       }
-       return notFound;
+        assert ioe != null : "ioe is required";
+        final boolean notFound = ioe.getClass() == FileNotFoundException.class &&
+                ioe.getMessage().contains(MSG_NOT_FOUND);
+        final Throwable cause = ioe.getCause();
+        if (!notFound && cause != null && cause instanceof IOException) {
+            return isRepoNotFound((IOException) cause);
+        }
+        return notFound;
     }
-    
+
 }

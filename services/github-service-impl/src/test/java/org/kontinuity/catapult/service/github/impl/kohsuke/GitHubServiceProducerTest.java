@@ -13,17 +13,17 @@ public class GitHubServiceProducerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void tokenCannotBeEmptyWhenUsingUsername() {
-    	new GitHubServiceFactoryImpl().create("", "test");
+        new GitHubServiceFactoryImpl().create("", "test");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void tokenCannotBeNullWhenUsingUsername() {
-    	new GitHubServiceFactoryImpl().create(null, "test");
+        new GitHubServiceFactoryImpl().create(null, "test");
     }
 
     @Test
     public void createsInstance() {
-    	// when
+        // when
         final GitHubService service = new GitHubServiceFactoryImpl().create("test", "test");
         // then
         Assert.assertNotNull("instance was not created", service);

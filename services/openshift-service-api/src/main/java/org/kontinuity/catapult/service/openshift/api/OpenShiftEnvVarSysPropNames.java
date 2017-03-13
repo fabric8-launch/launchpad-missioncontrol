@@ -6,8 +6,8 @@ package org.kontinuity.catapult.service.openshift.api;
  */
 public interface OpenShiftEnvVarSysPropNames {
 
-	static String OPENSHIFT_API_URL = "CATAPULT_OPENSHIFT_API_URL";
+    static String OPENSHIFT_API_URL = "CATAPULT_OPENSHIFT_API_URL";
 
-	static String OPENSHIFT_CONSOLE_URL = "CATAPULT_OPENSHIFT_CONSOLE_URL";
+    static String OPENSHIFT_CONSOLE_URL = "CATAPULT_OPENSHIFT_CONSOLE_URL";
 
 }

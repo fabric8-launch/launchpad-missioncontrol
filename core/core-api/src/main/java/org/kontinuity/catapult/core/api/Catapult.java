@@ -13,20 +13,20 @@ public interface Catapult {
      * The {@link Catapult}, as the name suggests, is a launcher.  Its responsibility
      * is to take the following inputs:
      * <ul>
-     *   <li>A GitHub project</li>
-     *   <li>A GitHub user (OAuth token)</li>
-     *   <li>An OpenShift instance's API URL</li>
-     *   <li>An OpenShift user</li>
+     * <li>A GitHub project</li>
+     * <li>A GitHub user (OAuth token)</li>
+     * <li>An OpenShift instance's API URL</li>
+     * <li>An OpenShift user</li>
      * </ul>
      *
      * And perform the following actions:
      * <ul>
-     *     <li>Fork the GitHub project into the GitHub user's namespace</li>
-     *     <li>Create an OpenShift project</li>
-     *     <li>Apply the pipeline template to the OpenShift project</li>
-     *     <li>Associate the OpenShift project with the newly-forked GitHub repo</li>
-     *     <li>Create a GitHub webhook on the newly-forked GitHub project to
-     *        register push events to the OpenShift project</li>
+     * <li>Fork the GitHub project into the GitHub user's namespace</li>
+     * <li>Create an OpenShift project</li>
+     * <li>Apply the pipeline template to the OpenShift project</li>
+     * <li>Associate the OpenShift project with the newly-forked GitHub repo</li>
+     * <li>Create a GitHub webhook on the newly-forked GitHub project to
+     * register push events to the OpenShift project</li>
      * </ul>
      *
      * This will result in a fully-pipelined OpenShift project from a source GitHub repo.

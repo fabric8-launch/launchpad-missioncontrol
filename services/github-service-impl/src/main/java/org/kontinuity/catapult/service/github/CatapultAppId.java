@@ -10,7 +10,7 @@ import javax.inject.Qualifier;
 /**
  * CDI Qualifier annotation for the id of the Catapult application registered on GitHub.
  */
-@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD })
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
 public @interface CatapultAppId {

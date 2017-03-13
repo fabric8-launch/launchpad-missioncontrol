@@ -14,10 +14,6 @@ import org.kontinuity.catapult.service.github.api.GitHubRepository;
  */
 class KohsukeGitHubRepositoryImpl implements GitHubRepository {
 
-	private Logger log = Logger.getLogger(KohsukeGitHubRepositoryImpl.class.getName());
-
-    private final GHRepository delegate;
-
     /**
      * Creates a new instance with the specified, required delegate
      *
@@ -27,6 +23,10 @@ class KohsukeGitHubRepositoryImpl implements GitHubRepository {
         assert repository != null : "repository must be specified";
         this.delegate = repository;
     }
+
+    private final GHRepository delegate;
+
+    private Logger log = Logger.getLogger(KohsukeGitHubRepositoryImpl.class.getName());
 
     /**
      * {@inheritDoc}
@@ -50,13 +50,14 @@ class KohsukeGitHubRepositoryImpl implements GitHubRepository {
 
     @Override
     public URI getGitCloneUri() {
-    	try {
-    		return new URI(delegate.gitHttpTransportUrl());
-		} catch (URISyntaxException e) {
-			throw new RuntimeException("Exception occurred while trying to get the clone URL for repo '" + delegate.getFullName() + "'", e);
-		}
+        try {
+            return new URI(delegate.gitHttpTransportUrl());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Exception occurred while trying to get the clone URL for repo '" + delegate.getFullName() + "'", e);
+        }
 
     }
+
     /**
      * {@inheritDoc}
      */

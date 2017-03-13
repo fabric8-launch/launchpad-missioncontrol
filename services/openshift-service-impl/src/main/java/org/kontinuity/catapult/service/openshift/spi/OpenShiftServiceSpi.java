@@ -1,7 +1,7 @@
 package org.kontinuity.catapult.service.openshift.spi;
 
-import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 
 /**
  * Defines the service provider interface for implementations of {@link OpenShiftService}

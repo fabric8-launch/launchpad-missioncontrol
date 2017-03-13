@@ -11,7 +11,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kontinuity.catapult.service.github.api.*;
+import org.kontinuity.catapult.service.github.api.DuplicateWebhookException;
+import org.kontinuity.catapult.service.github.api.GitHubRepository;
+import org.kontinuity.catapult.service.github.api.GitHubService;
+import org.kontinuity.catapult.service.github.api.GitHubWebhook;
+import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
+import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
+import org.kontinuity.catapult.service.github.api.NoSuchWebhookException;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.github.test.GitHubTestCredentials;
 
@@ -22,36 +28,28 @@ import org.kontinuity.catapult.service.github.test.GitHubTestCredentials;
  */
 abstract class GitHubServiceTestBase {
 
-	private static final Logger log = Logger.getLogger(GitHubServiceTestBase.class.getName());
+    private static final Logger log = Logger.getLogger(GitHubServiceTestBase.class.getName());
+
     private static final String NAME_GITHUB_SOURCE_REPO = "jboss-developer/jboss-eap-quickstarts";
+
     private static final String MY_GITHUB_SOURCE_REPO_PREFIX = "my-test-repo-";
+
     private static final String MY_GITHUB_REPO_DESCRIPTION = "Test project created by Arquillian.";
 
-    /**
-     * @return The {@link GitHubService} used in testing
-     */
-    abstract GitHubService getGitHubService();
-
     private final List<String> repositoryNames = new ArrayList<>();
-	
-    private String generateRepositoryName() {
-		final String repoName = this.MY_GITHUB_SOURCE_REPO_PREFIX + UUID.randomUUID().toString();
-		this.repositoryNames.add(repoName);
-		return repoName;
-	}
 
-	@Before
-	public void before() {
-		this.repositoryNames.clear();
-	}
+    @Before
+    public void before() {
+        this.repositoryNames.clear();
+    }
 
-	@After
-	public void after() {
-		repositoryNames.stream().map(repo -> GitHubTestCredentials.getUsername() + '/' + repo)
-		        .filter(repo -> ((GitHubServiceSpi) getGitHubService()).repositoryExists(repo))
-		        .forEach(repo -> ((GitHubServiceSpi) getGitHubService()).deleteRepository(repo));
-	}
-	
+    @After
+    public void after() {
+        repositoryNames.stream().map(repo -> GitHubTestCredentials.getUsername() + '/' + repo)
+                .filter(repo -> ((GitHubServiceSpi) getGitHubService()).repositoryExists(repo))
+                .forEach(repo -> ((GitHubServiceSpi) getGitHubService()).deleteRepository(repo));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void forkRepoCannotBeNull() {
         getGitHubService().fork(null);
@@ -76,53 +74,53 @@ abstract class GitHubServiceTestBase {
     public void cannotForkNonexistentRepo() {
         getGitHubService().fork("ALRubinger/someRepoThatDoesNotAndWillNeverExist");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void createGitHubRepositoryCannotBeNull() throws Exception {
-    	((GitHubServiceSpi)getGitHubService()).createRepository(null, null);
+        ((GitHubServiceSpi) getGitHubService()).createRepository(null, null);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void createGitHubRepositoryNameCannotBeNull() throws Exception {
-    	((GitHubServiceSpi)getGitHubService()).createRepository(null, MY_GITHUB_REPO_DESCRIPTION);
+        ((GitHubServiceSpi) getGitHubService()).createRepository(null, MY_GITHUB_REPO_DESCRIPTION);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void createGitHubRepositoryDescriptionCannotBeNull() throws Exception {
-    	((GitHubServiceSpi)getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO_PREFIX, null);
+        ((GitHubServiceSpi) getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO_PREFIX, null);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void createGitHubRepositoryCannotBeEmpty() throws Exception {
-    	((GitHubServiceSpi)getGitHubService()).createRepository("", "");
+        ((GitHubServiceSpi) getGitHubService()).createRepository("", "");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void createGitHubRepositoryNameCannotBeEmpty() throws Exception {
-    	((GitHubServiceSpi)getGitHubService()).createRepository("", MY_GITHUB_REPO_DESCRIPTION);
+        ((GitHubServiceSpi) getGitHubService()).createRepository("", MY_GITHUB_REPO_DESCRIPTION);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void createGitHubRepositoryCannotDescriptionBeEmpty() throws Exception {
-    	((GitHubServiceSpi)getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO_PREFIX, "");
+        ((GitHubServiceSpi) getGitHubService()).createRepository(MY_GITHUB_SOURCE_REPO_PREFIX, "");
     }
-    
+
     @Test
     public void createGitHubRepository() throws Exception {
-    	// given
-    	final String repositoryName = generateRepositoryName();
-    	// when
-    	final GitHubRepository targetRepo = ((GitHubServiceSpi)getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
-    	// then
-    	Assert.assertEquals(GitHubTestCredentials.getUsername() + "/" + repositoryName, targetRepo.getFullName());
+        // given
+        final String repositoryName = generateRepositoryName();
+        // when
+        final GitHubRepository targetRepo = ((GitHubServiceSpi) getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
+        // then
+        Assert.assertEquals(GitHubTestCredentials.getUsername() + "/" + repositoryName, targetRepo.getFullName());
     }
 
     @Test
     public void createGithubWebHook() throws Exception {
-    	// given
-    	final String repositoryName = generateRepositoryName();
+        // given
+        final String repositoryName = generateRepositoryName();
         final URL webhookUrl = new URL("https://10.1.2.2");
-        final GitHubRepository targetRepo = ((GitHubServiceSpi)getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
+        final GitHubRepository targetRepo = ((GitHubServiceSpi) getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
         // when
         final GitHubWebhook webhook = getGitHubService().createWebhook(targetRepo, webhookUrl, GitHubWebhookEvent.ALL);
         // then
@@ -130,38 +128,49 @@ abstract class GitHubServiceTestBase {
         Assert.assertEquals(webhookUrl.toString(), webhook.getUrl());
     }
 
-   @Test
-   public void getGithubWebHook() throws Exception {
-      // given
-      final String repositoryName = generateRepositoryName();
-      final URL webhookUrl = new URL("https://10.1.2.2");
-      final GitHubRepository targetRepo = ((GitHubServiceSpi)getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
-      // when
-      final GitHubWebhook webhook = getGitHubService().createWebhook(targetRepo, webhookUrl, GitHubWebhookEvent.ALL);
-      // then
-      final GitHubWebhook roundtrip = ((GitHubServiceSpi) getGitHubService()).getWebhook(targetRepo,webhookUrl);
-      Assert.assertNotNull("Could not get webhook we just created", roundtrip);
-   }
+    @Test
+    public void getGithubWebHook() throws Exception {
+        // given
+        final String repositoryName = generateRepositoryName();
+        final URL webhookUrl = new URL("https://10.1.2.2");
+        final GitHubRepository targetRepo = ((GitHubServiceSpi) getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
+        // when
+        final GitHubWebhook webhook = getGitHubService().createWebhook(targetRepo, webhookUrl, GitHubWebhookEvent.ALL);
+        // then
+        final GitHubWebhook roundtrip = ((GitHubServiceSpi) getGitHubService()).getWebhook(targetRepo, webhookUrl);
+        Assert.assertNotNull("Could not get webhook we just created", roundtrip);
+    }
 
-   @Test(expected = NoSuchWebhookException.class)
-   public void throwExceptionOnNoSuchWebhook() throws Exception {
-      // given
-      final String repositoryName = generateRepositoryName();
-      final URL fakeWebhookUrl = new URL("http://totallysomethingIMadeUp.com");
-      final GitHubRepository targetRepo = ((GitHubServiceSpi) getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
-      // Try to get the webhook which does not exist.  Expect exception.
-      ((GitHubServiceSpi) getGitHubService()).getWebhook(targetRepo, fakeWebhookUrl);
-   }
+    @Test(expected = NoSuchWebhookException.class)
+    public void throwExceptionOnNoSuchWebhook() throws Exception {
+        // given
+        final String repositoryName = generateRepositoryName();
+        final URL fakeWebhookUrl = new URL("http://totallysomethingIMadeUp.com");
+        final GitHubRepository targetRepo = ((GitHubServiceSpi) getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
+        // Try to get the webhook which does not exist.  Expect exception.
+        ((GitHubServiceSpi) getGitHubService()).getWebhook(targetRepo, fakeWebhookUrl);
+    }
 
-   @Test(expected = DuplicateWebhookException.class)
-   public void throwExceptionOnDuplicateWebhook() throws Exception {
-      // given
-      final String repositoryName = generateRepositoryName();
-      final URL webhookUrl = new URL("https://10.1.2.2");
-      final GitHubRepository targetRepo = ((GitHubServiceSpi) getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
-      // Create the webhook.  Twice.  Expect exception
-      getGitHubService().createWebhook(targetRepo, webhookUrl, GitHubWebhookEvent.ALL);
-      getGitHubService().createWebhook(targetRepo, webhookUrl, GitHubWebhookEvent.ALL);
-   }
+    @Test(expected = DuplicateWebhookException.class)
+    public void throwExceptionOnDuplicateWebhook() throws Exception {
+        // given
+        final String repositoryName = generateRepositoryName();
+        final URL webhookUrl = new URL("https://10.1.2.2");
+        final GitHubRepository targetRepo = ((GitHubServiceSpi) getGitHubService()).createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
+        // Create the webhook.  Twice.  Expect exception
+        getGitHubService().createWebhook(targetRepo, webhookUrl, GitHubWebhookEvent.ALL);
+        getGitHubService().createWebhook(targetRepo, webhookUrl, GitHubWebhookEvent.ALL);
+    }
+
+    /**
+     * @return The {@link GitHubService} used in testing
+     */
+    abstract GitHubService getGitHubService();
+
+    private String generateRepositoryName() {
+        final String repoName = this.MY_GITHUB_SOURCE_REPO_PREFIX + UUID.randomUUID().toString();
+        this.repositoryNames.add(repoName);
+        return repoName;
+    }
 
 }

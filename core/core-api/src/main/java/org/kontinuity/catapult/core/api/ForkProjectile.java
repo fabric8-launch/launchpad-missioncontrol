@@ -9,40 +9,46 @@ package org.kontinuity.catapult.core.api;
  */
 public class ForkProjectile extends Projectile {
 
-   private final String sourceGitHubRepo;
+    /**
+     * Package-level access; to be invoked by {@link ProjectileBuilder}
+     * and all precondition checks are its responsibility
+     *
+     * @param builder
+     */
+    ForkProjectile(ForkProjectileBuilder builder) {
+        super(builder);
+        this.sourceGitHubRepo = builder.getSourceGitHubRepo();
+        this.pipelineTemplatePath = builder.getPipelineTemplatePath();
+        this.gitRef = builder.getGitRef();
+    }
 
-   /** the path to the file in the repo that contains the pipeline template. */
-   private String pipelineTemplatePath;
+    private final String sourceGitHubRepo;
 
-   private final String gitRef;
+    private final String gitRef;
 
-   /**
-    * Package-level access; to be invoked by {@link ProjectileBuilder}
-    * and all precondition checks are its responsibility
-    *
-    * @param builder
-    */
-   ForkProjectile(ForkProjectileBuilder builder) {
-      super(builder);
-      this.sourceGitHubRepo = builder.getSourceGitHubRepo();
-      this.pipelineTemplatePath = builder.getPipelineTemplatePath();
-      this.gitRef = builder.getGitRef();
-   }
+    /**
+     * the path to the file in the repo that contains the pipeline template.
+     */
+    private String pipelineTemplatePath;
 
-   /**
-    * @return source GitHub repository name in form "owner/repoName".
-    */
-   public String getSourceGitHubRepo() {
-      return this.sourceGitHubRepo;
-   }
+    /**
+     * @return source GitHub repository name in form "owner/repoName".
+     */
+    public String getSourceGitHubRepo() {
+        return this.sourceGitHubRepo;
+    }
 
-   /**
-    * @return The path to the pipeline template file in the repo
-    */
-   public String getPipelineTemplatePath() { return pipelineTemplatePath; }
+    /**
+     * @return The path to the pipeline template file in the repo
+     */
+    public String getPipelineTemplatePath() {
+        return pipelineTemplatePath;
+    }
 
-   /**
-    * @return The Git reference to use
-    */
-   public String getGitRef() { return gitRef; }
+    /**
+     * @return The Git reference to use
+     */
+    public String getGitRef() {
+        return gitRef;
+    }
 }
