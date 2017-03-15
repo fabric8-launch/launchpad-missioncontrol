@@ -42,15 +42,28 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
         if (githubToken == null || githubToken.isEmpty()) {
             throw new IllegalArgumentException("password/token is required");
         }
-        gitHub = ghb.build();
-      } catch (final IOException ioe) {
-        throw new RuntimeException("Could not create GitHub client", ioe);
-      }
-      final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub, githubToken);
-      if (log.isLoggable(Level.FINEST)) {
-        log.log(Level.FINEST, "Created backing GitHub client for user " + githubUsername);
-      }
-      return ghs;
+
+        final GitHub gitHub;
+        try {
+            // Use a cache for responses so we don't count HTTP 304 against our API quota
+            final File githubCacheFolder = GitHubLocalCache.INSTANCE.getCacheFolder();
+            final Cache cache = new Cache(githubCacheFolder, TENMB);
+            final GitHubBuilder ghb = new GitHubBuilder()
+                    .withConnector(new OkHttpConnector(new OkUrlFactory(new OkHttpClient().setCache(cache))));
+            if (githubUsername == null) {
+                ghb.withOAuthToken(githubToken);
+            } else {
+                ghb.withOAuthToken(githubToken, githubUsername);
+            }
+            gitHub = ghb.build();
+        } catch (final IOException ioe) {
+            throw new RuntimeException("Could not create GitHub client", ioe);
+        }
+        final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub, githubToken);
+        if (log.isLoggable(Level.FINEST)) {
+            log.log(Level.FINEST, "Created backing GitHub client for user " + githubUsername);
+        }
+        return ghs;
     }
 
 }

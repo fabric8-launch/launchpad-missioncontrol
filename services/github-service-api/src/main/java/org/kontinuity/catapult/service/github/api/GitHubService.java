@@ -40,8 +40,8 @@ public interface GitHubService {
      * by the path will be pushed.
      *
      * @param repositoryName - the name of the repository
-     * @param description - the repository description
-     * @param path - the files to be added and pushed
+     * @param description    - the repository description
+     * @param path           - the files to be added and pushed
      * @return the created {@link GitHubRepository}
      * @throws IllegalArgumentException
      */

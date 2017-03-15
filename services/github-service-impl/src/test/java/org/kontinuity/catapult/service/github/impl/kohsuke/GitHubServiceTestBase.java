@@ -1,21 +1,21 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
-import java.io.File;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,8 +29,6 @@ import org.kontinuity.catapult.service.github.api.NoSuchRepositoryException;
 import org.kontinuity.catapult.service.github.api.NoSuchWebhookException;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.github.test.GitHubTestCredentials;
-
-import javax.ws.rs.core.UriBuilder;
 
 /**
  * Base test class for extension in Unit and Integration modes
@@ -128,25 +126,25 @@ abstract class GitHubServiceTestBase {
 
     @Test
     public void createGitHubRepositoryWithContent() throws Exception {
-       // given
-       final String repositoryName = generateRepositoryName();
-       Path tempDirectory = Files.createTempDirectory("test");
-       Path file = tempDirectory.resolve("README.md");
-       Files.write(file, Collections.singletonList("Read me to know more"), Charset.forName("UTF-8"));
+        // given
+        final String repositoryName = generateRepositoryName();
+        Path tempDirectory = Files.createTempDirectory("test");
+        Path file = tempDirectory.resolve("README.md");
+        Files.write(file, Collections.singletonList("Read me to know more"), Charset.forName("UTF-8"));
 
-       // when
-       final GitHubRepository targetRepo = getGitHubService().createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION, tempDirectory.toFile());
+        // when
+        final GitHubRepository targetRepo = getGitHubService().createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION, tempDirectory.toFile());
 
-       // then
-       Assert.assertEquals(GitHubTestCredentials.getUsername() + "/" + repositoryName, targetRepo.getFullName());
-       URI readmeUri = UriBuilder.fromUri("https://raw.githubusercontent.com/")
-             .path(GitHubTestCredentials.getUsername())
-             .path(repositoryName)
-             .path("/master/README.md").build();
-       HttpURLConnection connection = (HttpURLConnection) readmeUri.toURL().openConnection();
-       Assert.assertEquals("README.md should have been pushed to the repo", 200, connection.getResponseCode());
+        // then
+        Assert.assertEquals(GitHubTestCredentials.getUsername() + "/" + repositoryName, targetRepo.getFullName());
+        URI readmeUri = UriBuilder.fromUri("https://raw.githubusercontent.com/")
+                .path(GitHubTestCredentials.getUsername())
+                .path(repositoryName)
+                .path("/master/README.md").build();
+        HttpURLConnection connection = (HttpURLConnection) readmeUri.toURL().openConnection();
+        Assert.assertEquals("README.md should have been pushed to the repo", 200, connection.getResponseCode());
 
-       FileUtils.forceDelete(tempDirectory.toFile());
+        FileUtils.forceDelete(tempDirectory.toFile());
     }
 
     @Test

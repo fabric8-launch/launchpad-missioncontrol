@@ -30,24 +30,24 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
 
     private String gitRef;
 
-   /**
-    * Creates and returns a new {@link ForkProjectile} instance based on the
-    * state of this builder; if any preconditions like missing properties
-    * or improper values exist, an {@link IllegalStateException} will be thrown
-    *
-    * @return the created {@link Projectile}
-    * @throws IllegalStateException
-    */
-   public ForkProjectile build() throws IllegalStateException {
-      super.build(this);
-      // Precondition checks
-      ProjectileBuilder.checkSpecified("sourceGitHubRepo", this.sourceGitHubRepo);
-      final Matcher matcher = REPO_PATTERN.matcher(sourceGitHubRepo);
-      if (!matcher.matches()) {
-         throw new IllegalStateException("source repo must be in form \"owner/repoName\"");
-      }
-      ProjectileBuilder.checkSpecified("pipelineTemplatePath", this.pipelineTemplatePath);
-      ProjectileBuilder.checkSpecified("girRef", this.gitRef);
+    /**
+     * Creates and returns a new {@link ForkProjectile} instance based on the
+     * state of this builder; if any preconditions like missing properties
+     * or improper values exist, an {@link IllegalStateException} will be thrown
+     *
+     * @return the created {@link Projectile}
+     * @throws IllegalStateException
+     */
+    public ForkProjectile build() throws IllegalStateException {
+        super.build(this);
+        // Precondition checks
+        ProjectileBuilder.checkSpecified("sourceGitHubRepo", this.sourceGitHubRepo);
+        final Matcher matcher = REPO_PATTERN.matcher(sourceGitHubRepo);
+        if (!matcher.matches()) {
+            throw new IllegalStateException("source repo must be in form \"owner/repoName\"");
+        }
+        ProjectileBuilder.checkSpecified("pipelineTemplatePath", this.pipelineTemplatePath);
+        ProjectileBuilder.checkSpecified("girRef", this.gitRef);
 
         // All good, so make a new instance
         return new ForkProjectile(this);

@@ -131,7 +131,7 @@ public class CatapultIT {
     @Test
     public void flingFork() {
         // Define the projectile with a custom, unique OpenShift project name.
-    	final String expectedName = getUniqueProjectName();
+        final String expectedName = getUniqueProjectName();
         final ForkProjectile projectile = ProjectileBuilder.newInstance()
                 .gitHubAccessToken(GitHubTestCredentials.getToken())
                 .openShiftProjectName(expectedName)
@@ -148,17 +148,17 @@ public class CatapultIT {
         assertions(expectedName, boom);
     }
 
-   @Test
-   public void flingCreate() {
-      // Define the projectile with a custom, unique OpenShift project name.
-      final String expectedName = getUniqueProjectName();
-      File tempDir = Files.createTempDir();
-      final CreateProjectile projectile = ProjectileBuilder.newInstance()
-            .gitHubAccessToken(GitHubTestCredentials.getToken())
-            .openShiftProjectName(expectedName)
-            .createType()
-            .projectLocation(tempDir.getPath())
-            .build();
+    @Test
+    public void flingCreate() {
+        // Define the projectile with a custom, unique OpenShift project name.
+        final String expectedName = getUniqueProjectName();
+        File tempDir = Files.createTempDir();
+        final CreateProjectile projectile = ProjectileBuilder.newInstance()
+                .gitHubAccessToken(GitHubTestCredentials.getToken())
+                .openShiftProjectName(expectedName)
+                .createType()
+                .projectLocation(tempDir.getPath())
+                .build();
 
         // Mark GitHub repo for deletion
         githubReposToDelete.add(expectedName);

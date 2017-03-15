@@ -67,15 +67,15 @@ public class CatapultImpl implements Catapult {
          * relative to the repository root
          */
         final URI pipelineTemplateUri = UriBuilder.fromUri("https://raw.githubusercontent.com/")
-              .path(forkProjectile.getSourceGitHubRepo())
-              .path(forkProjectile.getGitRef())
-              .path(forkProjectile.getPipelineTemplatePath()).build();
+                .path(forkProjectile.getSourceGitHubRepo())
+                .path(forkProjectile.getGitRef())
+                .path(forkProjectile.getPipelineTemplatePath()).build();
 
         // Configure the OpenShift project
         openShiftService.configureProject(createdProject,
-              gitHubRepository.getGitCloneUri(),
-              forkProjectile.getGitRef(),
-              pipelineTemplateUri);
+                                          gitHubRepository.getGitCloneUri(),
+                                          forkProjectile.getGitRef(),
+                                          pipelineTemplateUri);
 
         GitHubWebhook webhook = getGitHubWebhook(gitHubService, gitHubRepository, createdProject);
 
