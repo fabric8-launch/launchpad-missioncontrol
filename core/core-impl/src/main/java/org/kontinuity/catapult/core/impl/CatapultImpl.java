@@ -33,11 +33,11 @@ public class CatapultImpl implements Catapult {
 
     private static final Logger log = Logger.getLogger(CatapultImpl.class.getName());
 
-	@Inject
-	private OpenShiftService openShiftService;
+    @Inject
+    private OpenShiftService openShiftService;
 
-	@Inject
-	private GitHubServiceFactory gitHubServiceFactory;
+    @Inject
+    private GitHubServiceFactory gitHubServiceFactory;
 
     /**
      * {@inheritDoc}
@@ -67,15 +67,15 @@ public class CatapultImpl implements Catapult {
          * relative to the repository root
          */
         final URI pipelineTemplateUri = UriBuilder.fromUri("https://raw.githubusercontent.com/")
-              .path(forkProjectile.getSourceGitHubRepo())
-              .path(forkProjectile.getGitRef())
-              .path(forkProjectile.getPipelineTemplatePath()).build();
+            .path(forkProjectile.getSourceGitHubRepo())
+            .path(forkProjectile.getGitRef())
+            .path(forkProjectile.getPipelineTemplatePath()).build();
 
         // Configure the OpenShift project
         openShiftService.configureProject(createdProject,
-              gitHubRepository.getGitCloneUri(),
-              forkProjectile.getGitRef(),
-              pipelineTemplateUri);
+                                          gitHubRepository.getGitCloneUri(),
+                                          forkProjectile.getGitRef(),
+                                          pipelineTemplateUri);
 
         GitHubWebhook webhook = getGitHubWebhook(gitHubService, gitHubRepository, createdProject);
 
@@ -93,7 +93,7 @@ public class CatapultImpl implements Catapult {
                 // Swallow, it's OK, we've already forked this repo
                 log.log(Level.INFO, dpe.getMessage());
                 webhook = ((GitHubServiceSpi) gitHubService)
-                        .getWebhook(gitHubRepository, webhookUrl);
+                    .getWebhook(gitHubRepository, webhookUrl);
             }
         } else {
             webhook = null;
