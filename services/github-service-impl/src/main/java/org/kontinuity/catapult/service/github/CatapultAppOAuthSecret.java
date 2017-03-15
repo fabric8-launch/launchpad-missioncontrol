@@ -10,7 +10,7 @@ import javax.inject.Qualifier;
 /**
  * CDI Qualifier annotation for the OAuth secret of the Catapult application on GitHub.
  */
-@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD })
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
 public @interface CatapultAppOAuthSecret {

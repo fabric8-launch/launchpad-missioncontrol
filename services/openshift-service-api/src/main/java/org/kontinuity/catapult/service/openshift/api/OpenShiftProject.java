@@ -15,13 +15,13 @@ public interface OpenShiftProject {
      */
     String getName();
 
-   /**
-    * @return the URL of the console overview page for this project
-    */
-   URL getConsoleOverviewUrl();
-   
-   /**
-    * @return an unmodifiable copy of the list of {@link OpenShiftResource} for this project
-    */
-   List<OpenShiftResource> getResources();
+    /**
+     * @return the URL of the console overview page for this project
+     */
+    URL getConsoleOverviewUrl();
+
+    /**
+     * @return an unmodifiable copy of the list of {@link OpenShiftResource} for this project
+     */
+    List<OpenShiftResource> getResources();
 }

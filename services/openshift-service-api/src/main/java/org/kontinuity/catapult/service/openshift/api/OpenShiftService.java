@@ -19,16 +19,16 @@ public interface OpenShiftService {
      * @throws IllegalArgumentException  If the name is not specified
      */
     OpenShiftProject createProject(String name)
-        throws DuplicateProjectException, IllegalArgumentException;
-    
+            throws DuplicateProjectException, IllegalArgumentException;
+
     /**
      * Creates all resources for the given {@code project}, using the given {@code projectTemplate}.
-     * The {@code projectTemplate} is processed on the client side and then applied on OpenShift, where all the 
+     * The {@code projectTemplate} is processed on the client side and then applied on OpenShift, where all the
      * described resources are created.
-     *  
-     * @param project the project in which the pipeline will be created 
+     *
+     * @param project             the project in which the pipeline will be created
      * @param sourceRepositoryUri the location of the source repository to build the OpenShift application from
-     * @param gitRef The Git ref to use for the project
+     * @param gitRef              The Git ref to use for the project
      * @param pipelineTemplateUri the location of the pipeline template file
      */
     void configureProject(OpenShiftProject project,
@@ -36,16 +36,16 @@ public interface OpenShiftService {
                           String gitRef,
                           URI pipelineTemplateUri);
 
-   /**
-    * Creates all resources for the given {@code project}, using a standard project template.
-    * The project template creates a pipeline build for the passed {@code sourceRepositoryUri}
-    *
-    * @param project the project in which the pipeline will be created
-    * @param sourceRepositoryUri the location of the source repository to build the OpenShift application from
-    */
-   void configureProject(OpenShiftProject project, URI sourceRepositoryUri);
+    /**
+     * Creates all resources for the given {@code project}, using a standard project template.
+     * The project template creates a pipeline build for the passed {@code sourceRepositoryUri}
+     *
+     * @param project             the project in which the pipeline will be created
+     * @param sourceRepositoryUri the location of the source repository to build the OpenShift application from
+     */
+    void configureProject(OpenShiftProject project, URI sourceRepositoryUri);
 
-   /**
+    /**
      * @param project The project for which to construct a webhook URL
      * @return the webhook URL associated with the Build Configuration, which
      * GitHub can use to trigger a build upon change pushes.

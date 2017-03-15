@@ -1,12 +1,12 @@
 package org.kontinuity.catapult.test;
 
+import java.io.IOException;
+
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
-
-import java.io.IOException;
 
 /**
  * This is a hack in place because newer versions of phantomjs (>2.x)
@@ -20,34 +20,35 @@ import java.io.IOException;
  */
 public class WebDriverProviderHack {
 
-   private static final DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+    /**
+     * No instances
+     */
+    private WebDriverProviderHack() {
+    }
 
-   static {
-      // enforce resolver to use given phantomjs version
-      capabilities.setCapability("phantomjs.binary.version", "1.9.8");
-      // And set up security to allow SSL without a certificate (as provided by OpenShift)
-      capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS,
-              new String[] {"--web-security=no", "--ignore-ssl-errors=yes"});
-   }
+    private static final DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
 
-   /**
-    * No instances
-    */
-   private WebDriverProviderHack() {
-   }
+    static {
+        // enforce resolver to use given phantomjs version
+        capabilities.setCapability("phantomjs.binary.version", "1.9.8");
+        // And set up security to allow SSL without a certificate (as provided by OpenShift)
+        capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS,
+                                   new String[]{"--web-security=no", "--ignore-ssl-errors=yes"});
+    }
 
-   /**
-    * Obtains the {@link WebDriver} to be used in testing
-    * @return
-    */
-   static WebDriver getWebDriver() {
-      try {
-         return new PhantomJSDriver(
-                 ResolvingPhantomJSDriverService.createDefaultService(capabilities),
-                 capabilities);
-      } catch (final IOException ioe) {
-         throw new RuntimeException(ioe);
-      }
-   }
+    /**
+     * Obtains the {@link WebDriver} to be used in testing
+     *
+     * @return
+     */
+    static WebDriver getWebDriver() {
+        try {
+            return new PhantomJSDriver(
+                    ResolvingPhantomJSDriverService.createDefaultService(capabilities),
+                    capabilities);
+        } catch (final IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+    }
 
 }

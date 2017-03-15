@@ -1,9 +1,9 @@
 package org.kontinuity.catapult.base;
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.File;
 
 /**
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
@@ -12,7 +12,7 @@ public class EnvironmentSupportTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetEnvVarOrSysPropDefaultShouldNotBeNull() {
-        EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("foo",null);
+        EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("foo", null);
     }
 
     @Test
@@ -23,7 +23,7 @@ public class EnvironmentSupportTest {
 
     @Test
     public void testGetEnvVarOrSysPropDefault() {
-        String pathSeparator = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("path.separator.foo",File.pathSeparator);
+        String pathSeparator = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("path.separator.foo", File.pathSeparator);
         Assert.assertEquals(File.pathSeparator, pathSeparator);
     }
 }

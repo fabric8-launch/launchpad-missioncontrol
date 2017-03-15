@@ -1,13 +1,13 @@
 package org.kontinuity.catapult.service.openshift.impl;
 
+import java.net.MalformedURLException;
+import java.util.logging.Logger;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
-
-import java.net.MalformedURLException;
-import java.util.logging.Logger;
 
 /**
  * Test cases to ensure the {@link OpenShiftProjectImpl} is working as contracted
@@ -16,41 +16,42 @@ import java.util.logging.Logger;
  */
 public class OpenShiftProjectImplTest {
 
-   private static final Logger log = Logger.getLogger(OpenShiftProjectImplTest.class.getName());
-   private static final String PROJECT_NAME = "test-name";
+    private static final Logger log = Logger.getLogger(OpenShiftProjectImplTest.class.getName());
 
-   private static OpenShiftProject project;
+    private static final String PROJECT_NAME = "test-name";
 
-   @BeforeClass
-   public static void initProject() {
-      project = new OpenShiftProjectImpl(PROJECT_NAME);
-   }
+    private static OpenShiftProject project;
 
-   @Test(expected = IllegalArgumentException.class)
-   public void nameCannotBeNull() {
-      new OpenShiftProjectImpl(null);
-   }
+    @BeforeClass
+    public static void initProject() {
+        project = new OpenShiftProjectImpl(PROJECT_NAME);
+    }
 
-   @Test(expected = IllegalArgumentException.class)
-   public void nameCannotBeEmpty() {
-      new OpenShiftProjectImpl("");
-   }
+    @Test(expected = IllegalArgumentException.class)
+    public void nameCannotBeNull() {
+        new OpenShiftProjectImpl(null);
+    }
 
-   @Test
-   public void name() {
-      Assert.assertEquals(PROJECT_NAME, project.getName());
-   }
+    @Test(expected = IllegalArgumentException.class)
+    public void nameCannotBeEmpty() {
+        new OpenShiftProjectImpl("");
+    }
 
-   @Test
-   public void consoleOverviewUrl() throws MalformedURLException {
-      final String expectedUrl = OpenShiftSettings.getOpenShiftConsoleUrl() +
-              "/console/project/" +
-              PROJECT_NAME +
-              "/overview/";
-      log.info("Expected Console Overview URL: " + expectedUrl);
-      final String actualUrl = project.getConsoleOverviewUrl().toExternalForm();
-      log.info("Actual Console Overview URL: " + actualUrl);
-      Assert.assertEquals(expectedUrl, actualUrl);
-   }
+    @Test
+    public void name() {
+        Assert.assertEquals(PROJECT_NAME, project.getName());
+    }
+
+    @Test
+    public void consoleOverviewUrl() throws MalformedURLException {
+        final String expectedUrl = OpenShiftSettings.getOpenShiftConsoleUrl() +
+                "/console/project/" +
+                PROJECT_NAME +
+                "/overview/";
+        log.info("Expected Console Overview URL: " + expectedUrl);
+        final String actualUrl = project.getConsoleOverviewUrl().toExternalForm();
+        log.info("Actual Console Overview URL: " + actualUrl);
+        Assert.assertEquals(expectedUrl, actualUrl);
+    }
 
 }

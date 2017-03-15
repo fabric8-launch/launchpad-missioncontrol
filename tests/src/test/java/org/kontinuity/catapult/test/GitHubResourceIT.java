@@ -1,5 +1,16 @@
 package org.kontinuity.catapult.test;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.json.Json;
+import javax.json.stream.JsonParser;
+import javax.swing.*;
+
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
@@ -19,16 +30,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import javax.json.Json;
-import javax.json.stream.JsonParser;
-import javax.swing.JOptionPane;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Validation of the GithubResource api endpoint
  * This requires the following environment variables to be configured:
@@ -45,23 +46,21 @@ public class GitHubResourceIT {
      if the runtime code changes that's a contract break)
      */
     private static final String PATH_VERIFY = "api/github/verify";
-    private static final String PATH_AUTHORIZE = "api/github/authorize";
-    private static final String PATH_AUTHORIZE_WITH_REDIRECT = PATH_AUTHORIZE + "?redirect_url=/github/verify";
-    private static final String PATH_CALLBACK = "api/github/callback?code=c7c4d8631701b80b7759&state=eyJ1dWlkIjoiMzI0Y2I0ODMtODEzOS00NDk2LTg2OWMtOGI2MWFlODIxN2FiIiwicmVkaXJlY3RfdXJsIjoiL2dpdGh1Yi92ZXJpZnkifQ%3D%3D";
-    private static final String MIME_TYPE_JSON = "application/json";
-    private static final String JSON_KEY_SESSION_HAS_GH_ACCESS_TOKEN = "session_has_github_access_token";
 
-    /**
-     * Deploy the catapult.war as built since we only test via the API endpoints
-     * @return
-     */
-    @Deployment(testable = false)
-    public static WebArchive createDeployment() {
-        return Deployments.getMavenBuiltWar();
-    }
+    private static final String PATH_AUTHORIZE = "api/github/authorize";
+
+    private static final String PATH_AUTHORIZE_WITH_REDIRECT = PATH_AUTHORIZE + "?redirect_url=/github/verify";
+
+    private static final String PATH_CALLBACK = "api/github/callback?code=c7c4d8631701b80b7759&state=eyJ1dWlkIjoiMzI0Y2I0ODMtODEzOS00NDk2LTg2OWMtOGI2MWFlODIxN2FiIiwicmVkaXJlY3RfdXJsIjoiL2dpdGh1Yi92ZXJpZnkifQ%3D%3D";
+
+    private static final String MIME_TYPE_JSON = "application/json";
+
+    private static final String JSON_KEY_SESSION_HAS_GH_ACCESS_TOKEN = "session_has_github_access_token";
 
     @ArquillianResource
     private URL deploymentUrl;
+
+    private WebDriver driver = WebDriverProviderHack.getWebDriver();
 
     /*
     We cannot inject the WebDriver from Drone because of:
@@ -71,10 +70,18 @@ public class GitHubResourceIT {
     private WebDriver driver;
     */
 
-    private WebDriver driver = WebDriverProviderHack.getWebDriver();
+    /**
+     * Deploy the catapult.war as built since we only test via the API endpoints
+     *
+     * @return
+     */
+    @Deployment(testable = false)
+    public static WebArchive createDeployment() {
+        return Deployments.getMavenBuiltWar();
+    }
 
     @After
-    public void closeWebDriver(){
+    public void closeWebDriver() {
         driver.close();
         driver.quit();
     }
@@ -119,11 +126,12 @@ public class GitHubResourceIT {
         Assert.assertTrue(finalContent.contains(expected));
     }
 
-   /**
-    * Ensures that the redirect_url query param is specified in the "authorize"
-    * endpoint
-    * @throws IOException
-    */
+    /**
+     * Ensures that the redirect_url query param is specified in the "authorize"
+     * endpoint
+     *
+     * @throws IOException
+     */
     @Test
     public void redirectForAuthorizeIsRequired() throws IOException {
         // Try to auth but don't pass a redirect URL as a query param
@@ -134,12 +142,13 @@ public class GitHubResourceIT {
                 "Was expecting an HTTP status code of 400");
     }
 
-   /**
-    * Ensures that the callback endpoint can not be invoked by just any caller;
-    * the state UUID must be initiated from our own "authorize" endpoint, else
-    * return HTTP status 401/Unauthorized
-    * @throws IOException
-    */
+    /**
+     * Ensures that the callback endpoint can not be invoked by just any caller;
+     * the state UUID must be initiated from our own "authorize" endpoint, else
+     * return HTTP status 401/Unauthorized
+     *
+     * @throws IOException
+     */
     @Test
     public void noManInTheMiddle() throws IOException {
         // Try to invoke the callback with a BS state
@@ -153,7 +162,7 @@ public class GitHubResourceIT {
     static void performGitHubOAuth(final WebDriver driver) throws IOException {
         assert driver != null : "driver must be specified";
 
-        log.info("VERSION: "+ ((RemoteWebDriver)driver).getCapabilities().getBrowserName()+ " - " +((RemoteWebDriver)driver).getCapabilities().getVersion());
+        log.info("VERSION: " + ((RemoteWebDriver) driver).getCapabilities().getBrowserName() + " - " + ((RemoteWebDriver) driver).getCapabilities().getVersion());
 
         String html = driver.getPageSource();
 
@@ -161,12 +170,12 @@ public class GitHubResourceIT {
         if (log.isLoggable(Level.FINEST)) {
             log.finest(MessageFormat.format("Page#1 html: {0}\n", html));
         }
-        log.info("Current URL: "+ driver.getCurrentUrl());
+        log.info("Current URL: " + driver.getCurrentUrl());
 
         // First need to login user into github
         final String username = GitHubTestCredentials.getUsername();
         final String password = GitHubTestCredentials.getPassword();
-        if(username == null || username.isEmpty()
+        if (username == null || username.isEmpty()
                 || password == null || password.isEmpty()) {
             throw new IllegalStateException(
                     "GITHUB_USERNAME and GITHUB_PASSWORD must be configured as sysprops or env vars for this test");
@@ -180,9 +189,9 @@ public class GitHubResourceIT {
         commitBtn.click();
 
         final String page2Url = driver.getCurrentUrl();
-        log.info("Page2 URL: "+ page2Url);
+        log.info("Page2 URL: " + page2Url);
         String html2 = driver.getPageSource();
-        if(log.isLoggable(Level.FINEST)) {
+        if (log.isLoggable(Level.FINEST)) {
             log.finest(MessageFormat.format("Page#2 html: {0}\n", html2));
         }
 
@@ -191,7 +200,7 @@ public class GitHubResourceIT {
             final WebElement authorizeBtn = driver.findElement(By.name("authorize"));
             authorizeBtn.click();
             final String html3 = driver.getPageSource();
-            if(log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Level.FINEST)) {
                 log.finest(MessageFormat.format("Page#3 html: {0}\n", html3));
             }
         } catch (NoSuchElementException e) {

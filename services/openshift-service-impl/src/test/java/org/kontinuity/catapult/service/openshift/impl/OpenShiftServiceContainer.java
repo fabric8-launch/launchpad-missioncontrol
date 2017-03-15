@@ -10,8 +10,8 @@ import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
  */
 public interface OpenShiftServiceContainer {
 
-   /**
-    * @return An {@link OpenShiftService}
-    */
-   OpenShiftService getOpenShiftService();
+    /**
+     * @return An {@link OpenShiftService}
+     */
+    OpenShiftService getOpenShiftService();
 }

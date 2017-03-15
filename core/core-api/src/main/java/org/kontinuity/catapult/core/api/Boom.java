@@ -23,9 +23,9 @@ public interface Boom {
     OpenShiftProject getCreatedProject();
 
     /**
-	 * @return the webhook created on the forked repo on GitHub to trigger
-	 *         builds on OpenShift.
-	 */
-	GitHubWebhook getGitHubWebhook();
+     * @return the webhook created on the forked repo on GitHub to trigger
+     * builds on OpenShift.
+     */
+    GitHubWebhook getGitHubWebhook();
 
 }

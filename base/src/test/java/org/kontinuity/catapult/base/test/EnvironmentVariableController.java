@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class EnvironmentVariableController {
 
-    private EnvironmentVariableController(){
+    private EnvironmentVariableController() {
         // No instances
     }
 

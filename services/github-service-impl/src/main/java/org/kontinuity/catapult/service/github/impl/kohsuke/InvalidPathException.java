@@ -7,17 +7,17 @@ import java.net.URISyntaxException;
  */
 public class InvalidPathException extends IllegalArgumentException {
 
-	private static final long serialVersionUID = 450790118418275921L;
+    /**
+     * Constructor.
+     *
+     * @param message the exception message
+     * @param cause   the underlying cause
+     */
+    public InvalidPathException(String message, URISyntaxException cause) {
+        super(message, cause);
+    }
 
-	/**
-	 * Constructor.
-	 * @param message the exception message
-	 * @param cause the underlying cause
-	 */
-	public InvalidPathException(String message, URISyntaxException cause) {
-		super(message, cause);
-	}
-	
-	
+    private static final long serialVersionUID = 450790118418275921L;
+
 
 }

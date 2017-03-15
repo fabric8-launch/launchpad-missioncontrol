@@ -13,9 +13,6 @@ import java.nio.file.Files;
 enum GitHubLocalCache {
     INSTANCE;
 
-    private final File cacheFolder;
-    private static final String PREFIX = "githubCache";
-
     GitHubLocalCache() {
         try {
             cacheFolder = Files.createTempDirectory(PREFIX).toFile();
@@ -23,6 +20,10 @@ enum GitHubLocalCache {
             throw new RuntimeException("Could not create the GitHub cache folder");
         }
     }
+
+    private static final String PREFIX = "githubCache";
+
+    private final File cacheFolder;
 
     public File getCacheFolder() {
         return cacheFolder;
