@@ -28,6 +28,12 @@
       <groupId>org.kontinuity.catapult</groupId>
       <artifactId>catapult-core-impl</artifactId>
     </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-multipart-provider</artifactId>
+      <version>${version.org.jboss.resteasy_resteasy.multipart.provider}</version>
+    </dependency>
+
   </dependencies>
   <profiles>
     <profile>
@@ -37,7 +43,7 @@
           <plugin>
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>wildfly-swarm-plugin</artifactId>
-            <version>2017.3.2</version>
+            <version>${version.wildfly.swarm}</version>
             <executions>
               <execution>
                 <goals>

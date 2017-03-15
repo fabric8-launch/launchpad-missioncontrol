@@ -37,6 +37,7 @@
     <version.ch.qos.logback_logback-classic>1.0.13</version.ch.qos.logback_logback-classic>
     <version.org.assertj_assertj-core>3.4.1</version.org.assertj_assertj-core>
     <version.org.jboss.resteasy_resteasy.multipart.provider>3.0.6.Final</version.org.jboss.resteasy_resteasy.multipart.provider>
+    <version.wildfly.swarm>2017.3.3</version.wildfly.swarm>
 
   </properties>
   <modules>
@@ -211,6 +212,13 @@
         <artifactId>assertj-core</artifactId>
         <version>${version.org.assertj_assertj-core}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly.swarm</groupId>
+        <artifactId>bom-all</artifactId>
+        <version>${version.wildfly.swarm}</version>
+        <scope>import</scope>
+        <type>pom</type>
       </dependency>
     </dependencies>
   </dependencyManagement>
