@@ -19,11 +19,6 @@
          <artifactId>catapult-service-github-impl</artifactId>
       </dependency>
        <dependency>
-           <groupId>org.eclipse.jgit</groupId>
-           <artifactId>org.eclipse.jgit</artifactId>
-           <version>4.6.0.201612231935-r</version>
-       </dependency>
-       <dependency>
            <groupId>org.kontinuity.catapult</groupId>
            <artifactId>catapult-service-github-impl</artifactId>
            <type>test-jar</type>

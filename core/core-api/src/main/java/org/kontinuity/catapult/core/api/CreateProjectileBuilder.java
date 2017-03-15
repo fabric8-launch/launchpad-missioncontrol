@@ -29,7 +29,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     * @return the created {@link Projectile}
     * @throws IllegalStateException
     */
-   public Projectile build() {
+   public CreateProjectile build() {
       super.build(this);
       ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
       return new CreateProjectile(this);

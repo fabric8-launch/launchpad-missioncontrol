@@ -14,11 +14,6 @@ public abstract class Projectile {
 
    private final String gitHubAccessToken;
 
-   public enum Type {
-      FORK,
-      CREATE
-   }
-
    /**
     * Package-level access; to be invoked by {@link ProjectileBuilder}
     * and all precondition checks are its responsibility

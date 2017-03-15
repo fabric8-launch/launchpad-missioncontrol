@@ -60,7 +60,7 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
       } catch (final IOException ioe) {
         throw new RuntimeException("Could not create GitHub client", ioe);
       }
-      final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub);
+      final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub, githubToken);
       if (log.isLoggable(Level.FINEST)) {
         log.log(Level.FINEST, "Created backing GitHub client for user " + githubUsername);
       }

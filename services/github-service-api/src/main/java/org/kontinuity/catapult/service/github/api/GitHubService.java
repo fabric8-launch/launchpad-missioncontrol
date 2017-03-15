@@ -1,5 +1,6 @@
 package org.kontinuity.catapult.service.github.api;
 
+import java.io.File;
 import java.net.URL;
 
 /**
@@ -32,6 +33,19 @@ public interface GitHubService {
      * @throws IllegalArgumentException
      */
     GitHubRepository createRepository(String repositoryName, String description) throws IllegalArgumentException;
+
+    /**
+     * Creates a repository with the given information (name and description). The repository will be
+     * created by default with no homepage, issues, wiki downloads and will be public. All files specified
+     * by the path will be pushed.
+     *
+     * @param repositoryName - the name of the repository
+     * @param description - the repository description
+     * @param path - the files to be added and pushed
+     * @return the created {@link GitHubRepository}
+     * @throws IllegalArgumentException
+     */
+    GitHubRepository createRepository(String repositoryName, String description, File path) throws IllegalArgumentException;
 
     /**
      * Creates a webhook in the GitHub repository.

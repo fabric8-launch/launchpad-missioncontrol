@@ -38,7 +38,7 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
     * @return the created {@link Projectile}
     * @throws IllegalStateException
     */
-   public Projectile build() throws IllegalStateException {
+   public ForkProjectile build() throws IllegalStateException {
       super.build(this);
       // Precondition checks
       ProjectileBuilder.checkSpecified("sourceGitHubRepo", this.sourceGitHubRepo);
