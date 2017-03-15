@@ -21,19 +21,19 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
 
     private String projectLocation;
 
-    /**
-     * Creates and returns a new {@link CreateProjectile} instance based on the
-     * state of this builder; if any preconditions like missing properties
-     * or improper values exist, an {@link IllegalStateException} will be thrown
-     *
-     * @return the created {@link Projectile}
-     * @throws IllegalStateException
-     */
-    public Projectile build() {
-        super.build(this);
-        ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
-        return new CreateProjectile(this);
-    }
+   /**
+    * Creates and returns a new {@link CreateProjectile} instance based on the
+    * state of this builder; if any preconditions like missing properties
+    * or improper values exist, an {@link IllegalStateException} will be thrown
+    *
+    * @return the created {@link Projectile}
+    * @throws IllegalStateException
+    */
+   public CreateProjectile build() {
+      super.build(this);
+      ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
+      return new CreateProjectile(this);
+   }
 
     /**
      * Sets the projectLocation of the repository this

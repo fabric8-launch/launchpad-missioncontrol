@@ -19,10 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kontinuity.catapult.core.api.Boom;
-import org.kontinuity.catapult.core.api.Catapult;
-import org.kontinuity.catapult.core.api.Projectile;
-import org.kontinuity.catapult.core.api.ProjectileBuilder;
+import org.kontinuity.catapult.core.api.*;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
@@ -134,8 +131,8 @@ public class CatapultIT {
     @Test
     public void flingFork() {
         // Define the projectile with a custom, unique OpenShift project name.
-        final String expectedName = getUniqueProjectName();
-        final Projectile projectile = ProjectileBuilder.newInstance()
+    	final String expectedName = getUniqueProjectName();
+        final ForkProjectile projectile = ProjectileBuilder.newInstance()
                 .gitHubAccessToken(GitHubTestCredentials.getToken())
                 .openShiftProjectName(expectedName)
                 .forkType()
@@ -151,17 +148,17 @@ public class CatapultIT {
         assertions(expectedName, boom);
     }
 
-    @Test
-    public void flingCreate() {
-        // Define the projectile with a custom, unique OpenShift project name.
-        final String expectedName = getUniqueProjectName();
-        File tempDir = Files.createTempDir();
-        final Projectile projectile = ProjectileBuilder.newInstance()
-                .gitHubAccessToken(GitHubTestCredentials.getToken())
-                .openShiftProjectName(expectedName)
-                .createType()
-                .projectLocation(tempDir.getPath())
-                .build();
+   @Test
+   public void flingCreate() {
+      // Define the projectile with a custom, unique OpenShift project name.
+      final String expectedName = getUniqueProjectName();
+      File tempDir = Files.createTempDir();
+      final CreateProjectile projectile = ProjectileBuilder.newInstance()
+            .gitHubAccessToken(GitHubTestCredentials.getToken())
+            .openShiftProjectName(expectedName)
+            .createType()
+            .projectLocation(tempDir.getPath())
+            .build();
 
         // Mark GitHub repo for deletion
         githubReposToDelete.add(expectedName);
