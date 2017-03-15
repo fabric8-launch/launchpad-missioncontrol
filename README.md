@@ -76,45 +76,27 @@ Prerequisites to Run Integration Tests
    
 3. A locally-running instance of OpenShift 
 
-    The Catapult project currently depends on unreleased features in OpenShift Origin.  The recommended deployment target is the [Atomic Developer Bundle](https://github.com/projectatomic/adb-atomic-developer-bundle), which is packaged as a [Vagrant](https://www.vagrantup.com/) file.  ALR has created a fork to include the features we need in Catapult until a proper OpenShift and ADB release is performed.  Keep in mind that until these releases are performed, we're depending upon snapshot releases and thus the Catapult build will not be reproducible over time. 
-    
-    To set up the ADB environment, 
-    
-    * Install the ADB and prerequisite projects by following [these instructions](https://github.com/projectatomic/adb-atomic-developer-bundle/blob/master/docs/installing.rst)
-    * Download https://raw.githubusercontent.com/ALRubinger/adb-atomic-developer-bundle/origin-latest/components/centos/centos-openshift-setup/Vagrantfile
-        * ie. `curl https://raw.githubusercontent.com/ALRubinger/adb-atomic-developer-bundle/origin-latest/components/centos/centos-openshift-setup/Vagrantfile`
-    * `vagrant up`
-    * Set the environment variable `CATAPULT_OPENSHIFT_API_URL` to `https://10.1.2.2:8443`.  This is the address that Catapult uses to call upon the OpenShift API.  
-    * Set the environment variable `CATAPULT_OPENSHIFT_CONSOLE_URL` to `https://10.1.2.2:8443` (by default that's where ADB exposes OpenShift to the host machine).  This is the address used as a base to refer the user back to the OpenShift Console.  You may also use this address in a browser to access the console.
+    * Install minishift and prerequisite projects by following these instructions
+        * https://github.com/minishift/minishift#installing-minishift
+	
+    * Check everything works okay by loggin in to the OpenShift console
+        * Run `minishift start`
+        * Open the URL found in the output of the previous command in a browser. You can get the same URL by executing `minishift console --url` as well.
+        * Log in with user `admin` and password `admin`
+        * You may have to accept some security exceptions in your browser because of missing SSL Certificates
 
-    If you prefer, you may also run tests against a local instance of Origin you build yourself; instructions for getting this stood up are here:
-    
-    * https://github.com/openshift/origin/blob/master/CONTRIBUTING.adoc
-    
-    You may take a binary built by the OpenShift team, build an instance locally, obtain through the CDK, or use Vagrant; any way that boots an `upstream/master` version of OpenShift locally should be fine.
-    
-    When running, this should give you a local API to execute against at https://localhost:8443, which is where the OpenShiftService tests currently look to make their calls (by default).  To override this, you may specify the environment variable or system property `KONTINUITY_CATAPULT_OPENSHIFT_URL`.
-    
-4. Configure OpenShift
-
-    For the time being, we need to do a little configuration in OpenShift to add the support we depend upon.
-    
-    * Log into OpenShift
-        * From ADB, this is done after `vagrant up` has completed:
-            * `vagrant ssh`
-        * `oc login`
-            * Use `admin`/`admin` as the username/password
-        * Add Jenkins Template Support
-            * When Using ADB: `oc create -f https://raw.githubusercontent.com/openshift/origin/master/examples/jenkins/pipeline/jenkinstemplate.json -n openshift`
-            * When Building Locally : `oc create --config=openshift.local.config/master/admin.kubeconfig -f https://raw.githubusercontent.com/openshift/origin/master/examples/jenkins/pipeline/jenkinstemplate.json -n openshift`            
-
-5. Configure Local Environment
-
-    By default, the Catapult console will display known pipelinable applications as read from the application store repository located at:
-    
-      `https://raw.githubusercontent.com/redhat-kontinuity/appstore/master/appstore.json`
-      
-    To override this default repository location, set the environment variable or the system property `CATAPULT_APPSTORE_URL`.  If both are set, the system property will take precedence. 
+    * Set up the following environment variables:
+        ```
+        CATAPULT_OPENSHIFT_API_URL=<insert minishift console url something like https://192.168.99.128:8443>
+        CATAPULT_OPENSHIFT_CONSOLE_URL=<insert minishift console url something like https://192.168.99.128:8443>
+        ```
+        
+        You can do this automatically in the following way:
+        
+        ```
+        export CATAPULT_OPENSHIFT_API_URL=`minishift console --url`
+        export CATAPULT_OPENSHIFT_CONSOLE_URL=`minishift console --url`
+        ```
 
 Build and Run the Unit Tests
 ----------------------------
