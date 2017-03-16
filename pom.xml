@@ -25,15 +25,13 @@
     <!-- other plug-in versions -->
     <version.org.apache.httpcomponents_httpclient>4.3.5</version.org.apache.httpcomponents_httpclient>
     <version.arquillian_universe>1.0.0.Alpha2</version.arquillian_universe>
-    <version.org.arquillian.container_arquillian-container-chameleon>1.0.0.Alpha6
-    </version.org.arquillian.container_arquillian-container-chameleon>
+    <version.org.arquillian.container_arquillian-container-chameleon>1.0.0.Alpha6</version.org.arquillian.container_arquillian-container-chameleon>
     <version.org.kohsuke_github-api>1.76</version.org.kohsuke_github-api>
     <version.io.fabric8_openshift-client>1.3.96</version.io.fabric8_openshift-client>
     <version.io.fabric8_kubernetes-api>2.2.131</version.io.fabric8_kubernetes-api>
     <version.com.fasterxml.jackson>2.7.0</version.com.fasterxml.jackson>
     <version.com.squareup.okhttp>2.7.2</version.com.squareup.okhttp>
-    <version.org.jboss.arquillian.extension_arquillian-phantom-driver>1.2.1.Final
-    </version.org.jboss.arquillian.extension_arquillian-phantom-driver>
+    <version.org.jboss.arquillian.extension_arquillian-phantom-driver>1.2.1.Final</version.org.jboss.arquillian.extension_arquillian-phantom-driver>
     <version.ch.qos.logback_logback-classic>1.0.13</version.ch.qos.logback_logback-classic>
     <version.org.assertj_assertj-core>3.4.1</version.org.assertj_assertj-core>
     <version.org.jboss.resteasy_resteasy.multipart.provider>3.0.6.Final</version.org.jboss.resteasy_resteasy.multipart.provider>
@@ -45,6 +43,8 @@
     <module>core/core-impl</module>
     <module>services/github-service-api</module>
     <module>services/github-service-impl</module>
+    <module>services/keycloak-service-api</module>
+    <module>services/keycloak-service-impl</module>
     <module>services/openshift-service-api</module>
     <module>services/openshift-service-impl</module>
     <module>web</module>
@@ -73,6 +73,16 @@
       <dependency>
         <groupId>org.kontinuity.catapult</groupId>
         <artifactId>catapult-service-github-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kontinuity.catapult</groupId>
+        <artifactId>catapult-service-keycloak-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kontinuity.catapult</groupId>
+        <artifactId>catapult-service-keycloak-impl</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
