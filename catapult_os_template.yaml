@@ -52,8 +52,10 @@ objects:
             value: ${KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID}
           - name: KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET
             value: ${KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET}
-          - name: CATAPULT_APPSTORE_URL
-            value: ${CATAPULT_APPSTORE_URL}
+          - name: KEYCLOAK_URL
+            value: ${KEYCLOAK_URL}
+          - name: KEYCLOAK_REALM
+            value: ${KEYCLOAK_REALM}
           image: ""
           imagePullPolicy: Always
           name: ${NAME}
@@ -133,7 +135,11 @@ parameters:
   name: CATAPULT_OPENSHIFT_CONSOLE_URL
   required: true
   value: https://10.1.2.2:8443
-- description: The location of the appstore repository showing known pipelinable applications
-  displayName: AppStore URL
-  name: CATAPULT_APPSTORE_URL
-  value: https://raw.githubusercontent.com/redhat-kontinuity/appstore/master/appstore.json
+- description: The URL (without the /auth part) of a Keycloak installation to perform SSO authentication
+  displayName: KeyCloak URL
+  name: KEYCLOAK_URL
+  value: http://sso.prod-preview.openshift.io
+- description: The keycloak realm to be used
+  displayName: KeyCloak Realm
+  name: KEYCLOAK_REALM
+  value: fabric8
