@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -91,10 +90,13 @@ public class KeycloakServiceImpl implements KeycloakService {
         try {
             Response response = call.execute();
             String content = response.body().string();
-            if (javax.ws.rs.core.MediaType.APPLICATION_JSON.equals(response.body().contentType().toString())) {
+            // Keycloak does not respect the content-type
+            if (content.startsWith("{")) {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = mapper.readTree(content);
-                if (response.code() == 400) {
+                if (response.isSuccessful()) {
+                    return node.get("access_token").asText();
+                } else if (response.code() == 400) {
                     throw new IllegalArgumentException(node.get("errorMessage").asText());
                 } else {
                     throw new IllegalStateException(node.get("errorMessage").asText());
@@ -106,7 +108,7 @@ public class KeycloakServiceImpl implements KeycloakService {
                 if (idxAccessToken < 0) {
                     throw new IllegalStateException("Access Token not found");
                 }
-                return content.substring(idxAccessToken + tokenParam.length(), content.indexOf('&', idxAccessToken+tokenParam.length()));
+                return content.substring(idxAccessToken + tokenParam.length(), content.indexOf('&', idxAccessToken + tokenParam.length()));
             }
         } catch (IOException io) {
             throw new RuntimeException("Error while fetching token from keycloak", io);
