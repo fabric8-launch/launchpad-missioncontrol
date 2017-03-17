@@ -15,6 +15,7 @@ import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
 import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.Fabric8OpenShiftServiceImpl;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
+import org.kontinuity.catapult.service.openshift.test.OpenShiftTestCredentials;
 
 /**
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
@@ -55,7 +56,7 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
 
     @Override
     public OpenShiftService getOpenShiftService() {
-        return this.openShiftServiceFactory.create("admin", "admin");
+        return this.openShiftServiceFactory.create(OpenShiftTestCredentials.getToken());
     }
 
 }
