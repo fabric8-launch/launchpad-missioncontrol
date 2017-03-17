@@ -97,6 +97,15 @@ Prerequisites to Run Integration Tests
         export CATAPULT_OPENSHIFT_API_URL=`minishift console --url`
         export CATAPULT_OPENSHIFT_CONSOLE_URL=`minishift console --url`
         ```
+    * Request a token by navigating to the URL returned from the command below (you'll need to authenticate - use admin/admin).  
+        ```
+        echo $CATAPULT_OPENSHIFT_API_URL/oauth/token/request
+        ```
+    * Set up the following environment variable: 
+        ```
+        export CATAPULT_OPENSHIFT_TOKEN=<insert token from URL above>
+        ```
+         
 
 Build and Run the Unit Tests
 ----------------------------
