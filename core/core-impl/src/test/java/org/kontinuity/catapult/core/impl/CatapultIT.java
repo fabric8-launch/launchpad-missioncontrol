@@ -17,9 +17,14 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kontinuity.catapult.core.api.*;
+import org.kontinuity.catapult.core.api.Boom;
+import org.kontinuity.catapult.core.api.Catapult;
+import org.kontinuity.catapult.core.api.CreateProjectile;
+import org.kontinuity.catapult.core.api.ForkProjectile;
+import org.kontinuity.catapult.core.api.ProjectileBuilder;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
@@ -28,7 +33,9 @@ import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.github.test.GitHubTestCredentials;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
+import org.kontinuity.catapult.service.openshift.test.OpenShiftTestCredentials;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -60,7 +67,7 @@ public class CatapultIT {
     private final Collection<String> githubReposToDelete = new ArrayList<>();
 
     @Inject
-    private OpenShiftService openShiftService;
+    private OpenShiftServiceFactory openShiftServiceFactory;
 
     @Inject
     private GitHubServiceFactory gitHubServiceFactory;
@@ -119,6 +126,7 @@ public class CatapultIT {
     @Before
     @After
     public void cleanupOpenShiftProjects() {
+        OpenShiftService openShiftService = openShiftServiceFactory.create(OpenShiftTestCredentials.getToken());
         openshiftProjectsToDelete.forEach(projectName -> {
             final boolean deleted = ((OpenShiftServiceSpi) openShiftService).deleteProject(projectName);
             if (deleted) {
@@ -134,6 +142,7 @@ public class CatapultIT {
         final String expectedName = getUniqueProjectName();
         final ForkProjectile projectile = ProjectileBuilder.newInstance()
                 .gitHubAccessToken(GitHubTestCredentials.getToken())
+                .openshiftAccessToken(OpenShiftTestCredentials.getToken())
                 .openShiftProjectName(expectedName)
                 .forkType()
                 .sourceGitHubRepo(GITHUB_SOURCE_REPO_FULLNAME)
@@ -155,6 +164,7 @@ public class CatapultIT {
         File tempDir = Files.createTempDir();
         final CreateProjectile projectile = ProjectileBuilder.newInstance()
                 .gitHubAccessToken(GitHubTestCredentials.getToken())
+                .openshiftAccessToken(OpenShiftTestCredentials.getToken())
                 .openShiftProjectName(expectedName)
                 .createType()
                 .projectLocation(tempDir.getPath())

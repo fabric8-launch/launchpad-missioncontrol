@@ -114,6 +114,13 @@
         <scope>test</scope>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kontinuity.catapult</groupId>
+        <artifactId>catapult-service-openshift-impl</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${project.version}</version>
+      </dependency>
       <!-- External dependencies -->
       <dependency>
         <groupId>javax</groupId>
