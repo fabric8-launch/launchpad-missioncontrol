@@ -108,6 +108,9 @@ Prerequisites to Run Integration Tests
 
 3. A Keycloak server
 
+    * Make sure your Federated Identity settings are correct
+      * Navigate to http://sso.prod-preview.openshift.io/auth/realms/fabric8/account/identity
+      * Make sure that the Github and Openshift v3 tokens are set, otherwise click the Add button next to them 
     * You need a valid token. It lasts for ~30min, so make sure to renew after that time expires between your tests 
       * Open Chrome and go to: http://prod-preview.openshift.io/
       * Click Sign-in (in the upper right corner), you should be redirected to developers.redhat.com
