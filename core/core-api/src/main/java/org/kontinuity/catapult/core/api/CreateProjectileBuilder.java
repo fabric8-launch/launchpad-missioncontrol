@@ -15,11 +15,11 @@ import java.io.File;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class CreateProjectileBuilder extends ProjectileBuilder {
+    private String projectLocation;
+
     CreateProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
         super(gitHubAccessToken, openShiftProjectName);
     }
-
-    private String projectLocation;
 
     /**
      * Creates and returns a new {@link CreateProjectile} instance based on the
@@ -29,10 +29,15 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
      * @return the created {@link Projectile}
      * @throws IllegalStateException
      */
-    public Projectile build() {
+    public CreateProjectile build() {
         super.build(this);
         ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
         return new CreateProjectile(this);
+    }
+
+    @Override
+    String createDefaultProjectName() {
+        return projectLocation.substring(projectLocation.lastIndexOf(File.separator) + 1);
     }
 
     /**
@@ -52,10 +57,5 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
      */
     public String getProjectLocation() {
         return projectLocation;
-    }
-
-    @Override
-    String createDefaultProjectName() {
-        return projectLocation.substring(projectLocation.lastIndexOf(File.separator) + 1);
     }
 }

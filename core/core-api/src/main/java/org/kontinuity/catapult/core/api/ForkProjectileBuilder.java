@@ -15,10 +15,6 @@ import java.util.regex.Pattern;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class ForkProjectileBuilder extends ProjectileBuilder {
-    ForkProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
-        super(gitHubAccessToken, openShiftProjectName);
-    }
-
     private static final Pattern REPO_PATTERN = Pattern.compile("^[a-zA-Z_0-9\\-]+/[a-zA-Z_0-9\\-]+");
 
     private String sourceGitHubRepo;
@@ -30,6 +26,10 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
 
     private String gitRef;
 
+    ForkProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
+        super(gitHubAccessToken, openShiftProjectName);
+    }
+
     /**
      * Creates and returns a new {@link ForkProjectile} instance based on the
      * state of this builder; if any preconditions like missing properties
@@ -38,7 +38,7 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
      * @return the created {@link Projectile}
      * @throws IllegalStateException
      */
-    public Projectile build() throws IllegalStateException {
+    public ForkProjectile build() throws IllegalStateException {
         super.build(this);
         // Precondition checks
         ProjectileBuilder.checkSpecified("sourceGitHubRepo", this.sourceGitHubRepo);
@@ -51,6 +51,15 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
 
         // All good, so make a new instance
         return new ForkProjectile(this);
+    }
+
+    @Override
+    String createDefaultProjectName() {
+        final String sourceGitHubRepo = this.getSourceGitHubRepo();
+        final String targetProjectName = this.getSourceGitHubRepo().substring(
+            sourceGitHubRepo.lastIndexOf('/') + 1);
+
+        return targetProjectName;
     }
 
     /**
@@ -76,6 +85,7 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
         this.pipelineTemplatePath = pipelineTemplatePath;
         return this;
     }
+
 
     /**
      * Sets Git ref to use. Required
@@ -107,14 +117,5 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
      */
     public String getGitRef() {
         return gitRef;
-    }
-
-    @Override
-    String createDefaultProjectName() {
-        final String sourceGitHubRepo = this.getSourceGitHubRepo();
-        final String targetProjectName = this.getSourceGitHubRepo().substring(
-                sourceGitHubRepo.lastIndexOf('/') + 1);
-
-        return targetProjectName;
     }
 }

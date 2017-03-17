@@ -7,14 +7,15 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.extras.OkHttpConnector;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
+
+import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
 
 /**
  * Implementation of the {@link GitHubServiceFactory}
@@ -25,9 +26,9 @@ import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
 @ApplicationScoped
 public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
 
-    private static final int TENMB = 10 * 1024 * 1024; // 10MB
-
     private Logger log = Logger.getLogger(GitHubServiceFactoryImpl.class.getName());
+
+    private static final int TENMB = 10 * 1024 * 1024; // 10MB
 
     @Override
     public GitHubService create(final String githubToken) {
@@ -49,7 +50,7 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
             final File githubCacheFolder = GitHubLocalCache.INSTANCE.getCacheFolder();
             final Cache cache = new Cache(githubCacheFolder, TENMB);
             final GitHubBuilder ghb = new GitHubBuilder()
-                    .withConnector(new OkHttpConnector(new OkUrlFactory(new OkHttpClient().setCache(cache))));
+                .withConnector(new OkHttpConnector(new OkUrlFactory(new OkHttpClient().setCache(cache))));
             if (githubUsername == null) {
                 ghb.withOAuthToken(githubToken);
             } else {
@@ -59,7 +60,7 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
         } catch (final IOException ioe) {
             throw new RuntimeException("Could not create GitHub client", ioe);
         }
-        final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub);
+        final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub, githubToken);
         if (log.isLoggable(Level.FINEST)) {
             log.log(Level.FINEST, "Created backing GitHub client for user " + githubUsername);
         }

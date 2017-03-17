@@ -8,6 +8,13 @@ package org.kontinuity.catapult.core.api;
  */
 public abstract class Projectile {
     /**
+     * the name of OpenShift project to create.
+     */
+    private String openShiftProjectName;
+
+    private final String gitHubAccessToken;
+
+    /**
      * Package-level access; to be invoked by {@link ProjectileBuilder}
      * and all precondition checks are its responsibility
      */
@@ -15,13 +22,6 @@ public abstract class Projectile {
         this.gitHubAccessToken = builder.getGitHubAccessToken();
         this.openShiftProjectName = builder.getOpenShiftProjectName();
     }
-
-    private final String gitHubAccessToken;
-
-    /**
-     * the name of OpenShift project to create.
-     */
-    private String openShiftProjectName;
 
     /**
      * @return the GitHub access token we have obtained from the user as part of
@@ -36,10 +36,5 @@ public abstract class Projectile {
      */
     public String getOpenShiftProjectName() {
         return openShiftProjectName;
-    }
-
-    public enum Type {
-        FORK,
-        CREATE
     }
 }
