@@ -133,7 +133,8 @@ abstract class GitHubServiceTestBase {
         Files.write(file, Collections.singletonList("Read me to know more"), Charset.forName("UTF-8"));
 
         // when
-        final GitHubRepository targetRepo = getGitHubService().createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION, tempDirectory.toFile());
+        final GitHubRepository targetRepo = getGitHubService().createRepository(repositoryName, MY_GITHUB_REPO_DESCRIPTION);
+        getGitHubService().push(targetRepo , tempDirectory.toFile());
 
         // then
         Assert.assertEquals(GitHubTestCredentials.getUsername() + "/" + repositoryName, targetRepo.getFullName());
@@ -200,7 +201,7 @@ abstract class GitHubServiceTestBase {
     abstract GitHubService getGitHubService();
 
     private String generateRepositoryName() {
-        final String repoName = this.MY_GITHUB_SOURCE_REPO_PREFIX + UUID.randomUUID().toString();
+        final String repoName = MY_GITHUB_SOURCE_REPO_PREFIX + UUID.randomUUID().toString();
         this.repositoryNames.add(repoName);
         return repoName;
     }

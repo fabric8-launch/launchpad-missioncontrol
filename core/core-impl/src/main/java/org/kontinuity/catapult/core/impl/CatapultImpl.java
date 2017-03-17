@@ -116,7 +116,8 @@ public class CatapultImpl implements Catapult {
         final GitHubService gitHubService = getGitHubService(projectile);
         String projectName = projectile.getOpenShiftProjectName();
         File path = new File(projectile.getProjectLocation());
-        GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, " ", path);
+        GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, " ");
+        gitHubService.push(gitHubRepository, path);
 
         OpenShiftProject createdProject = openShiftService.createProject(projectName);
         openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());

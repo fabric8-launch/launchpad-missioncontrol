@@ -177,8 +177,7 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
     }
 
     @Override
-    public GitHubRepository createRepository(String repositoryName, String description, File path) throws IllegalArgumentException {
-        GitHubRepository gitHubRepository = createRepository(repositoryName, description);
+    public void push(GitHubRepository gitHubRepository, File path) throws IllegalArgumentException {
         try (Git repo = Git.init().setDirectory(path).call()) {
             repo.add().addFilepattern(".").call();
             repo.commit().setMessage("initial version").call();
@@ -190,8 +189,6 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         } catch (GitAPIException | MalformedURLException e) {
             throw new RuntimeException("An error occurred while creating the git repo", e);
         }
-
-        return gitHubRepository;
     }
 
     /**
