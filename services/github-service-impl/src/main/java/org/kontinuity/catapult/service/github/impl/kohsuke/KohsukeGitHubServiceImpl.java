@@ -210,7 +210,7 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
             if (ioe instanceof FileNotFoundException) {
                 final FileNotFoundException fnfe = (FileNotFoundException) ioe;
                 fnfe.getMessage().contains("Hook already exists on this repository");
-                throw DuplicateWebhookException.getInstance(webhookUrl);
+                throw DuplicateWebhookException.create(webhookUrl);
             }
             throw new RuntimeException(ioe);
         }
@@ -242,7 +242,7 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         try {
             found = hooks.stream().filter(hook -> hook.getConfig().get(WEBHOOK_URL).equals(url.toString())).findFirst().get();
         } catch (final NoSuchElementException snee) {
-            throw NoSuchWebhookException.getInstance(repository, url);
+            throw NoSuchWebhookException.create(repository, url);
         }
         return new KohsukeGitHubWebhook(found);
     }

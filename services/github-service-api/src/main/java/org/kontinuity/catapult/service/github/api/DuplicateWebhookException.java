@@ -19,7 +19,7 @@ public class DuplicateWebhookException extends RuntimeException {
      *            equal by value to it exists
      * @throws IllegalArgumentException If the webhook is not specified
      */
-    public static DuplicateWebhookException getInstance(final URL url) throws IllegalArgumentException {
+    public static DuplicateWebhookException create(final URL url) throws IllegalArgumentException {
         if (url == null) {
             throw new IllegalArgumentException("url is required");
         }

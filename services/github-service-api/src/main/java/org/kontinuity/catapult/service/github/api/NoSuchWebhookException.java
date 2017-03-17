@@ -21,7 +21,7 @@ public class NoSuchWebhookException extends RuntimeException {
      *             equal by value to it exists
      * @throws IllegalArgumentException If either argument is not specified
      */
-    public static NoSuchWebhookException getInstance(final GitHubRepository repo, final URL url) throws IllegalArgumentException {
+    public static NoSuchWebhookException create(final GitHubRepository repo, final URL url) throws IllegalArgumentException {
         if (repo == null) {
             throw new IllegalArgumentException("repo is required");
         }
