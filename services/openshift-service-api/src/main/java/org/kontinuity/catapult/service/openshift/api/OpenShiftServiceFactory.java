@@ -13,13 +13,4 @@ public interface OpenShiftServiceFactory {
      * @return an {@link OpenShiftService}
      */
     OpenShiftService create(String oauthToken);
-
-    /**
-     * Returns an {@link OpenShiftService} given a username and password
-     *
-     * @param user     a valid Openshift user
-     * @param password a valid Openshift password
-     * @return an {@link OpenShiftService}
-     */
-    OpenShiftService create(String user, String password);
 }

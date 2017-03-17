@@ -76,31 +76,6 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
         this.client = client;
     }
 
-    Fabric8OpenShiftServiceImpl(final String apiUrl, final String consoleUrl, final String user, final String password) {
-        assert apiUrl != null && !apiUrl.isEmpty() : "apiUrl is required";
-        assert consoleUrl != null && !consoleUrl.isEmpty() : "consoleUrl is required";
-        assert user != null && !user.isEmpty() : "user is required";
-        assert password != null && !password.isEmpty() : "password is required";
-        try {
-            this.apiUrl = new URL(apiUrl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            this.consoleUrl = new URL(consoleUrl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        final Config config = new ConfigBuilder()
-                .withMasterUrl(apiUrl)
-                .withUsername(user)
-                .withPassword(password)
-                .withTrustCerts(true) //TODO Issue #17 never do this in production as it opens us to man-in-the-middle attacks
-                .build();
-        final OpenShiftClient client = new DefaultOpenShiftClient(config);
-        this.client = client;
-    }
-
     private static final Logger log = Logger.getLogger(Fabric8OpenShiftServiceImpl.class.getName());
 
     private static final int CODE_DUPLICATE_PROJECT = 409;

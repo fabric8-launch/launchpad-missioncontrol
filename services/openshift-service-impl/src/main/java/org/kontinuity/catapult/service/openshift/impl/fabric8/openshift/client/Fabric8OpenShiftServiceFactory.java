@@ -46,36 +46,4 @@ public class Fabric8OpenShiftServiceFactory implements OpenShiftServiceFactory {
         log.finest(() -> "Created backing OpenShift client for " + openShiftApiUrl);
         return new Fabric8OpenShiftServiceImpl(openShiftApiUrl, openshiftConsoleUrl, oauthToken);
     }
-
-    /**
-     * Returns an {@link OpenShiftService} given a username and password
-     *
-     * @param user     a valid Openshift user
-     * @param password a valid Openshift password
-     * @return an {@link OpenShiftService}
-     */
-    @Override
-    public Fabric8OpenShiftServiceImpl create(String user, String password) {
-        if (user == null) {
-            throw new IllegalArgumentException("user is required");
-        }
-        if (password == null) {
-            throw new IllegalArgumentException("password is required");
-        }
-
-        final String openShiftApiUrl = OpenShiftSettings.getOpenShiftApiUrl();
-        final String openshiftConsoleUrl = OpenShiftSettings.getOpenShiftConsoleUrl();
-
-        // Precondition checks
-        if (openShiftApiUrl == null) {
-            throw new IllegalArgumentException("openshiftUrl is required");
-        }
-        if (openshiftConsoleUrl == null) {
-            throw new IllegalArgumentException("openshiftConsoleUrl is required");
-        }
-
-        // Create and return
-        log.finest(() -> "Created backing OpenShift client for " + openShiftApiUrl);
-        return new Fabric8OpenShiftServiceImpl(openShiftApiUrl, openshiftConsoleUrl, user, password);
-    }
 }
