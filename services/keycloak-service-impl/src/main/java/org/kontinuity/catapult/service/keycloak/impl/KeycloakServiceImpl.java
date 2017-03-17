@@ -23,10 +23,6 @@ import org.kontinuity.catapult.service.keycloak.api.KeycloakService;
 public class KeycloakServiceImpl implements KeycloakService {
     private static final String TOKEN_URL_TEMPLATE = "%s/auth/realms/%s/broker/%s/token";
 
-    private final String keyCloakURL;
-
-    private final String realm;
-
     private final String gitHubURL;
 
     private final String openshiftURL;
@@ -35,14 +31,11 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Inject
     public KeycloakServiceImpl() {
-        this(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("KEYCLOAK_URL"),
-             EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("KEYCLOAK_REALM"));
+        this(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_KEYCLOAK_URL"),
+             EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_KEYCLOAK_REALM"));
     }
 
     public KeycloakServiceImpl(String keyCloakURL, String realm) {
-        this.keyCloakURL = keyCloakURL;
-        this.realm = realm;
-
         this.gitHubURL = buildURL(keyCloakURL, realm, "github");
         this.openshiftURL = buildURL(keyCloakURL, realm, "openshift-v3");
 
