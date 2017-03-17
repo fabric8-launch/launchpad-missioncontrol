@@ -23,6 +23,7 @@ import org.kontinuity.catapult.service.github.api.GitHubWebhookEvent;
 import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
 
 /**
  * Implementation of the {@link Catapult} interface.
@@ -34,7 +35,7 @@ public class CatapultImpl implements Catapult {
     private static final Logger log = Logger.getLogger(CatapultImpl.class.getName());
 
     @Inject
-    private OpenShiftService openShiftService;
+    private OpenShiftServiceFactory openShiftServiceFactory;
 
     @Inject
     private GitHubServiceFactory gitHubServiceFactory;
@@ -59,6 +60,7 @@ public class CatapultImpl implements Catapult {
         /*
           TODO Figure how to best handle posilbe DuplicateProjectException, but has to be handled to the user at some intelligent level
          */
+        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftAccessToken());
         final OpenShiftProject createdProject = openShiftService.createProject(projectName);
 
         ForkProjectile forkProjectile = projectile;
@@ -77,13 +79,31 @@ public class CatapultImpl implements Catapult {
                                           forkProjectile.getGitRef(),
                                           pipelineTemplateUri);
 
-        GitHubWebhook webhook = getGitHubWebhook(gitHubService, gitHubRepository, createdProject);
+        GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);
 
         // Return information needed to continue flow to the user
         return new BoomImpl(gitHubRepository, createdProject, webhook);
     }
 
-    private GitHubWebhook getGitHubWebhook(GitHubService gitHubService, GitHubRepository gitHubRepository, OpenShiftProject createdProject) {
+    @Override
+    public Boom fling(CreateProjectile projectile) throws IllegalArgumentException {
+        final GitHubService gitHubService = getGitHubService(projectile);
+        String projectName = projectile.getOpenShiftProjectName();
+        File path = new File(projectile.getProjectLocation());
+        GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, " ");
+        gitHubService.push(gitHubRepository, path);
+
+        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftAccessToken());
+        OpenShiftProject createdProject = openShiftService.createProject(projectName);
+        openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());
+
+        GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);
+        return new BoomImpl(gitHubRepository, createdProject, webhook);
+    }
+
+
+    private GitHubWebhook getGitHubWebhook(GitHubService gitHubService, OpenShiftService openShiftService,
+                                           GitHubRepository gitHubRepository, OpenShiftProject createdProject) {
         GitHubWebhook webhook;
         final URL webhookUrl = openShiftService.getWebhookUrl(createdProject);
         if (webhookUrl != null) {
@@ -109,20 +129,5 @@ public class CatapultImpl implements Catapult {
         // Fork the repository for the user
         final String gitHubAccessToken = projectile.getGitHubAccessToken();
         return gitHubServiceFactory.create(gitHubAccessToken);
-    }
-
-    @Override
-    public Boom fling(CreateProjectile projectile) throws IllegalArgumentException {
-        final GitHubService gitHubService = getGitHubService(projectile);
-        String projectName = projectile.getOpenShiftProjectName();
-        File path = new File(projectile.getProjectLocation());
-        GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, " ");
-        gitHubService.push(gitHubRepository, path);
-
-        OpenShiftProject createdProject = openShiftService.createProject(projectName);
-        openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());
-
-        GitHubWebhook webhook = getGitHubWebhook(gitHubService, gitHubRepository, createdProject);
-        return new BoomImpl(gitHubRepository, createdProject, webhook);
     }
 }

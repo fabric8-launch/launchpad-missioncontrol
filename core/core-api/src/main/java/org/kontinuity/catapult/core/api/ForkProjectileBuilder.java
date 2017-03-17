@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class ForkProjectileBuilder extends ProjectileBuilder {
-    ForkProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
-        super(gitHubAccessToken, openShiftProjectName);
+    ForkProjectileBuilder(String gitHubAccessToken, String openshiftAccessToken, String openShiftProjectName) {
+        super(gitHubAccessToken, openshiftAccessToken, openShiftProjectName);
     }
 
     private static final Pattern REPO_PATTERN = Pattern.compile("^[a-zA-Z_0-9\\-]+/[a-zA-Z_0-9\\-]+");

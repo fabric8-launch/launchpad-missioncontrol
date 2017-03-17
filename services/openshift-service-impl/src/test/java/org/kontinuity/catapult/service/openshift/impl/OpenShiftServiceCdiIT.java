@@ -12,7 +12,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.runner.RunWith;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.Fabric8OpenShiftClientServiceImpl;
+import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
+import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.Fabric8OpenShiftServiceImpl;
 import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
 
 /**
@@ -27,7 +28,7 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
     private static final Logger log = Logger.getLogger(OpenShiftServiceCdiIT.class.getName());
 
     @Inject
-    private OpenShiftService openshiftService;
+    private OpenShiftServiceFactory openShiftServiceFactory;
 
     /**
      * @return a jar file containing all the required classes to test the {@link OpenShiftService}
@@ -39,7 +40,7 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
         // Create deploy file
         final WebArchive war = ShrinkWrap.create(WebArchive.class)
-                .addPackage(Fabric8OpenShiftClientServiceImpl.class.getPackage())
+                .addPackage(Fabric8OpenShiftServiceImpl.class.getPackage())
                 .addPackage(OpenShiftServiceCdiIT.class.getPackage())
                 .addPackage(OpenShiftService.class.getPackage())
                 .addClass(DeleteOpenShiftProjectRule.class)
@@ -54,7 +55,7 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
 
     @Override
     public OpenShiftService getOpenShiftService() {
-        return this.openshiftService;
+        return this.openShiftServiceFactory.create("admin", "admin");
     }
 
 }

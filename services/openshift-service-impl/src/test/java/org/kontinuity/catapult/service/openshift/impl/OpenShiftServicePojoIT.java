@@ -1,7 +1,7 @@
 package org.kontinuity.catapult.service.openshift.impl;
 
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.OpenShiftServiceProducer;
+import org.kontinuity.catapult.service.openshift.impl.fabric8.openshift.client.Fabric8OpenShiftServiceFactory;
 
 /**
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
@@ -13,6 +13,6 @@ public class OpenShiftServicePojoIT extends OpenShiftServiceTestBase {
 
     @Override
     public OpenShiftService getOpenShiftService() {
-        return new OpenShiftServiceProducer().create();
+        return new Fabric8OpenShiftServiceFactory().create("admin","admin");
     }
 }

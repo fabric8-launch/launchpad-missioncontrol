@@ -20,12 +20,15 @@ public class ProjectileBuilder {
         // No external instances
     }
 
-    ProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
+    ProjectileBuilder(String gitHubAccessToken, String openshiftAccessToken, String openShiftProjectName) {
         this.gitHubAccessToken = gitHubAccessToken;
+        this.openshiftAccessToken = openshiftAccessToken;
         this.openShiftProjectName = openShiftProjectName;
     }
 
     private String gitHubAccessToken;
+
+    private String openshiftAccessToken;
 
     /**
      * the name of OpenShift project to create.
@@ -70,11 +73,27 @@ public class ProjectileBuilder {
     }
 
     /**
+     * Sets the Openshift access token we have obtained from the user as part of
+     * the OAuth process. Required.
+     *
+     * @param openshiftAccessToken
+     * @return This builder
+     */
+    public ProjectileBuilder openshiftAccessToken(final String openshiftAccessToken) {
+        this.openshiftAccessToken = openshiftAccessToken;
+        return this;
+    }
+
+    /**
      * @return the GitHub access token we have obtained from the user as part of
      * the OAuth process
      */
     public String getGitHubAccessToken() {
         return this.gitHubAccessToken;
+    }
+
+    public String getOpenshiftAccessToken() {
+        return openshiftAccessToken;
     }
 
     /**
@@ -85,11 +104,11 @@ public class ProjectileBuilder {
     }
 
     public CreateProjectileBuilder createType() {
-        return new CreateProjectileBuilder(getGitHubAccessToken(), getOpenShiftProjectName());
+        return new CreateProjectileBuilder(getGitHubAccessToken(), getOpenshiftAccessToken(), getOpenShiftProjectName());
     }
 
     public ForkProjectileBuilder forkType() {
-        return new ForkProjectileBuilder(getGitHubAccessToken(), getOpenShiftProjectName());
+        return new ForkProjectileBuilder(getGitHubAccessToken(), getOpenshiftAccessToken(), getOpenShiftProjectName());
     }
 
     /**
@@ -110,6 +129,7 @@ public class ProjectileBuilder {
 
     void build(ProjectileBuilder builder) {
         ProjectileBuilder.checkSpecified("gitHubAccessToken", this.gitHubAccessToken);
+        ProjectileBuilder.checkSpecified("openshiftAccessToken", this.openshiftAccessToken);
         // Default the openshiftProjectName if need be
         try {
             ProjectileBuilder.checkSpecified("openshiftProjectName", this.openShiftProjectName);

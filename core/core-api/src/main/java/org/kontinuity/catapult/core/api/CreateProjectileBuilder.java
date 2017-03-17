@@ -15,8 +15,8 @@ import java.io.File;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class CreateProjectileBuilder extends ProjectileBuilder {
-    CreateProjectileBuilder(String gitHubAccessToken, String openShiftProjectName) {
-        super(gitHubAccessToken, openShiftProjectName);
+    CreateProjectileBuilder(String gitHubAccessToken, String openshiftAccessToken, String openShiftProjectName) {
+        super(gitHubAccessToken, openshiftAccessToken, openShiftProjectName);
     }
 
     private String projectLocation;

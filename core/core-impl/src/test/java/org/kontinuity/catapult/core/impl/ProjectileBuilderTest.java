@@ -113,6 +113,7 @@ public class ProjectileBuilderTest {
         return ProjectileBuilder.newInstance()
                 .openShiftProjectName(SOME_VALUE)
                 .gitHubAccessToken(SOME_VALUE)
+                .openshiftAccessToken(SOME_VALUE)
                 .forkType()
                 .sourceGitHubRepo(REPO_VALUE)
                 .gitRef(SOME_VALUE)

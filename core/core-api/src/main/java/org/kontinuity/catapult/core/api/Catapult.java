@@ -15,6 +15,7 @@ public interface Catapult {
      * <ul>
      * <li>A GitHub project</li>
      * <li>A GitHub user (OAuth token)</li>
+     * <li>An OpenShift user (OAuth token)</li>
      * <li>An OpenShift instance's API URL</li>
      * <li>An OpenShift user</li>
      * </ul>
@@ -51,6 +52,7 @@ public interface Catapult {
      * <ul>
      * <li>A location of the code</li>
      * <li>A GitHub user (OAuth token)</li>
+     * <li>An OpenShift user (OAuth token)</li>
      * <li>An OpenShift instance's API URL</li>
      * <li>An OpenShift user</li>
      * </ul>

@@ -36,7 +36,7 @@ import org.kontinuity.catapult.service.openshift.spi.OpenShiftServiceSpi;
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  * @author <a href="mailto:xcoulon@redhat.com">Xavier Coulon</a>
  */
-public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService, OpenShiftServiceSpi {
+public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, OpenShiftServiceSpi {
 
     /**
      * Name of the JSON file containing the template to apply on the OpenShift
@@ -46,14 +46,17 @@ public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService
 
     /**
      * Creates an {@link OpenShiftService} implementation communicating
-     * with the backend service via the specified, required apiUrl
+     * with the backend service via the specified, required apiUrl authenticated
+     * through the required oauthToken
      *
      * @param apiUrl
      * @param consoleUrl
+     * @param oauthToken
      */
-    Fabric8OpenShiftClientServiceImpl(final String apiUrl, final String consoleUrl) {
+    Fabric8OpenShiftServiceImpl(final String apiUrl, final String consoleUrl, final String oauthToken) {
         assert apiUrl != null && !apiUrl.isEmpty() : "apiUrl is required";
         assert consoleUrl != null && !consoleUrl.isEmpty() : "consoleUrl is required";
+        assert oauthToken != null && !oauthToken.isEmpty() : "oauthToken is required";
         try {
             this.apiUrl = new URL(apiUrl);
         } catch (MalformedURLException e) {
@@ -64,18 +67,41 @@ public final class Fabric8OpenShiftClientServiceImpl implements OpenShiftService
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        final Config config = new ConfigBuilder().
-                withMasterUrl(apiUrl).
-                withUsername("admin"). //TODO externalize or account for this?
-                withPassword("admin"). // TODO externalize or account for this?
-                withTrustCerts(true). //TODO Issue #17 never do this in production as it opens us to man-in-the-middle attacks
-                build();
+        final Config config = new ConfigBuilder()
+                .withMasterUrl(apiUrl)
+                .withOauthToken(oauthToken)
+                .withTrustCerts(true) //TODO Issue #17 never do this in production as it opens us to man-in-the-middle attacks
+                .build();
         final OpenShiftClient client = new DefaultOpenShiftClient(config);
         this.client = client;
-
     }
 
-    private static final Logger log = Logger.getLogger(Fabric8OpenShiftClientServiceImpl.class.getName());
+    Fabric8OpenShiftServiceImpl(final String apiUrl, final String consoleUrl, final String user, final String password) {
+        assert apiUrl != null && !apiUrl.isEmpty() : "apiUrl is required";
+        assert consoleUrl != null && !consoleUrl.isEmpty() : "consoleUrl is required";
+        assert user != null && !user.isEmpty() : "user is required";
+        assert password != null && !password.isEmpty() : "password is required";
+        try {
+            this.apiUrl = new URL(apiUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            this.consoleUrl = new URL(consoleUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        final Config config = new ConfigBuilder()
+                .withMasterUrl(apiUrl)
+                .withUsername(user)
+                .withPassword(password)
+                .withTrustCerts(true) //TODO Issue #17 never do this in production as it opens us to man-in-the-middle attacks
+                .build();
+        final OpenShiftClient client = new DefaultOpenShiftClient(config);
+        this.client = client;
+    }
+
+    private static final Logger log = Logger.getLogger(Fabric8OpenShiftServiceImpl.class.getName());
 
     private static final int CODE_DUPLICATE_PROJECT = 409;
 
