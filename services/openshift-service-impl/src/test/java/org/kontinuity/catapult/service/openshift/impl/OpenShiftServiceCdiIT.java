@@ -46,6 +46,7 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
                 .addPackage(OpenShiftService.class.getPackage())
                 .addClass(DeleteOpenShiftProjectRule.class)
                 .addClass(OpenShiftServiceSpi.class)
+                .addClass(OpenShiftTestCredentials.class)
                 .addAsResource("openshift-project-template.json")
                 .addAsWebInfResource("META-INF/jboss-deployment-structure.xml", "jboss-deployment-structure.xml")
                 .addAsLibraries(dependencies);
