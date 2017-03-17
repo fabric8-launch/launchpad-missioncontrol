@@ -94,7 +94,8 @@ public class CatapultResource {
                 .build();
 
         // Fling it
-        return processResult(catapult.fling(projectile));
+        Boom boom = catapult.fling(projectile);
+        return processBoom(boom);
     }
 
     @POST
@@ -118,8 +119,13 @@ public class CatapultResource {
                 if (gitHubAccessToken == null) {
                     return createCreateRedirectUrl(path);
                 }
-
-                return processResult(catapult.fling(createCreateProjectile(path, gitHubAccessToken)));
+                CreateProjectile projectile = ProjectileBuilder.newInstance()
+                        .gitHubAccessToken(gitHubAccessToken)
+                        .createType()
+                        .projectLocation(path)
+                        .build();
+                Boom boom = catapult.fling(projectile);
+                return processBoom(boom);
             }
         } catch (final IOException e) {
             throw new WebApplicationException("could not unpack zip file into temp folder", e);
@@ -135,8 +141,14 @@ public class CatapultResource {
         if (gitHubAccessToken == null) {
             return createCreateRedirectUrl(projectLocation);
         }
+        CreateProjectile projectile = ProjectileBuilder.newInstance()
+                .gitHubAccessToken(gitHubAccessToken)
+                .createType()
+                .projectLocation(projectLocation)
+                .build();
 
-        return processResult(catapult.fling(createCreateProjectile(projectLocation, gitHubAccessToken)));
+        Boom boom = catapult.fling(projectile);
+        return processBoom(boom);
     }
 
     /**
@@ -194,7 +206,7 @@ public class CatapultResource {
                 .getSession().getAttribute(GitHubResource.SESSION_ATTRIBUTE_GITHUB_ACCESS_TOKEN);
     }
 
-    private Response processResult(Boom boom) {
+    private Response processBoom(Boom boom) {
         // Redirect to the console overview page
         final URI consoleOverviewUri;
         try {
@@ -206,13 +218,5 @@ public class CatapultResource {
             throw new WebApplicationException("couldn't get console location do you have the environment variable set", urise);
         }
         return Response.temporaryRedirect(consoleOverviewUri).build();
-    }
-
-    private CreateProjectile createCreateProjectile(String path, String gitHubAccessToken) {
-        return ProjectileBuilder.newInstance()
-                .gitHubAccessToken(gitHubAccessToken)
-                .createType()
-                .projectLocation(path)
-                .build();
     }
 }
