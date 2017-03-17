@@ -104,7 +104,7 @@ public class KeycloakServiceImpl implements KeycloakService {
                 return content.substring(idxAccessToken + tokenParam.length(), content.indexOf('&', idxAccessToken + tokenParam.length()));
             }
         } catch (IOException io) {
-            throw new RuntimeException("Error while fetching token from keycloak", io);
+            throw new IllegalStateException("Error while fetching token from keycloak", io);
         }
     }
 
