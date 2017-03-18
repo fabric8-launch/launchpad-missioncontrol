@@ -7,10 +7,12 @@ public class IdentityBuilder {
     private IdentityBuilder(){}
 
     public static TokenIdentity usingToken(String token) {
+        assert token != null && !token.isEmpty() : "token is required";
         return new TokenIdentityImpl(token);
     }
 
     public static UserPasswordIdentity usingUserPassword(String user, String password) {
+        assert user != null && !user.isEmpty() : "user is required";
         return new UserPasswordIdentityImpl(user,password);
     }
 
