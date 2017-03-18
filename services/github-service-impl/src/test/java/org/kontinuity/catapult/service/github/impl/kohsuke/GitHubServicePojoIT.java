@@ -1,6 +1,5 @@
 package org.kontinuity.catapult.service.github.impl.kohsuke;
 
-import org.kontinuity.catapult.base.identity.IdentityBuilder;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.test.GitHubTestCredentials;
 
