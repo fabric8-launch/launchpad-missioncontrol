@@ -2,7 +2,6 @@ package org.kontinuity.catapult.service.github.impl.kohsuke;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,6 +12,10 @@ import com.squareup.okhttp.OkUrlFactory;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.extras.OkHttpConnector;
+import org.kontinuity.catapult.base.identity.Identity;
+import org.kontinuity.catapult.base.identity.IdentityVisitor;
+import org.kontinuity.catapult.base.identity.TokenIdentity;
+import org.kontinuity.catapult.base.identity.UserPasswordIdentity;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 import org.kontinuity.catapult.service.github.api.GitHubServiceFactory;
 
@@ -30,16 +33,10 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
     private Logger log = Logger.getLogger(GitHubServiceFactoryImpl.class.getName());
 
     @Override
-    public GitHubService create(final String githubToken) {
-        return create(githubToken, null);
-    }
-
-    // TODO: when do we need to pass an actual GitHub username ? (It's only used in tests)
-    @Override
-    public GitHubService create(final String githubToken, final String githubUsername) {
+    public GitHubService create(final Identity identity) {
 
         // Precondition checks
-        if (githubToken == null || githubToken.isEmpty()) {
+        if (identity == null) {
             throw new IllegalArgumentException("password/token is required");
         }
 
@@ -50,19 +47,23 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
             final Cache cache = new Cache(githubCacheFolder, TENMB);
             final GitHubBuilder ghb = new GitHubBuilder()
                     .withConnector(new OkHttpConnector(new OkUrlFactory(new OkHttpClient().setCache(cache))));
-            if (githubUsername == null) {
-                ghb.withOAuthToken(githubToken);
-            } else {
-                ghb.withOAuthToken(githubToken, githubUsername);
-            }
+            identity.accept(new IdentityVisitor() {
+                @Override
+                public void visit(TokenIdentity token) {
+                    ghb.withOAuthToken(token.getToken());
+                }
+
+                @Override
+                public void visit(UserPasswordIdentity userPassword) {
+                    ghb.withPassword(userPassword.getUsername(), userPassword.getPassword());
+                }
+            });
             gitHub = ghb.build();
         } catch (final IOException ioe) {
             throw new RuntimeException("Could not create GitHub client", ioe);
         }
-        final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub, githubToken);
-        if (log.isLoggable(Level.FINEST)) {
-            log.log(Level.FINEST, "Created backing GitHub client for user " + githubUsername);
-        }
+        final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub, identity);
+        log.finest(() -> "Created backing GitHub client for identity " + identity);
         return ghs;
     }
 

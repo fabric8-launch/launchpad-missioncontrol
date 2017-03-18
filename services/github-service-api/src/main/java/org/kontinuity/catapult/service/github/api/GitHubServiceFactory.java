@@ -1,5 +1,7 @@
 package org.kontinuity.catapult.service.github.api;
 
+import org.kontinuity.catapult.base.identity.Identity;
+
 /**
  * A factory for the {@link GitHubService} instance.
  *
@@ -12,22 +14,9 @@ public interface GitHubServiceFactory {
      * Creates a new {@link GitHubService} with the specified,
      * required personal access token.
      *
-     * @param githubToken
+     * @param identity
      * @return the created {@link GitHubService}
      * @throws IllegalArgumentException If the {@code githubToken} is not specified
      */
-    GitHubService create(String githubToken);
-
-    /**
-     * Creates a new {@link GitHubService} with the specified,
-     * required personal access token and the optional username
-     *
-     * @param githubToken
-     * @param githubUsername
-     * @return the created {@link GitHubService}
-     * @throws IllegalArgumentException If the {@code githubToken} is not specified
-     */
-    // TODO: when do we need to pass an actual GitHub username ? (It's only used in tests)
-    GitHubService create(String githubToken, String githubUsername);
-
+    GitHubService create(Identity identity);
 }

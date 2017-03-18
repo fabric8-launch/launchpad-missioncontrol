@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.URIish;
@@ -23,6 +24,10 @@ import org.kohsuke.github.GHEvent;
 import org.kohsuke.github.GHHook;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.kontinuity.catapult.base.identity.Identity;
+import org.kontinuity.catapult.base.identity.IdentityVisitor;
+import org.kontinuity.catapult.base.identity.TokenIdentity;
+import org.kontinuity.catapult.base.identity.UserPasswordIdentity;
 import org.kontinuity.catapult.service.github.api.DuplicateWebhookException;
 import org.kontinuity.catapult.service.github.api.GitHubRepository;
 import org.kontinuity.catapult.service.github.api.GitHubService;
@@ -47,10 +52,10 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
      *
      * @param delegate
      */
-    KohsukeGitHubServiceImpl(final GitHub delegate, String token) {
+    KohsukeGitHubServiceImpl(final GitHub delegate, final Identity identity) {
         assert delegate != null : "delegate must be specified";
         this.delegate = delegate;
-        this.gitHubToken = token;
+        this.identity = identity;
     }
 
     private static final String WEBHOOK_CONFIG_PROP_INSECURE_SSL_NAME = "insecure_ssl";
@@ -63,9 +68,9 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
 
     private static final String WEBHOOK_URL = "url";
 
-    private final String gitHubToken;
-
     private final GitHub delegate;
+
+    private final Identity identity;
 
     /**
      * {@inheritDoc}
@@ -185,7 +190,19 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
             add.setName("origin");
             add.setUri(new URIish(gitHubRepository.getGitCloneUri().toURL()));
             add.call();
-            repo.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitHubToken, "")).call();
+            PushCommand pushCommand = repo.push();
+            identity.accept(new IdentityVisitor() {
+                @Override
+                public void visit(TokenIdentity token) {
+                    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(token.getToken(), ""));
+                }
+
+                @Override
+                public void visit(UserPasswordIdentity userPassword) {
+                    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userPassword.getUsername(), userPassword.getPassword()));
+                }
+            });
+            pushCommand.call();
         } catch (GitAPIException | MalformedURLException e) {
             throw new RuntimeException("An error occurred while creating the git repo", e);
         }

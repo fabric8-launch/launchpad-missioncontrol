@@ -2,6 +2,7 @@ package org.kontinuity.catapult.core.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.kontinuity.catapult.base.identity.IdentityBuilder;
 import org.kontinuity.catapult.core.api.ForkProjectileBuilder;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.core.api.ProjectileBuilder;
@@ -32,12 +33,7 @@ public class ProjectileBuilderTest {
 
     @Test(expected = IllegalStateException.class)
     public void requiresGitHubAccessToken() {
-        this.getPopulatedBuilder().gitHubAccessToken(null).forkType().build();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void requiresGitHubAccessTokenNotEmpty() {
-        this.getPopulatedBuilder().gitHubAccessToken(EMPTY).forkType().build();
+        this.getPopulatedBuilder().gitHubIdentity(null).forkType().build();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -112,8 +108,8 @@ public class ProjectileBuilderTest {
     private ForkProjectileBuilder getPopulatedBuilder() {
         return ProjectileBuilder.newInstance()
                 .openShiftProjectName(SOME_VALUE)
-                .gitHubAccessToken(SOME_VALUE)
-                .openshiftAccessToken(SOME_VALUE)
+                .gitHubIdentity(IdentityBuilder.usingToken(SOME_VALUE))
+                .openShiftIdentity(IdentityBuilder.usingToken(SOME_VALUE))
                 .forkType()
                 .sourceGitHubRepo(REPO_VALUE)
                 .gitRef(SOME_VALUE)

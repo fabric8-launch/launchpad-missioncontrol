@@ -1,6 +1,8 @@
 package org.kontinuity.catapult.service.openshift.test;
 
 import org.kontinuity.catapult.base.EnvironmentSupport;
+import org.kontinuity.catapult.base.identity.Identity;
+import org.kontinuity.catapult.base.identity.IdentityBuilder;
 
 /**
  * Used to obtain the OpenShift credentials from the environment
@@ -18,7 +20,7 @@ public class OpenShiftTestCredentials {
     /**
      * @return the Openshift token
      */
-    public static String getToken() {
-        return EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_OPENSHIFT_TOKEN);
+    public static Identity getToken() {
+        return IdentityBuilder.usingToken(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_OPENSHIFT_TOKEN));
     }
 }

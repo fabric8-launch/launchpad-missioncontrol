@@ -2,6 +2,7 @@ package org.kontinuity.catapult.service.github.impl.kohsuke;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.kontinuity.catapult.base.identity.IdentityBuilder;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 
 /**
@@ -12,19 +13,14 @@ import org.kontinuity.catapult.service.github.api.GitHubService;
 public class GitHubServiceProducerTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void tokenCannotBeEmptyWhenUsingUsername() {
-        new GitHubServiceFactoryImpl().create("", "test");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void tokenCannotBeNullWhenUsingUsername() {
-        new GitHubServiceFactoryImpl().create(null, "test");
+    public void identityCannotBeNull() {
+        new GitHubServiceFactoryImpl().create(null);
     }
 
     @Test
     public void createsInstance() {
         // when
-        final GitHubService service = new GitHubServiceFactoryImpl().create("test", "test");
+        final GitHubService service = new GitHubServiceFactoryImpl().create(IdentityBuilder.usingUserPassword("test","test"));
         // then
         Assert.assertNotNull("instance was not created", service);
     }

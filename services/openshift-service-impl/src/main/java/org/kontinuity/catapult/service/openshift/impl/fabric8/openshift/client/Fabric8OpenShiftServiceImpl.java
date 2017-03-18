@@ -21,6 +21,10 @@ import io.fabric8.openshift.api.model.ProjectRequest;
 import io.fabric8.openshift.api.model.Template;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
+import org.kontinuity.catapult.base.identity.Identity;
+import org.kontinuity.catapult.base.identity.IdentityVisitor;
+import org.kontinuity.catapult.base.identity.TokenIdentity;
+import org.kontinuity.catapult.base.identity.UserPasswordIdentity;
 import org.kontinuity.catapult.service.openshift.api.DuplicateProjectException;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftResource;
@@ -53,10 +57,10 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
      * @param consoleUrl
      * @param oauthToken
      */
-    Fabric8OpenShiftServiceImpl(final String apiUrl, final String consoleUrl, final String oauthToken) {
+    Fabric8OpenShiftServiceImpl(final String apiUrl, final String consoleUrl, final Identity identity) {
         assert apiUrl != null && !apiUrl.isEmpty() : "apiUrl is required";
         assert consoleUrl != null && !consoleUrl.isEmpty() : "consoleUrl is required";
-        assert oauthToken != null && !oauthToken.isEmpty() : "oauthToken is required";
+        assert identity != null : "oauthToken is required";
         try {
             this.apiUrl = new URL(apiUrl);
         } catch (MalformedURLException e) {
@@ -67,11 +71,23 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        final Config config = new ConfigBuilder()
+        ConfigBuilder configBuilder = new ConfigBuilder()
                 .withMasterUrl(apiUrl)
-                .withOauthToken(oauthToken)
-                .withTrustCerts(true) //TODO Issue #17 never do this in production as it opens us to man-in-the-middle attacks
-                .build();
+                //TODO Issue #17 never do this in production as it opens us to man-in-the-middle attacks
+                .withTrustCerts(true);
+        identity.accept(new IdentityVisitor() {
+            @Override
+            public void visit(TokenIdentity token) {
+                configBuilder.withOauthToken(token.getToken());
+            }
+            @Override
+            public void visit(UserPasswordIdentity userPassword) {
+                configBuilder
+                        .withUsername(userPassword.getUsername())
+                        .withPassword(userPassword.getPassword());
+            }
+        });
+        final Config config = configBuilder.build();
         final OpenShiftClient client = new DefaultOpenShiftClient(config);
         this.client = client;
     }

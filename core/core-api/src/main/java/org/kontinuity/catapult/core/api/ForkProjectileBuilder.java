@@ -3,6 +3,8 @@ package org.kontinuity.catapult.core.api;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.kontinuity.catapult.base.identity.Identity;
+
 /**
  * DSL builder for creating {@link ForkProjectile} objects.  Responsible for
  * validating state before calling upon the {@link ForkProjectileBuilder#build()}
@@ -15,7 +17,7 @@ import java.util.regex.Pattern;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class ForkProjectileBuilder extends ProjectileBuilder {
-    ForkProjectileBuilder(String gitHubAccessToken, String openshiftAccessToken, String openShiftProjectName) {
+    ForkProjectileBuilder(Identity gitHubAccessToken, Identity openshiftAccessToken, String openShiftProjectName) {
         super(gitHubAccessToken, openshiftAccessToken, openShiftProjectName);
     }
 

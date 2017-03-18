@@ -1,6 +1,8 @@
 package org.kontinuity.catapult.service.github.test;
 
 import org.kontinuity.catapult.base.EnvironmentSupport;
+import org.kontinuity.catapult.base.identity.Identity;
+import org.kontinuity.catapult.base.identity.IdentityBuilder;
 
 /**
  * Used to obtain the GitHub credentials from the environment
@@ -29,8 +31,8 @@ public class GitHubTestCredentials {
     /**
      * @return the GitHub token
      */
-    public static String getToken() {
-        return EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_GITHUB_TOKEN);
+    public static Identity getToken() {
+        return IdentityBuilder.usingToken(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_GITHUB_TOKEN));
     }
 
     /**

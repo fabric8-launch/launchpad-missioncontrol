@@ -1,5 +1,7 @@
 package org.kontinuity.catapult.service.openshift.api;
 
+import org.kontinuity.catapult.base.identity.Identity;
+
 /**
  * Creates {@link OpenShiftService} instances
  *
@@ -9,8 +11,8 @@ public interface OpenShiftServiceFactory {
     /**
      * Returns an {@link OpenShiftService} given it's OAuth token
      *
-     * @param oauthToken token from SSO server (OAuth)
+     * @param identity an identity
      * @return an {@link OpenShiftService}
      */
-    OpenShiftService create(String oauthToken);
+    OpenShiftService create(Identity identity);
 }

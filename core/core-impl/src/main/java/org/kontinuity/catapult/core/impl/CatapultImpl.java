@@ -60,7 +60,7 @@ public class CatapultImpl implements Catapult {
         /*
           TODO Figure how to best handle posilbe DuplicateProjectException, but has to be handled to the user at some intelligent level
          */
-        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftAccessToken());
+        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
         final OpenShiftProject createdProject = openShiftService.createProject(projectName);
 
         ForkProjectile forkProjectile = projectile;
@@ -93,7 +93,7 @@ public class CatapultImpl implements Catapult {
         GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, " ");
         gitHubService.push(gitHubRepository, path);
 
-        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftAccessToken());
+        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
         OpenShiftProject createdProject = openShiftService.createProject(projectName);
         openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());
 
@@ -125,9 +125,6 @@ public class CatapultImpl implements Catapult {
         if (projectile == null) {
             throw new IllegalArgumentException("projectile must be specified");
         }
-
-        // Fork the repository for the user
-        final String gitHubAccessToken = projectile.getGitHubAccessToken();
-        return gitHubServiceFactory.create(gitHubAccessToken);
+        return gitHubServiceFactory.create(projectile.getGitHubIdentity());
     }
 }

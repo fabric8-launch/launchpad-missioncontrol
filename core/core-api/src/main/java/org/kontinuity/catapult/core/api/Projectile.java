@@ -1,5 +1,7 @@
 package org.kontinuity.catapult.core.api;
 
+import org.kontinuity.catapult.base.identity.Identity;
+
 /**
  * Value object defining the inputs to {@link Catapult#fling(Projectile)};
  * immutable and pre-checked for valid state during creation.
@@ -8,9 +10,9 @@ package org.kontinuity.catapult.core.api;
  */
 public abstract class Projectile {
 
-    private final String gitHubAccessToken;
+    private final Identity gitHubIdentity;
 
-    private final String openShiftAccessToken;
+    private final Identity openShiftIdentity;
 
     private final String openShiftProjectName;
 
@@ -19,25 +21,23 @@ public abstract class Projectile {
      * and all precondition checks are its responsibility
      */
     Projectile(final ProjectileBuilder builder) {
-        this.gitHubAccessToken = builder.getGitHubAccessToken();
-        this.openShiftAccessToken = builder.getOpenshiftAccessToken();
+        this.gitHubIdentity = builder.getGitHubIdentity();
+        this.openShiftIdentity = builder.getOpenShiftIdentity();
         this.openShiftProjectName = builder.getOpenShiftProjectName();
     }
 
     /**
-     * @return the GitHub access token we have obtained from the user as part of
-     * the OAuth process
+     * @return the GitHub identity
      */
-    public String getGitHubAccessToken() {
-        return this.gitHubAccessToken;
+    public Identity getGitHubIdentity() {
+        return this.gitHubIdentity;
     }
 
     /**
-     * @return the Openshift access token we have obtained from the user as part of
-     * the OAuth process
+     * @return the Openshift identity
      */
-    public String getOpenShiftAccessToken() {
-        return openShiftAccessToken;
+    public Identity getOpenShiftIdentity() {
+        return openShiftIdentity;
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.kontinuity.catapult.base.identity.Identity;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftSettings;
@@ -26,9 +27,9 @@ public class Fabric8OpenShiftServiceFactory implements OpenShiftServiceFactory {
      * @throws IllegalArgumentException If the {@code openshiftUrl} is not specified
      */
     @Override
-    public Fabric8OpenShiftServiceImpl create(String oauthToken) {
-        if (oauthToken == null) {
-            throw new IllegalArgumentException("oauthToken is required");
+    public Fabric8OpenShiftServiceImpl create(Identity identity) {
+        if (identity == null) {
+            throw new IllegalArgumentException("identity is required");
         }
 
         final String openShiftApiUrl = OpenShiftSettings.getOpenShiftApiUrl();
@@ -44,6 +45,6 @@ public class Fabric8OpenShiftServiceFactory implements OpenShiftServiceFactory {
 
         // Create and return
         log.finest(() -> "Created backing OpenShift client for " + openShiftApiUrl);
-        return new Fabric8OpenShiftServiceImpl(openShiftApiUrl, openshiftConsoleUrl, oauthToken);
+        return new Fabric8OpenShiftServiceImpl(openShiftApiUrl, openshiftConsoleUrl, identity);
     }
 }

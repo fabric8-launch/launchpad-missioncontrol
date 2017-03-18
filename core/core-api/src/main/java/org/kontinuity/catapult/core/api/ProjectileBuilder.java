@@ -1,5 +1,7 @@
 package org.kontinuity.catapult.core.api;
 
+import org.kontinuity.catapult.base.identity.Identity;
+
 /**
  * DSL builder for creating {@link Projectile} objects.  Responsible for
  * validating state before calling upon the {@link ForkProjectileBuilder#build()}
@@ -7,7 +9,7 @@ package org.kontinuity.catapult.core.api;
  * <p>
  * <ul>
  * <li>sourceGitHubRepo</li>
- * <li>gitHubAccessToken</li>
+ * <li>gitHubIdentity</li>
  * </ul>
  * <p>
  * Each property's valid value and purpose is documented in its setter method.
@@ -20,15 +22,15 @@ public class ProjectileBuilder {
         // No external instances
     }
 
-    ProjectileBuilder(String gitHubAccessToken, String openshiftAccessToken, String openShiftProjectName) {
-        this.gitHubAccessToken = gitHubAccessToken;
-        this.openshiftAccessToken = openshiftAccessToken;
+    ProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName) {
+        this.gitHubIdentity = gitHubIdentity;
+        this.openShiftIdentity = openShiftIdentity;
         this.openShiftProjectName = openShiftProjectName;
     }
 
-    private String gitHubAccessToken;
+    private Identity gitHubIdentity;
 
-    private String openshiftAccessToken;
+    private Identity openShiftIdentity;
 
     /**
      * the name of OpenShift project to create.
@@ -64,11 +66,11 @@ public class ProjectileBuilder {
      * Sets the GitHub access token we have obtained from the user as part of
      * the OAuth process. Required.
      *
-     * @param gitHubAccessToken
+     * @param identity
      * @return This builder
      */
-    public ProjectileBuilder gitHubAccessToken(final String gitHubAccessToken) {
-        this.gitHubAccessToken = gitHubAccessToken;
+    public ProjectileBuilder gitHubIdentity(final Identity identity) {
+        this.gitHubIdentity = identity;
         return this;
     }
 
@@ -76,11 +78,11 @@ public class ProjectileBuilder {
      * Sets the Openshift access token we have obtained from the user as part of
      * the OAuth process. Required.
      *
-     * @param openshiftAccessToken
+     * @param identity
      * @return This builder
      */
-    public ProjectileBuilder openshiftAccessToken(final String openshiftAccessToken) {
-        this.openshiftAccessToken = openshiftAccessToken;
+    public ProjectileBuilder openShiftIdentity(final Identity identity) {
+        this.openShiftIdentity = identity;
         return this;
     }
 
@@ -88,12 +90,12 @@ public class ProjectileBuilder {
      * @return the GitHub access token we have obtained from the user as part of
      * the OAuth process
      */
-    public String getGitHubAccessToken() {
-        return this.gitHubAccessToken;
+    public Identity getGitHubIdentity() {
+        return this.gitHubIdentity;
     }
 
-    public String getOpenshiftAccessToken() {
-        return openshiftAccessToken;
+    public Identity getOpenShiftIdentity() {
+        return openShiftIdentity;
     }
 
     /**
@@ -104,11 +106,11 @@ public class ProjectileBuilder {
     }
 
     public CreateProjectileBuilder createType() {
-        return new CreateProjectileBuilder(getGitHubAccessToken(), getOpenshiftAccessToken(), getOpenShiftProjectName());
+        return new CreateProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName());
     }
 
     public ForkProjectileBuilder forkType() {
-        return new ForkProjectileBuilder(getGitHubAccessToken(), getOpenshiftAccessToken(), getOpenShiftProjectName());
+        return new ForkProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName());
     }
 
     /**
@@ -116,20 +118,22 @@ public class ProjectileBuilder {
      * an {@link IllegalArgumentException} citing the specified name
      * (which is also required ;) )
      *
+     * @param name
      * @param value
      * @throws IllegalStateException
      */
     static void checkSpecified(final String name,
-                               final String value) throws IllegalStateException {
+                               final Object value) throws IllegalStateException {
         assert name != null && !name.isEmpty() : "name is required";
-        if (value == null || value.isEmpty()) {
+
+        if (value == null || (value instanceof String && ((String)value).isEmpty())) {
             throw new IllegalStateException(name + " must be specified");
         }
     }
 
     void build(ProjectileBuilder builder) {
-        ProjectileBuilder.checkSpecified("gitHubAccessToken", this.gitHubAccessToken);
-        ProjectileBuilder.checkSpecified("openshiftAccessToken", this.openshiftAccessToken);
+        ProjectileBuilder.checkSpecified("gitHubIdentity", this.gitHubIdentity);
+        ProjectileBuilder.checkSpecified("openShiftIdentity", this.openShiftIdentity);
         // Default the openshiftProjectName if need be
         try {
             ProjectileBuilder.checkSpecified("openshiftProjectName", this.openShiftProjectName);

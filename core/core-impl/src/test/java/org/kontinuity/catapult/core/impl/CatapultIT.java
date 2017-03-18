@@ -17,9 +17,10 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kontinuity.catapult.base.identity.Identity;
+import org.kontinuity.catapult.base.identity.IdentityBuilder;
 import org.kontinuity.catapult.core.api.Boom;
 import org.kontinuity.catapult.core.api.Catapult;
 import org.kontinuity.catapult.core.api.CreateProjectile;
@@ -141,8 +142,8 @@ public class CatapultIT {
         // Define the projectile with a custom, unique OpenShift project name.
         final String expectedName = getUniqueProjectName();
         final ForkProjectile projectile = ProjectileBuilder.newInstance()
-                .gitHubAccessToken(GitHubTestCredentials.getToken())
-                .openshiftAccessToken(OpenShiftTestCredentials.getToken())
+                .gitHubIdentity(GitHubTestCredentials.getToken())
+                .openShiftIdentity(OpenShiftTestCredentials.getToken())
                 .openShiftProjectName(expectedName)
                 .forkType()
                 .sourceGitHubRepo(GITHUB_SOURCE_REPO_FULLNAME)
@@ -163,8 +164,8 @@ public class CatapultIT {
         final String expectedName = getUniqueProjectName();
         File tempDir = Files.createTempDir();
         final CreateProjectile projectile = ProjectileBuilder.newInstance()
-                .gitHubAccessToken(GitHubTestCredentials.getToken())
-                .openshiftAccessToken(OpenShiftTestCredentials.getToken())
+                .gitHubIdentity(GitHubTestCredentials.getToken())
+                .openShiftIdentity(OpenShiftTestCredentials.getToken())
                 .openShiftProjectName(expectedName)
                 .createType()
                 .projectLocation(tempDir.getPath())
