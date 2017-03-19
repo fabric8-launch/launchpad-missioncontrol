@@ -17,12 +17,12 @@ public class UserPasswordIdentity implements Identity {
         return this.username;
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return this.password;
     }
 
     @Override
-    public void accept(IdentityVisitor visitor){
+    public void accept(IdentityVisitor visitor) {
         visitor.visit(this);
     }
 
