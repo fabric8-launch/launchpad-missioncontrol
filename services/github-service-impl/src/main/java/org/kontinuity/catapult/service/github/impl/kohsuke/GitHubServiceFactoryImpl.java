@@ -63,7 +63,7 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
             throw new RuntimeException("Could not create GitHub client", ioe);
         }
         final GitHubService ghs = new KohsukeGitHubServiceImpl(gitHub, identity);
-        log.finest(() -> "Created backing GitHub client for identity " + identity);
+        log.finest(() -> "Created backing GitHub client for identity using " + identity.getClass().getSimpleName());
         return ghs;
     }
 
