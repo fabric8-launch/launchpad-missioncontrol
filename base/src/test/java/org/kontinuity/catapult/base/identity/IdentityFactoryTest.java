@@ -13,30 +13,30 @@ public class IdentityFactoryTest {
 
     @Test
     public void testTokenIdentity() {
-        TokenIdentity identity = IdentityFactory.usingToken("FOO");
+        TokenIdentity identity = IdentityFactory.createFromToken("FOO");
         Assert.assertThat(identity.getToken(), equalTo("FOO"));
     }
 
     @Test
     public void testUserPasswordIdentity() {
-        UserPasswordIdentity identity = IdentityFactory.usingUserPassword("USER", "PASS");
+        UserPasswordIdentity identity = IdentityFactory.createFromUserPassword("USER", "PASS");
         Assert.assertThat(identity.getUsername(), equalTo("USER"));
         Assert.assertThat(identity.getPassword(), equalTo("PASS"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullTokenIdentityNotSupported() {
-        IdentityFactory.usingToken(null);
+        IdentityFactory.createFromToken(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullUserPasswordIdentityNotSupported() {
-        IdentityFactory.usingUserPassword(null, "PASS");
+        IdentityFactory.createFromUserPassword(null, "PASS");
     }
 
     @Test
     public void testUserNullPasswordIdentity() {
-        UserPasswordIdentity identity = IdentityFactory.usingUserPassword("USER", null);
+        UserPasswordIdentity identity = IdentityFactory.createFromUserPassword("USER", null);
         Assert.assertThat(identity.getUsername(), equalTo("USER"));
         Assert.assertThat(identity.getPassword(), nullValue());
     }

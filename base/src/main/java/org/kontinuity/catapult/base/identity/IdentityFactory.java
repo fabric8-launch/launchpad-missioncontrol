@@ -9,17 +9,11 @@ public class IdentityFactory {
 
     private IdentityFactory(){}
 
-    public static TokenIdentity usingToken(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("Token is required");
-        }
+    public static TokenIdentity createFromToken(String token) {
         return new TokenIdentity(token);
     }
 
-    public static UserPasswordIdentity usingUserPassword(String user, String password) {
-        if (user == null || user.isEmpty()) {
-            throw new IllegalArgumentException("User is required");
-        }
+    public static UserPasswordIdentity createFromUserPassword(String user, String password) {
         return new UserPasswordIdentity(user,password);
     }
 }

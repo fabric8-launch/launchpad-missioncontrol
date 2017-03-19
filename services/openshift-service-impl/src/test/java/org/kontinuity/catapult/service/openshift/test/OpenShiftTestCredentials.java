@@ -21,6 +21,6 @@ public class OpenShiftTestCredentials {
      * @return the Openshift token
      */
     public static Identity getToken() {
-        return IdentityFactory.usingToken(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_OPENSHIFT_TOKEN));
+        return IdentityFactory.createFromToken(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_OPENSHIFT_TOKEN));
     }
 }

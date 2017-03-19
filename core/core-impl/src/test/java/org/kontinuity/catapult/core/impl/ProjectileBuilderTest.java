@@ -108,8 +108,8 @@ public class ProjectileBuilderTest {
     private ForkProjectileBuilder getPopulatedBuilder() {
         return ProjectileBuilder.newInstance()
                 .openShiftProjectName(SOME_VALUE)
-                .gitHubIdentity(IdentityFactory.usingToken(SOME_VALUE))
-                .openShiftIdentity(IdentityFactory.usingToken(SOME_VALUE))
+                .gitHubIdentity(IdentityFactory.createFromToken(SOME_VALUE))
+                .openShiftIdentity(IdentityFactory.createFromToken(SOME_VALUE))
                 .forkType()
                 .sourceGitHubRepo(REPO_VALUE)
                 .gitRef(SOME_VALUE)

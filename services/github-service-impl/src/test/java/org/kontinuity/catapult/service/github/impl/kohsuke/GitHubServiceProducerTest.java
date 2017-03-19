@@ -20,7 +20,7 @@ public class GitHubServiceProducerTest {
     @Test
     public void createsInstance() {
         // when
-        final GitHubService service = new GitHubServiceFactoryImpl().create(IdentityFactory.usingUserPassword("test", "test"));
+        final GitHubService service = new GitHubServiceFactoryImpl().create(IdentityFactory.createFromUserPassword("test", "test"));
         // then
         Assert.assertNotNull("instance was not created", service);
     }

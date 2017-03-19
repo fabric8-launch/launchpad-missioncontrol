@@ -87,7 +87,7 @@ public class CatapultResource {
         }
 
         ForkProjectile projectile = ProjectileBuilder.newInstance()
-                .gitHubIdentity(IdentityFactory.usingToken(gitHubAccessToken))
+                .gitHubIdentity(IdentityFactory.createFromToken(gitHubAccessToken))
                 .forkType()
                 .sourceGitHubRepo(sourceGitHubRepo)
                 .gitRef(gitRef)
@@ -121,7 +121,7 @@ public class CatapultResource {
                     return createCreateRedirectUrl(path);
                 }
                 CreateProjectile projectile = ProjectileBuilder.newInstance()
-                        .gitHubIdentity(IdentityFactory.usingToken(gitHubAccessToken))
+                        .gitHubIdentity(IdentityFactory.createFromToken(gitHubAccessToken))
                         .createType()
                         .projectLocation(path)
                         .build();
@@ -143,7 +143,7 @@ public class CatapultResource {
             return createCreateRedirectUrl(projectLocation);
         }
         CreateProjectile projectile = ProjectileBuilder.newInstance()
-                .gitHubIdentity(IdentityFactory.usingToken(gitHubAccessToken))
+                .gitHubIdentity(IdentityFactory.createFromToken(gitHubAccessToken))
                 .createType()
                 .projectLocation(projectLocation)
                 .build();

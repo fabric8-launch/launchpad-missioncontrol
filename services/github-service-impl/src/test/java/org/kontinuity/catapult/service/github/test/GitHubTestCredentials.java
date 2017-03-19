@@ -32,7 +32,7 @@ public class GitHubTestCredentials {
      * @return the GitHub token
      */
     public static Identity getToken() {
-        return IdentityFactory.usingToken(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_GITHUB_TOKEN));
+        return IdentityFactory.createFromToken(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_GITHUB_TOKEN));
     }
 
     /**

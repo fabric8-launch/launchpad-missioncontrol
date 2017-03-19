@@ -9,6 +9,9 @@ public class UserPasswordIdentity implements Identity {
     private final String password;
 
     UserPasswordIdentity(String username, String password) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("User is required");
+        }
         this.username = username;
         this.password = password;
     }

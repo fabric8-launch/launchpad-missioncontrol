@@ -7,6 +7,9 @@ public class TokenIdentity implements Identity {
     private final String token;
 
     TokenIdentity(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token is required");
+        }
         this.token = token;
     }
 
