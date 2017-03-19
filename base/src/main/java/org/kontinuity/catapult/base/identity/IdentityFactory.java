@@ -10,12 +10,16 @@ public class IdentityFactory {
     private IdentityFactory(){}
 
     public static TokenIdentity usingToken(String token) {
-        assert token != null && !token.isEmpty() : "token is required";
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token is required");
+        }
         return new TokenIdentity(token);
     }
 
     public static UserPasswordIdentity usingUserPassword(String user, String password) {
-        assert user != null && !user.isEmpty() : "user is required";
+        if (user == null || user.isEmpty()) {
+            throw new IllegalArgumentException("User is required");
+        }
         return new UserPasswordIdentity(user,password);
     }
 }

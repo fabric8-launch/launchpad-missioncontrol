@@ -1,43 +1,44 @@
 package org.kontinuity.catapult.base.identity;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+
 /**
- * Created by georgegastaldi on 17/03/17.
+ * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
 public class IdentityFactoryTest {
 
     @Test
     public void testTokenIdentity() {
-        final AtomicBoolean test = new AtomicBoolean();
         TokenIdentity identity = IdentityFactory.usingToken("FOO");
-        Assert.assertThat(identity.getToken(), CoreMatchers.equalTo("FOO"));
-        identity.accept(new IdentityVisitor() {
-            @Override
-            public void visit(TokenIdentity token) {
-                test.set(true);
-            }
-        });
-        Assert.assertTrue(test.get());
+        Assert.assertThat(identity.getToken(), equalTo("FOO"));
     }
 
     @Test
     public void testUserPasswordIdentity() {
-        final AtomicBoolean test = new AtomicBoolean();
         UserPasswordIdentity identity = IdentityFactory.usingUserPassword("USER", "PASS");
-        Assert.assertThat(identity.getUsername(), CoreMatchers.equalTo("USER"));
-        Assert.assertThat(identity.getPassword(), CoreMatchers.equalTo("PASS"));
-        identity.accept(new IdentityVisitor() {
-            @Override
-            public void visit(UserPasswordIdentity userPasswordIdentity) {
-                test.set(true);
-            }
-        });
-        Assert.assertTrue(test.get());
+        Assert.assertThat(identity.getUsername(), equalTo("USER"));
+        Assert.assertThat(identity.getPassword(), equalTo("PASS"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullTokenIdentityNotSupported() {
+        IdentityFactory.usingToken(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullUserPasswordIdentityNotSupported() {
+        IdentityFactory.usingUserPassword(null, "PASS");
+    }
+
+    @Test
+    public void testUserNullPasswordIdentity() {
+        UserPasswordIdentity identity = IdentityFactory.usingUserPassword("USER", null);
+        Assert.assertThat(identity.getUsername(), equalTo("USER"));
+        Assert.assertThat(identity.getPassword(), nullValue());
     }
 
 }
