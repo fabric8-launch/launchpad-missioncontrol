@@ -11,14 +11,15 @@ import org.kontinuity.catapult.base.identity.Identity;
  * <p>
  * <ul>
  * <li>gitHubIdentity</li>
+ * <li>openShiftIdentity</li>
  * <li>projectLocation</li>
  * </ul>
  * <p>
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class CreateProjectileBuilder extends ProjectileBuilder {
-    CreateProjectileBuilder(Identity gitHubAccessToken, Identity openshiftAccessToken, String openShiftProjectName) {
-        super(gitHubAccessToken, openshiftAccessToken, openShiftProjectName);
+    CreateProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName) {
+        super(gitHubIdentity, openShiftIdentity, openShiftProjectName);
     }
 
     private String projectLocation;
