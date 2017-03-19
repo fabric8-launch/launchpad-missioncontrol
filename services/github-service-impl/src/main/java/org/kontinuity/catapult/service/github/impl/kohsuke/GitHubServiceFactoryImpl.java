@@ -37,7 +37,7 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
 
         // Precondition checks
         if (identity == null) {
-            throw new IllegalArgumentException("password/token is required");
+            throw new IllegalArgumentException("Identity is required");
         }
 
         final GitHub gitHub;

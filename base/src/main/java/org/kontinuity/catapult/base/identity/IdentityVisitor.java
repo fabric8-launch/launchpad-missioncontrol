@@ -1,6 +1,10 @@
 package org.kontinuity.catapult.base.identity;
 
 /**
+ * Visitor pattern used in conjuntion with Identity.  
+ * Implementations should consume the corresponding Identity type by implementing the supported methods in this interface.
+ * Unimplemented methods throw UnsupportedOperationException.
+ *
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
 public interface IdentityVisitor {
