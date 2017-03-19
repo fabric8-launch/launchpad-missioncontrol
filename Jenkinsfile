@@ -14,10 +14,10 @@ node{
             credentialsId: 'distortion-gh-test-access-token', variable: 'GITHUB_TOKEN']]) {
 
                 withCredentials([[$class: 'StringBinding',
-                credentialsId: 'distortion-gh-test-client-id', variable: 'KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID']]) {
+                credentialsId: 'distortion-gh-test-client-id', variable: 'CATAPULT_GITHUB_APP_CLIENT_ID']]) {
 
                     withCredentials([[$class: 'StringBinding',
-                    credentialsId: 'distortion-gh-test-client-secret', variable: 'KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET']]) {
+                    credentialsId: 'distortion-gh-test-client-secret', variable: 'CATAPULT_GITHUB_APP_CLIENT_SECRET']]) {
 
                         kubernetes.pod('buildtestpod').withImage('maven')
                         .withPrivileged(true)
@@ -49,10 +49,10 @@ node{
             credentialsId: 'distortion-gh-test-access-token', variable: 'GITHUB_TOKEN']]) {
 
                 withCredentials([[$class: 'StringBinding', 
-                credentialsId: 'distortion-gh-test-client-id', variable: 'KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID']]) {
+                credentialsId: 'distortion-gh-test-client-id', variable: 'CATAPULT_GITHUB_APP_CLIENT_ID']]) {
 
                     withCredentials([[$class: 'StringBinding', 
-                    credentialsId: 'distortion-gh-test-client-secret', variable: 'KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET']]) {
+                    credentialsId: 'distortion-gh-test-client-secret', variable: 'CATAPULT_GITHUB_APP_CLIENT_SECRET']]) {
         
                         kubernetes.pod('itpod').withImage('maven')
                         .withPrivileged(true)

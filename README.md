@@ -70,8 +70,8 @@ Prerequisites to Run Integration Tests
             
     * You will be shown your new application's `Client ID` and `Client Secret`
         * Set environment variables for these
-            * `KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID`
-            * `KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET`
+            * `CATAPULT_GITHUB_APP_CLIENT_ID`
+            * `CATAPULT_GITHUB_APP_CLIENT_SECRET`
         * You may need to log in again or `source` your `~/.bash_profile` or `~/.profile`, depending upon how you've set the environment variables (system-specific).
    
 3. A locally-running instance of OpenShift 

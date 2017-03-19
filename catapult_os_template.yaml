@@ -48,10 +48,10 @@ objects:
             value: https://openshift.default.svc.cluster.local
           - name: CATAPULT_OPENSHIFT_CONSOLE_URL
             value: ${CATAPULT_OPENSHIFT_CONSOLE_URL}
-          - name: KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID
-            value: ${KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID}
-          - name: KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET
-            value: ${KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET}
+          - name: CATAPULT_GITHUB_APP_CLIENT_ID
+            value: ${CATAPULT_GITHUB_APP_CLIENT_ID}
+          - name: CATAPULT_GITHUB_APP_CLIENT_SECRET
+            value: ${CATAPULT_GITHUB_APP_CLIENT_SECRET}
           - name: CATAPULT_KEYCLOAK_URL
             value: ${CATAPULT_KEYCLOAK_URL}
           - name: CATAPULT_KEYCLOAK_REALM
@@ -123,11 +123,11 @@ parameters:
   name: APPLICATION_DOMAIN
 - description: The Client ID of the GitHub OAuth Application you've registered
   displayName: GitHub OAuth Developer Application Client ID
-  name: KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_ID
+  name: CATAPULT_GITHUB_APP_CLIENT_ID
   required: true
 - description: The Client Secret of the GitHub OAuth Application you've registered
   displayName: GitHub OAuth Developer Application Client Secret
-  name: KONTINUITY_CATAPULT_GITHUB_APP_CLIENT_SECRET
+  name: CATAPULT_GITHUB_APP_CLIENT_SECRET
   required: true
 - description: The base URL of the OpenShift Console (ie. https://hostname:port or
     https://ipaddress:port)
