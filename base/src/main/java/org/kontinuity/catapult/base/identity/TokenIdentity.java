@@ -15,7 +15,7 @@ public class TokenIdentity implements Identity {
     }
 
     @Override
-    public void accept(IdentityVisitor visitor){
+    public void accept(IdentityVisitor visitor) {
         visitor.visit(this);
     }
 }
