@@ -2,7 +2,7 @@ package org.kontinuity.catapult.service.github.impl.kohsuke;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.kontinuity.catapult.base.identity.IdentityBuilder;
+import org.kontinuity.catapult.base.identity.IdentityFactory;
 import org.kontinuity.catapult.service.github.api.GitHubService;
 
 /**
@@ -20,7 +20,7 @@ public class GitHubServiceProducerTest {
     @Test
     public void createsInstance() {
         // when
-        final GitHubService service = new GitHubServiceFactoryImpl().create(IdentityBuilder.usingUserPassword("test","test"));
+        final GitHubService service = new GitHubServiceFactoryImpl().create(IdentityFactory.usingUserPassword("test", "test"));
         // then
         Assert.assertNotNull("instance was not created", service);
     }

@@ -31,7 +31,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-import org.kontinuity.catapult.base.identity.IdentityBuilder;
+import org.kontinuity.catapult.base.identity.IdentityFactory;
 import org.kontinuity.catapult.core.api.Boom;
 import org.kontinuity.catapult.core.api.Catapult;
 import org.kontinuity.catapult.core.api.CreateProjectile;
@@ -87,7 +87,7 @@ public class CatapultResource {
         }
 
         ForkProjectile projectile = ProjectileBuilder.newInstance()
-                .gitHubIdentity(IdentityBuilder.usingToken(gitHubAccessToken))
+                .gitHubIdentity(IdentityFactory.usingToken(gitHubAccessToken))
                 .forkType()
                 .sourceGitHubRepo(sourceGitHubRepo)
                 .gitRef(gitRef)
@@ -121,7 +121,7 @@ public class CatapultResource {
                     return createCreateRedirectUrl(path);
                 }
                 CreateProjectile projectile = ProjectileBuilder.newInstance()
-                        .gitHubIdentity(IdentityBuilder.usingToken(gitHubAccessToken))
+                        .gitHubIdentity(IdentityFactory.usingToken(gitHubAccessToken))
                         .createType()
                         .projectLocation(path)
                         .build();
@@ -143,7 +143,7 @@ public class CatapultResource {
             return createCreateRedirectUrl(projectLocation);
         }
         CreateProjectile projectile = ProjectileBuilder.newInstance()
-                .gitHubIdentity(IdentityBuilder.usingToken(gitHubAccessToken))
+                .gitHubIdentity(IdentityFactory.usingToken(gitHubAccessToken))
                 .createType()
                 .projectLocation(projectLocation)
                 .build();

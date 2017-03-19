@@ -2,7 +2,7 @@ package org.kontinuity.catapult.core.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.kontinuity.catapult.base.identity.IdentityBuilder;
+import org.kontinuity.catapult.base.identity.IdentityFactory;
 import org.kontinuity.catapult.core.api.ForkProjectileBuilder;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.core.api.ProjectileBuilder;
@@ -108,8 +108,8 @@ public class ProjectileBuilderTest {
     private ForkProjectileBuilder getPopulatedBuilder() {
         return ProjectileBuilder.newInstance()
                 .openShiftProjectName(SOME_VALUE)
-                .gitHubIdentity(IdentityBuilder.usingToken(SOME_VALUE))
-                .openShiftIdentity(IdentityBuilder.usingToken(SOME_VALUE))
+                .gitHubIdentity(IdentityFactory.usingToken(SOME_VALUE))
+                .openShiftIdentity(IdentityFactory.usingToken(SOME_VALUE))
                 .forkType()
                 .sourceGitHubRepo(REPO_VALUE)
                 .gitRef(SOME_VALUE)

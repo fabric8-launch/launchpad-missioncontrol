@@ -1,13 +1,21 @@
 package org.kontinuity.catapult.base.identity;
 
 /**
- * Created by georgegastaldi on 17/03/17.
+ * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
-public interface TokenIdentity extends Identity {
-    String getToken();
+public class TokenIdentity implements Identity {
+    private final String token;
+
+    TokenIdentity(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
 
     @Override
-    default void accept(IdentityVisitor visitor){
+    public void accept(IdentityVisitor visitor){
         visitor.visit(this);
     }
 }

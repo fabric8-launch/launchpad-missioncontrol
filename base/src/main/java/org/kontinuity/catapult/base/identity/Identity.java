@@ -1,10 +1,11 @@
 package org.kontinuity.catapult.base.identity;
 
+import java.util.function.Consumer;
+
 /**
  * Represents an identity used by authentication engines.
  *
- * Created by georgegastaldi on 17/03/17.
+ * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
-public interface Identity {
-    void accept(IdentityVisitor visitor);
+public interface Identity extends Consumer<IdentityVisitor> {
 }

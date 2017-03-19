@@ -1,14 +1,28 @@
 package org.kontinuity.catapult.base.identity;
 
 /**
- * Created by georgegastaldi on 17/03/17.
+ * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
-public interface UserPasswordIdentity extends Identity {
-    String getUsername();
-    String getPassword();
+public class UserPasswordIdentity implements Identity {
+
+    private final String username;
+    private final String password;
+
+    UserPasswordIdentity(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getPassword(){
+        return this.password;
+    }
 
     @Override
-    default void accept(IdentityVisitor visitor){
+    public void accept(IdentityVisitor visitor){
         visitor.visit(this);
     }
 
