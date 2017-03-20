@@ -11,28 +11,28 @@ public class KeycloakServiceIT {
     public void testInvalidTokenOpenshift() {
         String token = "token";
         KeycloakServiceImpl service = new KeycloakServiceImpl();
-        Assert.assertNotNull(service.getOpenShiftToken(token));
+        Assert.assertNotNull(service.getOpenShiftIdentity(token));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidTokenGithub() {
         String token = "InvalidToken";
         KeycloakServiceImpl service = new KeycloakServiceImpl();
-        Assert.assertNotNull(service.getGithubToken(token));
+        Assert.assertNotNull(service.getGithubIdentity(token));
     }
 
     @Test
     public void testValidTokenGithub() {
         String token = KeycloakTestCredentials.getToken();
         KeycloakServiceImpl service = new KeycloakServiceImpl();
-        Assert.assertNotNull(service.getGithubToken(token));
+        Assert.assertNotNull(service.getGithubIdentity(token));
     }
 
     @Test
     public void testValidTokenOpenshift() {
         String token = KeycloakTestCredentials.getToken();
         KeycloakServiceImpl service = new KeycloakServiceImpl();
-        Assert.assertNotNull(service.getOpenShiftToken(token));
+        Assert.assertNotNull(service.getOpenShiftIdentity(token));
     }
 
 }

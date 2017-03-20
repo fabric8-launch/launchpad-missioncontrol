@@ -12,6 +12,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import org.kontinuity.catapult.base.EnvironmentSupport;
+import org.kontinuity.catapult.base.identity.Identity;
+import org.kontinuity.catapult.base.identity.IdentityFactory;
 import org.kontinuity.catapult.service.keycloak.api.KeycloakService;
 
 /**
@@ -21,7 +23,11 @@ import org.kontinuity.catapult.service.keycloak.api.KeycloakService;
  */
 @ApplicationScoped
 public class KeycloakServiceImpl implements KeycloakService {
+
     private static final String TOKEN_URL_TEMPLATE = "%s/auth/realms/%s/broker/%s/token";
+
+    public static final String CATAPULT_KEYCLOAK_URL = "CATAPULT_KEYCLOAK_URL";
+    public static final String CATAPULT_KEYCLOAK_REALM = "CATAPULT_KEYCLOAK_REALM";
 
     private final String gitHubURL;
 
@@ -31,8 +37,8 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Inject
     public KeycloakServiceImpl() {
-        this(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_KEYCLOAK_URL"),
-             EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_KEYCLOAK_REALM"));
+        this(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(CATAPULT_KEYCLOAK_URL),
+             EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(CATAPULT_KEYCLOAK_REALM));
     }
 
     public KeycloakServiceImpl(String keyCloakURL, String realm) {
@@ -50,8 +56,13 @@ public class KeycloakServiceImpl implements KeycloakService {
      * @return
      */
     @Override
-    public String getOpenShiftToken(String keycloakAccessToken) {
-        return getToken(openShiftURL, keycloakAccessToken);
+    public Identity getOpenShiftIdentity(String keycloakAccessToken) {
+        String userName = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_USER_NAME");
+        if (userName != null) {
+            String userPassword = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_USER_PASSWORD");
+            return IdentityFactory.createFromUserPassword(userName, userPassword);
+        }
+        return IdentityFactory.createFromToken(getToken(openShiftURL, keycloakAccessToken));
     }
 
     /**
@@ -62,8 +73,8 @@ public class KeycloakServiceImpl implements KeycloakService {
      * @return
      */
     @Override
-    public String getGithubToken(String keycloakAccessToken) throws IllegalArgumentException {
-        return getToken(gitHubURL, keycloakAccessToken);
+    public Identity getGithubIdentity(String keycloakAccessToken) throws IllegalArgumentException {
+        return IdentityFactory.createFromToken(getToken(gitHubURL, keycloakAccessToken));
     }
 
     /**

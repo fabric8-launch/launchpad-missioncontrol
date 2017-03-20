@@ -1,5 +1,7 @@
 package org.kontinuity.catapult.core.api;
 
+import java.nio.file.Path;
+
 /**
  * Value object defining the inputs to {@link Catapult#fling(Projectile)};
  * immutable and pre-checked for valid state during creation.
@@ -18,9 +20,9 @@ public class CreateProjectile extends Projectile {
         this.projectLocation = builder.getProjectLocation();
     }
 
-    private final String projectLocation;
+    private final Path projectLocation;
 
-    public String getProjectLocation() {
+    public Path getProjectLocation() {
         return projectLocation;
     }
 }

@@ -166,7 +166,7 @@ public class CatapultIT {
                 .openShiftIdentity(OpenShiftTestCredentials.getToken())
                 .openShiftProjectName(expectedName)
                 .createType()
-                .projectLocation(tempDir.getPath())
+                .projectLocation(tempDir.toPath())
                 .build();
 
         // Mark GitHub repo for deletion

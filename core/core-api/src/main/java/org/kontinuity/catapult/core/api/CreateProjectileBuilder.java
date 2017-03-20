@@ -1,6 +1,6 @@
 package org.kontinuity.catapult.core.api;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.kontinuity.catapult.base.identity.Identity;
 
@@ -22,7 +22,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
         super(gitHubIdentity, openShiftIdentity, openShiftProjectName);
     }
 
-    private String projectLocation;
+    private Path projectLocation;
 
     /**
      * Creates and returns a new {@link CreateProjectile} instance based on the
@@ -45,7 +45,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
      * @param projectLocation
      * @return This builder
      */
-    public org.kontinuity.catapult.core.api.CreateProjectileBuilder projectLocation(final String projectLocation) {
+    public org.kontinuity.catapult.core.api.CreateProjectileBuilder projectLocation(final Path projectLocation) {
         this.projectLocation = projectLocation;
         return this;
     }
@@ -53,12 +53,13 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     /**
      * @return the location of the project to "upload" to GitHub.
      */
-    public String getProjectLocation() {
+    public Path getProjectLocation() {
         return projectLocation;
     }
 
     @Override
     String createDefaultProjectName() {
-        return projectLocation.substring(projectLocation.lastIndexOf(File.separator) + 1);
+
+        return projectLocation.getFileName().toString();
     }
 }

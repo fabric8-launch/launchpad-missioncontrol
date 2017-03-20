@@ -13,14 +13,14 @@ public class KeycloakServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidRequestURL() {
         KeycloakServiceImpl service = new KeycloakServiceImpl("foo","realm");
-        service.getOpenShiftToken("anything");
+        service.getOpenShiftIdentity("anything");
     }
 
     @Test(expected = IllegalStateException.class)
     public void testInvalidRequest() {
         //Service should not be available
         KeycloakServiceImpl service = new KeycloakServiceImpl("http://localhost:5555","realm");
-        service.getOpenShiftToken("token");
+        service.getOpenShiftIdentity("token");
         Assert.fail("Should have thrown IllegalStateException");
     }
 }

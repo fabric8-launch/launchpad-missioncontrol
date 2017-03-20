@@ -1,64 +1,67 @@
 package org.kontinuity.catapult.web.api;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Helper class that helps us with file uploads.
  */
 class FileUploadHelper {
 
+    private FileUploadHelper() {
+    }
+
     /**
      * Unzip a zip file into a temporary location
      *
-     * @param zipFile the zip file to be unzipped
+     * @param is the zip file contents to be unzipped
+     * @param outputDir the output directory
      * @throws IOException when we could not read the file
      */
-    static void unzip(File zipFile) throws IOException {
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
-            ZipEntry zipEntry = zis.getNextEntry();
-            while (zipEntry != null) {
-                String fileName = zipEntry.getName();
-                File file = new File(zipFile.getParent(), fileName);
-                if (!zipEntry.isDirectory()) {
-                    IOUtils.copy(zis, new FileOutputStream(file));
+    public static void unzip(InputStream is, Path outputDir) throws IOException {
+        try (ZipInputStream zis = new ZipInputStream(is)) {
+            ZipEntry zipEntry = null;
+            while ((zipEntry = zis.getNextEntry()) != null) {
+                Path entry = outputDir.resolve(zipEntry.getName());
+                if (zipEntry.isDirectory()) {
+                    Files.createDirectories(entry);
                 } else {
-                    FileUtils.forceMkdir(file);
+                    Files.copy(zis, entry);
                 }
-                zipEntry = zis.getNextEntry();
+                zis.closeEntry();
             }
         }
     }
 
     /**
-     * Get the file name from the `Content-Disposition` in the request headers of a form-data request
+     * Deletes a directory recursively
      *
-     * @param headers to find the file name in.
-     * @return the name of the file or `unknown` if not found
+     * @param directory
+     * @throws IOException
      */
-    static String getFileName(MultivaluedMap<String, String> headers) {
-        String[] contentDisposition = headers.getFirst("Content-Disposition").split(";");
+    public static void deleteDirectory(Path directory) throws IOException {
+        if (directory != null) {
+            Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.delete(file);
+                    return FileVisitResult.CONTINUE;
+                }
 
-        for (String filename : contentDisposition) {
-            if ((filename.trim().startsWith("filename"))) {
-                String[] name = filename.split("=");
-                return sanitizeFilename(name[1]);
-            }
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         }
-        return "unknown";
-    }
-
-    private static String sanitizeFilename(String s) {
-        return s.trim().replaceAll("\"", "");
     }
 
 }

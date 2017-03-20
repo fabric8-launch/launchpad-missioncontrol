@@ -89,7 +89,7 @@ public class CatapultImpl implements Catapult {
     public Boom fling(CreateProjectile projectile) throws IllegalArgumentException {
         final GitHubService gitHubService = getGitHubService(projectile);
         String projectName = projectile.getOpenShiftProjectName();
-        File path = new File(projectile.getProjectLocation());
+        File path = projectile.getProjectLocation().toFile();
         GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, " ");
         gitHubService.push(gitHubRepository, path);
 

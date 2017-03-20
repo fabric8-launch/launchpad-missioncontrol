@@ -229,6 +229,17 @@
         <version>${version.org.assertj_assertj-core}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-multipart-provider</artifactId>
+        <version>${version.org.jboss.resteasy_resteasy.multipart.provider}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${version.org.apache.httpcomponents_httpclient}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -236,17 +247,6 @@
       <groupId>javax</groupId>
       <artifactId>javaee-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-multipart-provider</artifactId>
-      <version>${version.org.jboss.resteasy_resteasy.multipart.provider}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${version.org.apache.httpcomponents_httpclient}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
