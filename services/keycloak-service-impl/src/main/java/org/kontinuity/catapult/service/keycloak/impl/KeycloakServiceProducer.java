@@ -17,7 +17,7 @@ public class KeycloakServiceProducer {
         String user = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_USERNAME");
         String password = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_PASSWORD");
         if (user != null && password != null) {
-            return new KeycloakServiceImpl();
+            return new KeycloakServiceMock();
         }
         return new KeycloakServiceImpl();
     }
