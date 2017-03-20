@@ -32,11 +32,10 @@ public interface KeycloakService {
      * @return
      */
     default  String extractKeycloakTokenFromHeader(String value) {
-        int idx = value.indexOf("Bearer ");
-        if (idx < 0) {
+        if (!value.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Bearer token not found");
         }
-        return value.substring(idx + 8);
+        return value.substring(7);
     }
 
 }
