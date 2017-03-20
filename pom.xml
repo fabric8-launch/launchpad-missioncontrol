@@ -249,6 +249,15 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-multipart-provider</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
