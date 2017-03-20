@@ -57,10 +57,9 @@ public class KeycloakServiceImpl implements KeycloakService {
      */
     @Override
     public Identity getOpenShiftIdentity(String keycloakAccessToken) {
-        String userName = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_USER_NAME");
-        if (userName != null) {
-            String userPassword = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_USER_PASSWORD");
-            return IdentityFactory.createFromUserPassword(userName, userPassword);
+        String token = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_TOKEN");
+        if (token != null) {
+            return IdentityFactory.createFromToken(token);
         }
         return IdentityFactory.createFromToken(getToken(openShiftURL, keycloakAccessToken));
     }
