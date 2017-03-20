@@ -57,11 +57,6 @@ public class KeycloakServiceImpl implements KeycloakService {
      */
     @Override
     public Identity getOpenShiftIdentity(String keycloakAccessToken) {
-        // Try using the provided Openshift token
-        String token = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_TOKEN");
-        if (token != null) {
-            return IdentityFactory.createFromToken(token);
-        }
         return IdentityFactory.createFromToken(getToken(openShiftURL, keycloakAccessToken));
     }
 
@@ -74,11 +69,6 @@ public class KeycloakServiceImpl implements KeycloakService {
      */
     @Override
     public Identity getGithubIdentity(String keycloakAccessToken) throws IllegalArgumentException {
-        // Try using the provided Github token
-        String token = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("GITHUB_TOKEN");
-        if (token != null) {
-            return IdentityFactory.createFromToken(token);
-        }
         return IdentityFactory.createFromToken(getToken(gitHubURL, keycloakAccessToken));
     }
 
