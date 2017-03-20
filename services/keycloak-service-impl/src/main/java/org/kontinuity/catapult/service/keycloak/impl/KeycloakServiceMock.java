@@ -13,7 +13,7 @@ public class KeycloakServiceMock implements KeycloakService {
     @Override
     public Identity getOpenShiftIdentity(String token) {
         // Read from the ENV variables
-        String user = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_OPENSHIFT_USER");
+        String user = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_OPENSHIFT_USERNAME");
         String password = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_OPENSHIFT_PASSWORD");
         return IdentityFactory.createFromUserPassword(user,password);
     }
@@ -24,4 +24,11 @@ public class KeycloakServiceMock implements KeycloakService {
         String val = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("GITHUB_TOKEN");
         return IdentityFactory.createFromToken(val);
     }
+
+    public static boolean isEnabled() {
+        String user = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_USERNAME");
+        String password = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_PASSWORD");
+        return (user != null && password != null);
+    }
+
 }

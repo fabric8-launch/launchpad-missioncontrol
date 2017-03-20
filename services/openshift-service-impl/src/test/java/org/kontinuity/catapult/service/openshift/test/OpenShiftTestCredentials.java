@@ -15,12 +15,15 @@ public class OpenShiftTestCredentials {
         // No instances
     }
 
-    private static final String NAME_ENV_VAR_SYSPROP_OPENSHIFT_TOKEN = "CATAPULT_OPENSHIFT_TOKEN";
+    private static final String NAME_ENV_VAR_SYSPROP_OPENSHIFT_USERNAME = "CATAPULT_OPENSHIFT_USERNAME";
+    private static final String NAME_ENV_VAR_SYSPROP_OPENSHIFT_PASSWORD = "CATAPULT_OPENSHIFT_PASSWORD";
 
     /**
      * @return the Openshift token
      */
     public static Identity getToken() {
-        return IdentityFactory.createFromToken(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_OPENSHIFT_TOKEN));
+        return IdentityFactory.createFromUserPassword(
+                EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_OPENSHIFT_USERNAME),
+                EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(NAME_ENV_VAR_SYSPROP_OPENSHIFT_PASSWORD));
     }
 }
