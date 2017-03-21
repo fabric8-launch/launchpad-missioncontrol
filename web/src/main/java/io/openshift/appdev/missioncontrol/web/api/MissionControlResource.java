@@ -13,6 +13,9 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -20,13 +23,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import io.openshift.appdev.missioncontrol.base.EnvironmentSupport;
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
@@ -53,6 +56,8 @@ public class MissionControlResource {
     private static final String PATH_LAUNCH = "/launch";
 
     private static final String PATH_UPLOAD = "/upload";
+
+    private static final String PATH_STATUS = "/status";
 
     /*
      MissionControl Query Parameters
@@ -84,7 +89,8 @@ public class MissionControlResource {
 
     @GET
     @Path(PATH_LAUNCH)
-    public Response fling(
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject fling(
             @Context final HttpServletRequest request,
             @NotNull @QueryParam(QUERY_PARAM_SOURCE_REPO) final String sourceGitHubRepo,
             @NotNull @QueryParam(QUERY_PARAM_GIT_REF) final String gitRef,
@@ -111,16 +117,17 @@ public class MissionControlResource {
                 .build();
         // Fling it
         executorService.submit(() -> missionControl.launch(projectile));
-        return Response.ok(Json.createObjectBuilder()
+        return Json.createObjectBuilder()
                                    .add("uuid", projectile.getId().toString())
-                                   .build())
-                .build();
+                                   .add("uuid_link", PATH_MISSIONCONTROL + PATH_STATUS + "/" + projectile.getId().toString())
+                                   .build();
     }
 
     @POST
     @Path(PATH_UPLOAD)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response upload(
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject upload(
             @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
             @MultipartForm UploadForm form) {
 
@@ -150,10 +157,10 @@ public class MissionControlResource {
                     // Fling it
                     CompletableFuture.supplyAsync(() -> missionControl.launch(projectile), executorService)
                             .whenComplete((boom, ex) -> FileUploadHelper.deleteDirectory(tempDir));
-                    return Response.ok(Json.createObjectBuilder()
+                    return Json.createObjectBuilder()
                                                .add("uuid", projectile.getId().toString())
-                                               .build())
-                            .build();
+                                               .add("uuid_link", PATH_CATAPULT + PATH_STATUS + "/" + projectile.getId().toString())
+                                               .build();
                 }
             }
         } catch (final IOException e) {
@@ -165,6 +172,15 @@ public class MissionControlResource {
                 log.log(Level.SEVERE, "Could not delete " + tempDir, e);
             }
         }
+    }
+
+    @GET
+    @Path(PATH_STATUS)
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonArray status(@PathParam("uuid") String uuid) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        arrayBuilder.add("Add status for " + uuid);
+        return arrayBuilder.build();
     }
 
 
