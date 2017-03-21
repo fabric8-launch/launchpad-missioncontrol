@@ -58,25 +58,24 @@ public class MissionControlImpl implements MissionControl {
         final String projectName = projectile.getOpenShiftProjectName();
 
         /*
-          TODO Figure how to best handle posilbe DuplicateProjectException, but has to be handled to the user at some intelligent level
+          TODO Figure how to best handle possible DuplicateProjectException, but has to be handled to the user at some intelligent level
          */
         OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
         final OpenShiftProject createdProject = openShiftService.createProject(projectName);
 
-        ForkProjectile forkProjectile = projectile;
         /*
          * Construct the full URI for the pipeline template file,
          * relative to the repository root
          */
         final URI pipelineTemplateUri = UriBuilder.fromUri("https://raw.githubusercontent.com/")
-                .path(forkProjectile.getSourceGitHubRepo())
-                .path(forkProjectile.getGitRef())
-                .path(forkProjectile.getPipelineTemplatePath()).build();
+                .path(projectile.getSourceGitHubRepo())
+                .path(projectile.getGitRef())
+                .path(projectile.getPipelineTemplatePath()).build();
 
         // Configure the OpenShift project
         openShiftService.configureProject(createdProject,
                                           gitHubRepository.getGitCloneUri(),
-                                          forkProjectile.getGitRef(),
+                                          projectile.getGitRef(),
                                           pipelineTemplateUri);
 
         GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);

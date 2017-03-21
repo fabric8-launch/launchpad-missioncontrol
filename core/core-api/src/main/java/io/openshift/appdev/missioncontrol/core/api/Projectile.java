@@ -1,5 +1,7 @@
 package io.openshift.appdev.missioncontrol.core.api;
 
+import java.util.UUID;
+
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
 
 /**
@@ -9,6 +11,8 @@ import io.openshift.appdev.missioncontrol.base.identity.Identity;
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
 public abstract class Projectile {
+
+    private final UUID id = UUID.randomUUID();
 
     private final Identity gitHubIdentity;
 
@@ -24,6 +28,13 @@ public abstract class Projectile {
         this.gitHubIdentity = builder.getGitHubIdentity();
         this.openShiftIdentity = builder.getOpenShiftIdentity();
         this.openShiftProjectName = builder.getOpenShiftProjectName();
+    }
+
+    /**
+     * @return return the unique id for this projectile
+     */
+    public UUID getId() {
+        return id;
     }
 
     /**
