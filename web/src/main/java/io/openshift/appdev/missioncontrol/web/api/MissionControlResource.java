@@ -2,15 +2,17 @@ package io.openshift.appdev.missioncontrol.web.api;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.json.Json;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -18,6 +20,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -76,6 +79,9 @@ public class MissionControlResource {
     @Inject
     private KeycloakService keycloakService;
 
+    @Resource
+    ManagedExecutorService executorService;
+
     @GET
     @Path(PATH_LAUNCH)
     public Response fling(
@@ -103,10 +109,12 @@ public class MissionControlResource {
                 .gitRef(gitRef)
                 .pipelineTemplatePath(pipelineTemplatePath)
                 .build();
-
         // Fling it
-        Boom boom = missionControl.launch(projectile);
-        return processBoom(boom);
+        executorService.submit(() -> missionControl.launch(projectile));
+        return Response.ok(Json.createObjectBuilder()
+                                   .add("uuid", projectile.getId().toString())
+                                   .build())
+                .build();
     }
 
     @POST
@@ -139,8 +147,13 @@ public class MissionControlResource {
                             .gitHubRepositoryDescription(form.getGitHubRepositoryDescription())
                             .projectLocation(project)
                             .build();
-                    Boom boom = missionControl.launch(projectile);
-                    return processBoom(boom);
+                    // Fling it
+                    CompletableFuture.supplyAsync(() -> missionControl.launch(projectile), executorService)
+                            .whenComplete((boom, ex) -> FileUploadHelper.deleteDirectory(tempDir));
+                    return Response.ok(Json.createObjectBuilder()
+                                               .add("uuid", projectile.getId().toString())
+                                               .build())
+                            .build();
                 }
             }
         } catch (final IOException e) {
@@ -152,21 +165,6 @@ public class MissionControlResource {
                 log.log(Level.SEVERE, "Could not delete " + tempDir, e);
             }
         }
-    }
-
-
-    private Response processBoom(Boom boom) {
-        // Redirect to the console overview page
-        final URI consoleOverviewUri;
-        try {
-            consoleOverviewUri = boom.getCreatedProject().getConsoleOverviewUrl().toURI();
-            if (log.isLoggable(Level.FINEST)) {
-                log.finest("Redirect issued to: " + consoleOverviewUri.toString());
-            }
-        } catch (final URISyntaxException urise) {
-            throw new WebApplicationException("couldn't get console location do you have the environment variable set?", urise);
-        }
-        return Response.temporaryRedirect(consoleOverviewUri).build();
     }
 
 

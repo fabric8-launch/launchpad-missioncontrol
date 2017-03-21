@@ -44,24 +44,29 @@ class FileUploadHelper {
      * Deletes a directory recursively
      *
      * @param directory
-     * @throws IOException
+     * @return true if deletion succeeds, false otherwise
      */
-    public static void deleteDirectory(Path directory) throws IOException {
+    public static boolean deleteDirectory(Path directory) {
         if (directory != null) {
-            Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
+            try {
+                Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        Files.delete(file);
+                        return FileVisitResult.CONTINUE;
+                    }
 
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                        Files.delete(dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException ignored) {
+                return false;
+            }
         }
+        return true;
     }
 
 }
