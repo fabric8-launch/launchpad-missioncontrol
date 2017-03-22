@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
 import javax.websocket.OnClose;
@@ -22,6 +23,8 @@ import org.kontinuity.catapult.core.api.StatusMessageEvent;
  */
 @ServerEndpoint("/status")
 public class CatapultStatusResource {
+    private static final Logger log = Logger.getLogger(CatapultStatusResource.class.getName());
+
     private static Map<UUID, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
 
     @OnClose
@@ -39,7 +42,12 @@ public class CatapultStatusResource {
     }
 
     public void onEvent(@Observes StatusMessageEvent msg) throws IOException {
-        peers.get(msg.getId()).getBasicRemote().sendText(serialise(msg));
+        Session session = peers.get(msg.getId());
+        if (session != null) {
+            session.getBasicRemote().sendText(serialise(msg));
+        } else {
+            log.warning("no active websocket session found for projectile with ID " + msg.getId());
+        }
     }
 
     private String serialise(StatusMessageEvent msg) {

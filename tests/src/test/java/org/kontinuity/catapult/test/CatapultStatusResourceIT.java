@@ -1,13 +1,10 @@
 package org.kontinuity.catapult.test;
 
-import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.websocket.ContainerProvider;
 import javax.websocket.Session;
@@ -28,17 +25,13 @@ import org.kontinuity.catapult.core.api.StatusMessage;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
 
 /**
- * Validation of the {@link org.kontinuity.catapult.web.api.CatapultResource}
- *
- * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
+ * Validation of the {@link org.kontinuity.catapult.web.api.CatapultStatusResource}
  */
 @RunWith(Arquillian.class)
 public class CatapultStatusResourceIT {
 
-    private static final Logger log = Logger.getLogger(CatapultStatusResourceIT.class.getName());
-
     @Inject
-    BeanManager manager;
+    Event<StatusMessageEvent> testEvent;
 
     @ArquillianResource
     private URI deploymentUrl;
@@ -49,12 +42,12 @@ public class CatapultStatusResourceIT {
     }
 
     /**
-     * Ensures that CDI event is relayed over the websocket.
+     * Ensures that CDI event is relayed over the webSocket status endpoint.
      *
      * @throws Exception when the test has failed
      */
     @Test
-    public void websocketsStatusTest() throws Exception {
+    public void webSocketsStatusTest() throws Exception {
         //given
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         URI uri = UriBuilder.fromUri(deploymentUrl).scheme("ws").path("status").build();
@@ -74,9 +67,11 @@ public class CatapultStatusResourceIT {
         data.put("GitHub project", "http://github.com/dummy-project-location");
 
         //when
-        manager.fireEvent(new StatusMessageEvent(projectile, StatusMessage.GITHUB_CREATE, data));
-//        testEvent.fire(new StatusMessageEvent(projectile, StatusMessage.GITHUB_CREATE, data));
         session.getBasicRemote().sendText(projectile.getId().toString());
+        //TODO there must be a way to not do these sleeps
+        Thread.sleep(1000);
+        testEvent.fire(new StatusMessageEvent(projectile, StatusMessage.GITHUB_CREATE, data));
+        Thread.sleep(1000);
 
         //then
         Assert.assertEquals("one message should been received", 1, endpoint.getMessagesReceived().size());
