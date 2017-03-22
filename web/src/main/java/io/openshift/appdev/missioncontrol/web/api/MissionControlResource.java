@@ -158,9 +158,9 @@ public class MissionControlResource {
                     CompletableFuture.supplyAsync(() -> missionControl.launch(projectile), executorService)
                             .whenComplete((boom, ex) -> FileUploadHelper.deleteDirectory(tempDir));
                     return Json.createObjectBuilder()
-                                               .add("uuid", projectile.getId().toString())
-                                               .add("uuid_link", PATH_CATAPULT + PATH_STATUS + "/" + projectile.getId().toString())
-                                               .build();
+                            .add("uuid", projectile.getId().toString())
+                            .add("uuid_link", PATH_MISSIONCONTROL + PATH_STATUS + "/" + projectile.getId().toString())
+                            .build();
                 }
             }
         } catch (final IOException e) {
@@ -175,11 +175,11 @@ public class MissionControlResource {
     }
 
     @GET
-    @Path(PATH_STATUS)
+    @Path(PATH_STATUS + "/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonArray status(@PathParam("uuid") String uuid) {
+    public JsonArray status(@PathParam("id") String id) {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        arrayBuilder.add("Add status for " + uuid);
+        arrayBuilder.add("Add status for " + id);
         return arrayBuilder.build();
     }
 
