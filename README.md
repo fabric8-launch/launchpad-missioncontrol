@@ -36,45 +36,18 @@ Prerequisites to Run Integration Tests
             * `admin:repo_hook`
             * `delete_repo`
     * Create 3 environment variables:
-        * `GITHUB_USERNAME`
-        * `GITHUB_TOKEN`
-        * `GITHUB_PASSWORD`
+        * `CATAPULT_GITHUB_TOKEN`
 
     For instance you may put into your `~/.bash_profile`:
 
-        export GITHUB_USERNAME=ALRubinger
-        export GITHUB_TOKEN=[token created from above]
-        export GITHUB_PASSWORD=mygithub-password
+        export CATAPULT_GITHUB_TOKEN=[token created from above]
     
-    Updates to `~./bash_profile` may require logging out of the shell to be visible; you may check by typing into a terminal:
+    Use `source ~./bash_profile` to make your changes visible; you may check by typing into a terminal:
 
-        $ echo $GITHUB_USERNAME
+        $ echo $CATAPULT_GITHUB_TOKEN
 
-    
-2.  A GitHub OAuth Application
- 
-    Catapult forks repositories on behalf of users; in order to do this, we must ask the user permission and this is done via the GitHub OAuth Web Flow.  In production Catapult will have an OAuth application registered with GitHub to register the appropriate callbacks, but for security reasons we cannot give out the credentials publicly for testing.  Each developer must set up their own OAuth application.
-    
-    * Log into the GitHub Settings for your user account and create a new OAuth application
-        * https://github.com/settings/applications/new
-            * Application Name
-                * e.g. `Catapult by Red Hat Kontinuity (Local Development for [@GitHubUsername])`
-            * Homepage URL
-                * e.g. `http://developers.redhat.com`
-            * Application Description
-                * Not required
-            * Authorization callback URL
-                * `http://127.0.0.1:8080/api/github/callback`
-                * You may need to replace `127.0.0.1` with your local machine's loopback binding depending upon your configuration, but this should work for the majority of cases
-        * Hit "Register application"
-            
-    * You will be shown your new application's `Client ID` and `Client Secret`
-        * Set environment variables for these
-            * `CATAPULT_GITHUB_APP_CLIENT_ID`
-            * `CATAPULT_GITHUB_APP_CLIENT_SECRET`
-        * You may need to log in again or `source` your `~/.bash_profile` or `~/.profile`, depending upon how you've set the environment variables (system-specific).
-   
-3. A locally-running instance of OpenShift 
+     
+2. A locally-running instance of OpenShift 
 
     * Install minishift and prerequisite projects by following these instructions
         * https://github.com/minishift/minishift#installing-minishift
@@ -100,12 +73,11 @@ Prerequisites to Run Integration Tests
 3. A Keycloak server
 
     * Make sure your Federated Identity settings are correct
-      * Open Chrome and go to: http://prod-preview.openshift.io/
-      * Click Sign-in (in the upper right corner), you should be redirected to developers.redhat.com
-      * Navigate to http://sso.prod-preview.openshift.io/auth/realms/fabric8/account/identity
-      * Make sure that the Github and Openshift v3 tokens are set
-      
-       
+        * Open Chrome and go to: http://prod-preview.openshift.io/
+        * Click Sign-in (in the upper right corner), you should be redirected to developers.redhat.com
+        * Navigate to http://sso.prod-preview.openshift.io/auth/realms/fabric8/account/identity
+        * Make sure that the Github and Openshift v3 tokens are set
+
     * Set up the following environment variables: 
       ```
         export CATAPULT_KEYCLOAK_URL=http://sso.prod-preview.openshift.io
