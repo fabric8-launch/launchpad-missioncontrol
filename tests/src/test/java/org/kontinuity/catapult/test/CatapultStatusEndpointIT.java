@@ -19,14 +19,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kontinuity.catapult.core.api.StatusMessage;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
+import org.kontinuity.catapult.test.Deployments;
+import org.kontinuity.catapult.test.StatusTestClientEndpoint;
+import org.kontinuity.catapult.web.api.websocket.CatapultStatusEndpoint;
 
 import static java.util.Collections.singletonMap;
 
 /**
- * Validation of the {@link org.kontinuity.catapult.web.api.CatapultStatusResource}
+ * Validation of the {@link CatapultStatusEndpoint}
  */
 @RunWith(Arquillian.class)
-public class CatapultStatusResourceIT {
+public class CatapultStatusEndpointIT {
 
     @Inject
     Event<StatusMessageEvent> testEvent;

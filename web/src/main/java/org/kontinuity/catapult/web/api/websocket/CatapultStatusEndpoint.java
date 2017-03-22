@@ -1,9 +1,8 @@
-package org.kontinuity.catapult.web.api;
+package org.kontinuity.catapult.web.api.websocket;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Logger;
@@ -24,28 +23,22 @@ import org.kontinuity.catapult.core.api.StatusMessageEvent;
  *
  * https://abhirockzz.wordpress.com/2015/02/10/integrating-cdi-and-websockets/
  */
-@ServerEndpoint("/status/{uuid}")
-public class CatapultStatusResource {
-    private static final Logger log = Logger.getLogger(CatapultStatusResource.class.getName());
+@ServerEndpoint(value = "/status/{uuid}", decoders = {})
+public class CatapultStatusEndpoint {
+    private static final Logger log = Logger.getLogger(CatapultStatusEndpoint.class.getName());
 
     private static Map<UUID, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
 
     @OnOpen
     public void onOpen(Session session, @PathParam("uuid") String uuid) {
         peers.put(UUID.fromString(uuid), session);
     }
 
-
     @OnClose
-    public void onClose(Session session, CloseReason closeReason) throws IOException {
-        for (Map.Entry<UUID, Session> key : peers.entrySet()) {
-            if (Objects.equals(key.getValue().getId(), session.getId())) {
-                peers.remove(key.getKey());
-            }
-        }
+    public void onClose(@PathParam("uuid") String uuid, Session session, CloseReason closeReason) throws IOException {
+        peers.remove(UUID.fromString(uuid));
     }
 
     /**
