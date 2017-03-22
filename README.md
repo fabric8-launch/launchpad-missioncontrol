@@ -35,7 +35,7 @@ Prerequisites to Run Integration Tests
             * `repo`
             * `admin:repo_hook`
             * `delete_repo`
-    * Create 3 environment variables:
+    * Create 2 environment variables:
         * `CATAPULT_GITHUB_USERNAME`
         * `CATAPULT_GITHUB_TOKEN`
 
