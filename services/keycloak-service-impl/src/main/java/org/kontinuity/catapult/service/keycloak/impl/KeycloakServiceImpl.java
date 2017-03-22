@@ -57,10 +57,6 @@ public class KeycloakServiceImpl implements KeycloakService {
      */
     @Override
     public Identity getOpenShiftIdentity(String keycloakAccessToken) {
-        if (useDefaultIdentities()) {
-            return getDefaultOpenShiftIdentity();
-        }
-
         return IdentityFactory.createFromToken(getToken(openShiftURL, keycloakAccessToken));
     }
 
@@ -73,10 +69,6 @@ public class KeycloakServiceImpl implements KeycloakService {
      */
     @Override
     public Identity getGithubIdentity(String keycloakAccessToken) throws IllegalArgumentException {
-        if (useDefaultIdentities()) {
-            return getDefaultGithubIdentity();
-        }
-
         return IdentityFactory.createFromToken(getToken(gitHubURL, keycloakAccessToken));
     }
 
@@ -124,24 +116,5 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     static String buildURL(String host, String realm, String broker) {
         return String.format(TOKEN_URL_TEMPLATE, host, realm, broker);
-    }
-
-    private Identity getDefaultOpenShiftIdentity() {
-        // Read from the ENV variables
-        String user = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_OPENSHIFT_USERNAME");
-        String password = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_OPENSHIFT_PASSWORD");
-        return IdentityFactory.createFromUserPassword(user, password);
-    }
-
-    private Identity getDefaultGithubIdentity() {
-        // Try using the provided Github token
-        String val = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("GITHUB_TOKEN");
-        return IdentityFactory.createFromToken(val);
-    }
-
-    private boolean useDefaultIdentities() {
-        String user = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_USERNAME");
-        String password = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp("CATAPULT_OPENSHIFT_PASSWORD");
-        return (user != null && password != null);
     }
 }
