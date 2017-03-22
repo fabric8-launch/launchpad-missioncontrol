@@ -10,10 +10,11 @@ import java.util.WeakHashMap;
 import javax.enterprise.event.Observes;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
 
 /**
@@ -21,31 +22,31 @@ import org.kontinuity.catapult.core.api.StatusMessageEvent;
  */
 @ServerEndpoint("/status")
 public class CatapultStatusResource {
-    private static Map<UUID, String> mapping = Collections.synchronizedMap(new WeakHashMap<>());
-    private static Map<String, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
-
-    @OnOpen
-    public void onOpen(Session session) throws IOException {
-        peers.put(session.getId(), session);
-    }
+    private static Map<UUID, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
 
     @OnClose
     public void onClose(Session session) throws IOException {
-        peers.remove(session.getId());
-        for (Map.Entry<UUID, String> key : mapping.entrySet()) {
-            if (Objects.equals(key.getValue(), session.getId())) {
-                mapping.remove(key.getKey());
+        for (Map.Entry<UUID, Session> key : peers.entrySet()) {
+            if (Objects.equals(key.getValue().getId(), session.getId())) {
+                peers.remove(key.getKey());
             }
         }
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        mapping.put(UUID.fromString(message), session.getId());
+        peers.put(UUID.fromString(message), session);
     }
 
     public void onEvent(@Observes StatusMessageEvent msg) throws IOException {
-        String clientId = mapping.get(msg.getId());
-        peers.get(clientId).getBasicRemote().sendText(msg.getFormattedMessage());
+        peers.get(msg.getId()).getBasicRemote().sendText(serialise(msg));
+    }
+
+    private String serialise(StatusMessageEvent msg) {
+        try {
+            return new ObjectMapper().writeValueAsString(msg);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("could not serialise message to json", e);
+        }
     }
 }
