@@ -36,14 +36,17 @@ Prerequisites to Run Integration Tests
             * `admin:repo_hook`
             * `delete_repo`
     * Create 3 environment variables:
+        * `CATAPULT_GITHUB_USERNAME`
         * `CATAPULT_GITHUB_TOKEN`
 
     For instance you may put into your `~/.bash_profile`:
 
-        export CATAPULT_GITHUB_TOKEN=[token created from above]
+        export CATAPULT_GITHUB_USERNAME=<your github username>
+        export CATAPULT_GITHUB_TOKEN=<token created from above>
     
     Use `source ~./bash_profile` to make your changes visible; you may check by typing into a terminal:
 
+        $ echo $CATAPULT_GITHUB_USERNAME
         $ echo $CATAPULT_GITHUB_TOKEN
 
      
