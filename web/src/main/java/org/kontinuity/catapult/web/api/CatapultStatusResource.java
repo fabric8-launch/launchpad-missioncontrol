@@ -11,8 +11,9 @@ import java.util.logging.Logger;
 import javax.enterprise.event.Observes;
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,13 +24,20 @@ import org.kontinuity.catapult.core.api.StatusMessageEvent;
  *
  * https://abhirockzz.wordpress.com/2015/02/10/integrating-cdi-and-websockets/
  */
-@ServerEndpoint("/status")
+@ServerEndpoint("/status/{uuid}")
 public class CatapultStatusResource {
     private static final Logger log = Logger.getLogger(CatapultStatusResource.class.getName());
 
     private static Map<UUID, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+
+    @OnOpen
+    public void onOpen(Session session, @PathParam("uuid") String uuid) {
+        peers.put(UUID.fromString(uuid), session);
+    }
+
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) throws IOException {
@@ -38,11 +46,6 @@ public class CatapultStatusResource {
                 peers.remove(key.getKey());
             }
         }
-    }
-
-    @OnMessage
-    public void onMessage(String message, Session session) {
-        peers.put(UUID.fromString(message), session);
     }
 
     /**

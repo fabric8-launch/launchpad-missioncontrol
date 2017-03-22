@@ -50,10 +50,10 @@ public class CatapultStatusResourceIT {
     @Test
     public void webSocketsStatusTest() throws Exception {
         //given
-        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        URI uri = UriBuilder.fromUri(deploymentUrl).scheme("ws").path("status").build();
-        Session session = container.connectToServer(endpoint, uri);
         UUID uuid = UUID.randomUUID();
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        URI uri = UriBuilder.fromUri(deploymentUrl).scheme("ws").path("status/"+uuid).build();
+        Session session = container.connectToServer(endpoint, uri);
 
         //when
         session.getBasicRemote().sendText(uuid.toString());
