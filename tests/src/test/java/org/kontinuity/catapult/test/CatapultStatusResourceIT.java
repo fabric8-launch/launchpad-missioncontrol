@@ -1,8 +1,7 @@
 package org.kontinuity.catapult.test;
 
 import java.net.URI;
-import java.nio.file.Files;
-import java.util.HashMap;
+import java.util.UUID;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -18,11 +17,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kontinuity.catapult.base.identity.IdentityFactory;
-import org.kontinuity.catapult.core.api.CreateProjectile;
-import org.kontinuity.catapult.core.api.ProjectileBuilder;
 import org.kontinuity.catapult.core.api.StatusMessage;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
+
+import static java.util.Collections.singletonMap;
 
 /**
  * Validation of the {@link org.kontinuity.catapult.web.api.CatapultStatusResource}
@@ -35,6 +33,9 @@ public class CatapultStatusResourceIT {
 
     @ArquillianResource
     private URI deploymentUrl;
+
+    @Inject
+    StatusTestClientEndpoint endpoint;
 
     @Deployment
     public static WebArchive getDeployment() {
@@ -51,26 +52,14 @@ public class CatapultStatusResourceIT {
         //given
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         URI uri = UriBuilder.fromUri(deploymentUrl).scheme("ws").path("status").build();
-
-        StatusTestClientEndpoint endpoint = new StatusTestClientEndpoint();
         Session session = container.connectToServer(endpoint, uri);
-
-        final CreateProjectile projectile = ProjectileBuilder.newInstance()
-                .gitHubIdentity(IdentityFactory.createFromToken("dummy-token"))
-                .openShiftIdentity(IdentityFactory.createFromToken("dummy-token"))
-                .openShiftProjectName("projectName")
-                .createType()
-                .projectLocation(Files.createTempDirectory("dummy"))
-                .build();
-
-        final HashMap<String, Object> data = new HashMap<>();
-        data.put("GitHub project", "http://github.com/dummy-project-location");
+        UUID uuid = UUID.randomUUID();
 
         //when
-        session.getBasicRemote().sendText(projectile.getId().toString());
+        session.getBasicRemote().sendText(uuid.toString());
         //TODO there must be a way to not do these sleeps
         Thread.sleep(1000);
-        testEvent.fire(new StatusMessageEvent(projectile, StatusMessage.GITHUB_CREATE, data));
+        testEvent.fire(new StatusMessageEvent(uuid, StatusMessage.GITHUB_CREATE, singletonMap("GitHub project", "http://github.com/dummy-project-location")));
         Thread.sleep(1000);
 
         //then

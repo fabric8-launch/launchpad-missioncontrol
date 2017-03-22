@@ -9,17 +9,19 @@ import java.util.WeakHashMap;
 import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
+import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
 
 /**
  * A websocket based resource that informs clients about the status of the operations
+ *
+ * https://abhirockzz.wordpress.com/2015/02/10/integrating-cdi-and-websockets/
  */
 @ServerEndpoint("/status")
 public class CatapultStatusResource {
@@ -27,8 +29,10 @@ public class CatapultStatusResource {
 
     private static Map<UUID, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @OnClose
-    public void onClose(Session session) throws IOException {
+    public void onClose(Session session, CloseReason closeReason) throws IOException {
         for (Map.Entry<UUID, Session> key : peers.entrySet()) {
             if (Objects.equals(key.getValue().getId(), session.getId())) {
                 peers.remove(key.getKey());
@@ -41,20 +45,19 @@ public class CatapultStatusResource {
         peers.put(UUID.fromString(message), session);
     }
 
+    /**
+     * Listen to status changes and pushes back to the registered sessions
+     *
+     * @param msg
+     * @throws IOException
+     */
     public void onEvent(@Observes StatusMessageEvent msg) throws IOException {
         Session session = peers.get(msg.getId());
         if (session != null) {
-            session.getBasicRemote().sendText(serialise(msg));
+            //TODO Use AsyncRemote instead?
+            session.getBasicRemote().sendText(objectMapper.writeValueAsString(msg));
         } else {
-            log.warning("no active websocket session found for projectile with ID " + msg.getId());
-        }
-    }
-
-    private String serialise(StatusMessageEvent msg) {
-        try {
-            return new ObjectMapper().writeValueAsString(msg);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("could not serialise message to json", e);
+            log.warning(() -> "no active websocket session found for projectile with ID " + msg.getId());
         }
     }
 }

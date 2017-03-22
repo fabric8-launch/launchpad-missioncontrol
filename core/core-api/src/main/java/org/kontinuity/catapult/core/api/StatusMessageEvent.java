@@ -11,8 +11,8 @@ public class StatusMessageEvent {
     private StatusMessage statusMessage;
     private Map<String, Object> data;
 
-    public StatusMessageEvent(Projectile projectile, StatusMessage statusMessage, Map<String, Object> data) {
-        this.id = projectile.getId();
+    public StatusMessageEvent(UUID uuid, StatusMessage statusMessage, Map<String, Object> data) {
+        this.id = uuid;
         this.statusMessage = statusMessage;
         this.data = data;
     }
