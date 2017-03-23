@@ -1,8 +1,11 @@
 package org.kontinuity.catapult.core.impl;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +27,7 @@ import org.kontinuity.catapult.service.github.spi.GitHubServiceSpi;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftProject;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftService;
 import org.kontinuity.catapult.service.openshift.api.OpenShiftServiceFactory;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Implementation of the {@link Catapult} interface.
@@ -89,9 +93,10 @@ public class CatapultImpl implements Catapult {
     public Boom fling(CreateProjectile projectile) throws IllegalArgumentException {
         final GitHubService gitHubService = getGitHubService(projectile);
         String projectName = projectile.getOpenShiftProjectName();
-        File path = projectile.getProjectLocation().toFile();
-        GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, " ");
-        gitHubService.push(gitHubRepository, path);
+        Path projectLocationPath = projectile.getProjectLocation();
+        String repositoryDescription = guessRepositoryDescription(projectLocationPath);
+        GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, repositoryDescription);
+        gitHubService.push(gitHubRepository, projectLocationPath.toFile());
 
         OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
         OpenShiftProject createdProject = openShiftService.createProject(projectName);
@@ -99,6 +104,30 @@ public class CatapultImpl implements Catapult {
 
         GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);
         return new BoomImpl(gitHubRepository, createdProject, webhook);
+    }
+
+
+    /**
+     * Guess the Repository Description from the .obsidian/obsidian.yaml file.
+     * Returns " " if not found
+     *
+     * @param path
+     * @return
+     */
+    private String guessRepositoryDescription(Path projectLocation) {
+        String path = " ";
+        Path obsidianDescriptor = projectLocation.resolve(".obsidian/obsidian.yaml");
+        if (Files.exists(obsidianDescriptor)) {
+            Yaml yaml = new Yaml();
+            try (BufferedReader reader = Files.newBufferedReader(obsidianDescriptor)) {
+                Map<String, String> data = yaml.loadAs(reader, Map.class);
+                path = data.getOrDefault("description", " ");
+            } catch (Exception e) {
+                // Ignore
+                log.log(Level.FINEST, "Error while reading obsidian descriptor", e);
+            }
+        }
+        return path;
     }
 
 
