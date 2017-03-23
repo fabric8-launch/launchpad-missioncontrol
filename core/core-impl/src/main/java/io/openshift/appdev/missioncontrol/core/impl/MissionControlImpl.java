@@ -102,13 +102,20 @@ public class MissionControlImpl implements MissionControl {
         GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, repositoryDescription);
         event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_CREATE, singletonMap("location", gitHubRepository.getHomepage())));
         gitHubService.push(gitHubRepository, path);
+        fireEvent(projectile, StatusMessage.GITHUB_PUSHED);
 
         OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
         OpenShiftProject createdProject = openShiftService.createProject(projectName);
+        event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.OPENSHIFT_CREATE, singletonMap("location", createdProject.getConsoleOverviewUrl())));
         openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());
 
         GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);
+        fireEvent(projectile, StatusMessage.GITHUB_WEBHOOK);
         return new BoomImpl(gitHubRepository, createdProject, webhook);
+    }
+
+    private void fireEvent(Projectile projectile, StatusMessage status) {
+        event.fire(new StatusMessageEvent(projectile.getId(), status));
     }
 
 

@@ -13,7 +13,7 @@
 
   <properties>
     <logback-classic.version>1.0.13</logback-classic.version>
-    <infinispan.version>8.0.2.Final</infinispan.version>
+    <cache2k-version>1.0.0.CR4</cache2k-version>
   </properties>
 
   <dependencies>
@@ -27,14 +27,16 @@
       <version>1.0.0</version>
     </dependency>
     <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-embedded</artifactId>
-      <version>${infinispan.version}</version>
+      <groupId>org.cache2k</groupId>
+      <artifactId>cache2k-api</artifactId>
+      <version>${cache2k-version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>RELEASE</version>
+      <groupId>org.cache2k</groupId>
+      <artifactId>cache2k-all</artifactId>
+      <version>${cache2k-version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>

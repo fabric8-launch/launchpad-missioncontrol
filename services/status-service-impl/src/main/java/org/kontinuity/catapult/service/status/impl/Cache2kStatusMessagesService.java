@@ -4,27 +4,38 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
-import org.infinispan.Cache;
+import org.cache2k.Cache;
+import org.cache2k.Cache2kBuilder;
 import org.kontinuity.catapult.core.api.StatusMessage;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
 import org.kontinuity.catapult.service.status.api.StatusMessagesService;
-import org.kontinuity.catapult.service.status.impl.config.StatusMessageCache;
 
 /**
  * Implementation of {@link StatusMessagesService} that relies on infinispan to do the caching
  */
 @ApplicationScoped
-public class StatusMessagesServiceInifinspan implements StatusMessagesService {
-    private final Cache<UUID, List<StatusMessageEvent>> cache;
+public class Cache2kStatusMessagesService implements StatusMessagesService {
 
-    @Inject
-    @StatusMessageCache
-    public StatusMessagesServiceInifinspan(Cache<UUID, List<StatusMessageEvent>> cache) {
+    private Cache<UUID, List<StatusMessageEvent>> cache;
+
+    @PostConstruct
+    public void init() {
+        cache = new Cache2kBuilder<UUID, List<StatusMessageEvent>>() {}
+                .name("status-cache")
+                .expireAfterWrite(1, TimeUnit.MINUTES)
+                .entryCapacity(1000)
+                .build();
+    }
+
+    public Cache2kStatusMessagesService() {}
+
+    Cache2kStatusMessagesService(Cache<UUID, List<StatusMessageEvent>> cache) {
         this.cache = cache;
     }
 
