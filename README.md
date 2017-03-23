@@ -27,6 +27,24 @@ Prerequisites to Build
 
 Prerequisites to Run Integration Tests
 --------------------------------------
+TLDR; copy that to a `catapult-env.sh` file and execute it using `source catapult-env.sh`: 
+
+```
+#!/bin/sh 
+
+export CATAPULT_GITHUB_USERNAME=<replace with your github username>
+export CATAPULT_GITHUB_TOKEN=<replace with your personal token (see step 1)>
+export CATAPULT_OPENSHIFT_API_URL=`minishift console --url`
+export CATAPULT_OPENSHIFT_CONSOLE_URL=`minishift console --url`
+export CATAPULT_KEYCLOAK_URL=http://sso.prod-preview.openshift.io
+export CATAPULT_KEYCLOAK_REALM=fabric8
+export CATAPULT_OPENSHIFT_USERNAME=admin
+export CATAPULT_OPENSHIFT_PASSWORD=admin
+
+```
+
+Or follow this detailed step-by-step guide:
+
 1. A GitHub Account
 
     * Log into GitHub and generate an access token for use here:
@@ -88,8 +106,8 @@ Prerequisites to Run Integration Tests
       ```
     IMPORTANT: Catapult will not use the keycloak server if you provide the following environment variables:
       ```    
-            export CATAPULT_OPENSHIFT_USERNAME=<user>
-            export CATAPULT_OPENSHIFT_PASSWORD=<pass>
+        export CATAPULT_OPENSHIFT_USERNAME=<user>
+        export CATAPULT_OPENSHIFT_PASSWORD=<pass>
       ```
 
     
