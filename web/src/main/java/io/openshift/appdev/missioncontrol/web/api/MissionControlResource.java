@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,8 +15,6 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -83,6 +83,9 @@ public class MissionControlResource {
 
     @Inject
     private KeycloakService keycloakService;
+
+    @Inject
+    private StatusMessagesService statusMessagesService;
 
     @Resource
     ManagedExecutorService executorService;
@@ -177,10 +180,8 @@ public class MissionControlResource {
     @GET
     @Path(PATH_STATUS + "/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonArray status(@PathParam("id") String id) {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        arrayBuilder.add("Add status for " + id);
-        return arrayBuilder.build();
+    public List<StatusMessageEvent> status(@PathParam("id") String id) {
+        return statusMessagesService.getStatusMessages(UUID.fromString(id));
     }
 
 

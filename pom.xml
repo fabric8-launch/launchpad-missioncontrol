@@ -47,6 +47,8 @@
     <module>services/keycloak-service-impl</module>
     <module>services/openshift-service-api</module>
     <module>services/openshift-service-impl</module>
+    <module>services/status-service-api</module>
+    <module>services/status-service-impl</module>
     <module>web</module>
     <module>tests</module>
   </modules>

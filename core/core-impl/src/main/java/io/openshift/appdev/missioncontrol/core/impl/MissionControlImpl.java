@@ -3,9 +3,11 @@ package io.openshift.appdev.missioncontrol.core.impl;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 
@@ -24,6 +26,10 @@ import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhook;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhookEvent;
 import io.openshift.appdev.missioncontrol.service.github.spi.GitHubServiceSpi;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
+import org.kontinuity.catapult.core.api.StatusMessage;
+import org.kontinuity.catapult.core.api.StatusMessageEvent;
+
+import static java.util.Collections.singletonMap;
 
 /**
  * Implementation of the {@link MissionControl} interface.
@@ -39,6 +45,9 @@ public class MissionControlImpl implements MissionControl {
 
     @Inject
     private GitHubServiceFactory gitHubServiceFactory;
+
+    @Inject
+    Event<StatusMessageEvent> event;
 
     /**
      * {@inheritDoc}
@@ -91,6 +100,7 @@ public class MissionControlImpl implements MissionControl {
         File path = projectile.getProjectLocation().toFile();
         String repositoryDescription = projectile.getGitHubRepositoryDescription();
         GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, repositoryDescription);
+        event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_CREATE, singletonMap("location", gitHubRepository.getHomepage())));
         gitHubService.push(gitHubRepository, path);
 
         OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
