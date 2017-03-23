@@ -69,8 +69,6 @@ public class CatapultResourceIT extends CatapultITBase {
 
         // Execute the Fling URL which should perform all actions and dump us on the return page
         driver.navigate().to(flingUrl);
-        GitHubResourceIT.performGitHubOAuth(
-                driver);
 
         // Ensure we land at *some* OpenShift console page until we can test for the
         // project overview page

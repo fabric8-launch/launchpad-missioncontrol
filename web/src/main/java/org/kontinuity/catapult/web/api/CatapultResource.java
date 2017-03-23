@@ -178,7 +178,7 @@ public class CatapultResource {
 
     private Identity getDefaultGithubIdentity() {
         // Try using the provided Github token
-        String val = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("GITHUB_TOKEN");
+        String val = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp("CATAPULT_GITHUB_TOKEN");
         return IdentityFactory.createFromToken(val);
     }
 

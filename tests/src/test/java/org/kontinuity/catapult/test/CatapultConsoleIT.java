@@ -90,10 +90,6 @@ public class CatapultConsoleIT extends CatapultITBase {
         final WebElement submit = driver.findElement(By.id("flingSubmitButton"));
         submit.click();
 
-        // Do OAuth
-        GitHubResourceIT.performGitHubOAuth(
-                driver);
-
         // Ensure we end up in the right place
         final File scrFile3 = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         FileUtils.copyFile(scrFile3,
