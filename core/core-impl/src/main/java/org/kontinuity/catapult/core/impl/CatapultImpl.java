@@ -123,7 +123,7 @@ public class CatapultImpl implements Catapult {
             try (BufferedReader reader = Files.newBufferedReader(obsidianDescriptor)) {
                 Map<String, String> data = yaml.loadAs(reader, Map.class);
                 path = data.getOrDefault("description", " ");
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Ignore
                 log.log(Level.FINEST, "Error while reading obsidian descriptor", e);
             }
