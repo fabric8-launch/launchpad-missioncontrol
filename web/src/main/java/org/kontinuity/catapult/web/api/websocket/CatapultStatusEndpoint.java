@@ -23,7 +23,7 @@ import org.kontinuity.catapult.core.api.StatusMessageEvent;
  *
  * https://abhirockzz.wordpress.com/2015/02/10/integrating-cdi-and-websockets/
  */
-@ServerEndpoint(value = "/status/{uuid}", decoders = {})
+@ServerEndpoint(value = "/status/{uuid}")
 public class CatapultStatusEndpoint {
     private static final Logger log = Logger.getLogger(CatapultStatusEndpoint.class.getName());
 
@@ -37,23 +37,22 @@ public class CatapultStatusEndpoint {
     }
 
     @OnClose
-    public void onClose(@PathParam("uuid") String uuid, Session session, CloseReason closeReason) throws IOException {
+    public void onClose(@PathParam("uuid") String uuid) throws IOException {
         peers.remove(UUID.fromString(uuid));
     }
 
     /**
-     * Listen to status changes and pushes back to the registered sessions
+     * Listen to status changes and pushes them to the registered sessions
      *
-     * @param msg
-     * @throws IOException
+     * @param msg the status message to be send
+     * @throws IOException when message could not be serialized to JSON
      */
     public void onEvent(@Observes StatusMessageEvent msg) throws IOException {
         Session session = peers.get(msg.getId());
         if (session != null) {
-            //TODO Use AsyncRemote instead?
-            session.getBasicRemote().sendText(objectMapper.writeValueAsString(msg));
+            session.getAsyncRemote().sendText(objectMapper.writeValueAsString(msg));
         } else {
-            log.warning(() -> "no active websocket session found for projectile with ID " + msg.getId());
+            log.warning(String.format("no active websocket session found for projectile with ID '%s'", msg.getId()));
         }
     }
 }

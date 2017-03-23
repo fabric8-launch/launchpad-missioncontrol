@@ -1,16 +1,10 @@
 package org.kontinuity.catapult.test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.concurrent.CountDownLatch;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.ClientEndpoint;
-import javax.websocket.CloseReason;
-import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
 
 /**
  * Websocket message listener for assertions.
@@ -18,28 +12,20 @@ import javax.websocket.Session;
 @ClientEndpoint
 @ApplicationScoped
 public class StatusTestClientEndpoint {
-    private static final Logger log = Logger.getLogger(StatusTestClientEndpoint.class.getName());
-
-    private List<String> messagesReceived = new ArrayList<>();
-
-    @OnOpen
-    public void onOpen(Session session) {
-        System.out.println("************************ CLIENT OPEN SESSION: " + session.getId());
-    }
+    private CountDownLatch latch = new CountDownLatch(1);
+    private String message;
 
     @OnMessage
     public void onMessage(String message) {
-        System.out.println("************************ CLIENT RECEIVED MESSAGE: " + message);
-        messagesReceived.add(message);
+        this.message = message;
+        latch.countDown();
     }
 
-    @OnClose
-    public void onClose(Session session, CloseReason closeReason) {
-        System.out.println("****************** CLIENT CLOSING SESSION");
-        log.info(String.format("Session %s closed because of %s", session.getId(), closeReason));
+    public String getMessage() {
+        return message;
     }
 
-    List<String> getMessagesReceived() {
-        return messagesReceived;
+    public CountDownLatch getLatch() {
+        return latch;
     }
 }
