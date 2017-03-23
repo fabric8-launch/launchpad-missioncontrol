@@ -27,7 +27,7 @@ Prerequisites to Build
 
 Prerequisites to Run Integration Tests
 --------------------------------------
-TLDR; copy that to a `catapult-env.sh` file and execute it using `source catapult-env.sh`: 
+TLDR; Start Minishift (`minishift start`), copy the content below to a `catapult-env.sh` file and execute it using `source catapult-env.sh`: 
 
 ```
 #!/bin/sh 
