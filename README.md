@@ -38,8 +38,8 @@ export CATAPULT_OPENSHIFT_API_URL=`minishift console --url`
 export CATAPULT_OPENSHIFT_CONSOLE_URL=`minishift console --url`
 export CATAPULT_KEYCLOAK_URL=http://sso.prod-preview.openshift.io
 export CATAPULT_KEYCLOAK_REALM=fabric8
-export CATAPULT_OPENSHIFT_USERNAME=admin
-export CATAPULT_OPENSHIFT_PASSWORD=admin
+export CATAPULT_OPENSHIFT_USERNAME=developer
+export CATAPULT_OPENSHIFT_PASSWORD=developer
 
 ```
 
@@ -57,12 +57,13 @@ Or follow this detailed step-by-step guide:
         * `CATAPULT_GITHUB_USERNAME`
         * `CATAPULT_GITHUB_TOKEN`
 
-    For instance you may put into your `~/.bash_profile`:
-
+    For instance you may create a `~/catapult-env.sh` file and add:
+    
+        #!/bin/sh
         export CATAPULT_GITHUB_USERNAME=<your github username>
         export CATAPULT_GITHUB_TOKEN=<token created from above>
     
-    Use `source ~./bash_profile` to make your changes visible; you may check by typing into a terminal:
+    Use `source ~/catapult-env.sh` to make your changes visible; you may check by typing into a terminal:
 
         $ echo $CATAPULT_GITHUB_USERNAME
         $ echo $CATAPULT_GITHUB_TOKEN
