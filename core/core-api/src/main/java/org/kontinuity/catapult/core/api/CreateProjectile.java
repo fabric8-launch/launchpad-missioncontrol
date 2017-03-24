@@ -18,11 +18,18 @@ public class CreateProjectile extends Projectile {
     CreateProjectile(CreateProjectileBuilder builder) {
         super(builder);
         this.projectLocation = builder.getProjectLocation();
+        this.gitHubRepositoryDescription = builder.getGitHubRepositoryDescription();
     }
 
     private final Path projectLocation;
+    private final String gitHubRepositoryDescription;
+
 
     public Path getProjectLocation() {
         return projectLocation;
+    }
+
+    public String getGitHubRepositoryDescription() {
+        return gitHubRepositoryDescription;
     }
 }

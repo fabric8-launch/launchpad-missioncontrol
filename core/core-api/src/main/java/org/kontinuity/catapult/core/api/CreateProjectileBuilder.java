@@ -23,6 +23,10 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     }
 
     private Path projectLocation;
+    /**
+     * The Github Repository Description
+     */
+    private String gitHubRepositoryDescription = " ";
 
     /**
      * Creates and returns a new {@link CreateProjectile} instance based on the
@@ -35,6 +39,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     public CreateProjectile build() {
         super.build(this);
         ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
+        ProjectileBuilder.checkSpecified("gitHubRepositoryDescription", this.gitHubRepositoryDescription);
         return new CreateProjectile(this);
     }
 
@@ -45,9 +50,23 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
      * @param projectLocation
      * @return This builder
      */
-    public org.kontinuity.catapult.core.api.CreateProjectileBuilder projectLocation(final Path projectLocation) {
+    public CreateProjectileBuilder projectLocation(final Path projectLocation) {
         this.projectLocation = projectLocation;
         return this;
+    }
+
+    /**
+     * Sets the GitHub repository description when creating a new repository
+     * @param description
+     * @return
+     */
+    public CreateProjectileBuilder gitHubRepositoryDescription(final String description) {
+        this.gitHubRepositoryDescription = description;
+        return this;
+    }
+
+    public String getGitHubRepositoryDescription() {
+        return gitHubRepositoryDescription;
     }
 
     /**
