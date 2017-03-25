@@ -146,7 +146,7 @@ Testing manually
 ----------------------------
 * If you have Catapult runing , you may upload a ZIP file containing a valid project (you can download one from the Uber generator) by using the following command: 
 ```
-  curl -F "file=@demo.zip" -H "Authorization: Unused"  http://localhost:8080/api/catapult/upload
+  curl -F "file=@demo.zip" http://localhost:8080/api/catapult/upload
 ```
 
 IMPORTANT: The `Authorization` header is needed, but it won't be used if you provided the `CATAPULT_OPENSHIFT_USERNAME` and `CATAPULT_OPENSHIFT_PASSWORD` env vars. 
