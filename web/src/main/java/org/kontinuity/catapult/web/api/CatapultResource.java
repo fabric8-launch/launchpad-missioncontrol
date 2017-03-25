@@ -25,8 +25,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.kontinuity.catapult.base.EnvironmentSupport;
 import org.kontinuity.catapult.base.identity.Identity;
 import org.kontinuity.catapult.base.identity.IdentityFactory;
@@ -120,7 +119,7 @@ public class CatapultResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response upload(
             @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
-            MultipartFormDataInput uploaded) {
+            @MultipartForm UploadForm form) {
 
         Identity githubIdentity;
         Identity openShiftIdentity;
@@ -131,11 +130,10 @@ public class CatapultResource {
             githubIdentity = keycloakService.getGitHubIdentity(authorization);
             openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
         }
-        InputPart inputPart = uploaded.getFormDataMap().get("file").get(0);
         java.nio.file.Path tempDir = null;
         try {
             tempDir = Files.createTempDirectory("tmpUpload");
-            try (InputStream inputStream = inputPart.getBody(InputStream.class, null)) {
+            try (InputStream inputStream = form.getFile()) {
                 FileUploadHelper.unzip(inputStream, tempDir);
                 try (DirectoryStream<java.nio.file.Path> projects = Files.newDirectoryStream(tempDir)) {
                     java.nio.file.Path project = projects.iterator().next();
@@ -143,6 +141,7 @@ public class CatapultResource {
                             .gitHubIdentity(githubIdentity)
                             .openShiftIdentity(openShiftIdentity)
                             .createType()
+                            .gitHubRepositoryDescription(form.getGitHubRepositoryDescription())
                             .projectLocation(project)
                             .build();
                     Boom boom = catapult.fling(projectile);
