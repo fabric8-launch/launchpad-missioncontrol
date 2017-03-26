@@ -39,7 +39,6 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     public CreateProjectile build() {
         super.build(this);
         ProjectileBuilder.checkSpecified("projectLocation", this.projectLocation);
-        ProjectileBuilder.checkSpecified("gitHubRepositoryDescription", this.gitHubRepositoryDescription);
         return new CreateProjectile(this);
     }
 
