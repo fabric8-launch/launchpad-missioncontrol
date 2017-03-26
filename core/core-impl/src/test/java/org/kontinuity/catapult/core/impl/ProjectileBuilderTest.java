@@ -1,8 +1,13 @@
 package org.kontinuity.catapult.core.impl;
 
+import java.nio.file.Paths;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.kontinuity.catapult.base.identity.IdentityFactory;
+import org.kontinuity.catapult.core.api.CreateProjectile;
+import org.kontinuity.catapult.core.api.CreateProjectileBuilder;
+import org.kontinuity.catapult.core.api.ForkProjectile;
 import org.kontinuity.catapult.core.api.ForkProjectileBuilder;
 import org.kontinuity.catapult.core.api.Projectile;
 import org.kontinuity.catapult.core.api.ProjectileBuilder;
@@ -23,54 +28,67 @@ public class ProjectileBuilderTest {
 
     @Test(expected = IllegalStateException.class)
     public void requiresSourceGitHubRepo() {
-        this.getPopulatedBuilder().sourceGitHubRepo(null).build();
+        this.getPopulatedForkProjectileBuilder().sourceGitHubRepo(null).build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void requiresSourceGitHubRepoNotEmpty() {
-        this.getPopulatedBuilder().sourceGitHubRepo(EMPTY).build();
+        this.getPopulatedForkProjectileBuilder().sourceGitHubRepo(EMPTY).build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void requiresGitHubAccessToken() {
-        this.getPopulatedBuilder().gitHubIdentity(null).forkType().build();
+        this.getPopulatedForkProjectileBuilder().gitHubIdentity(null).forkType().build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void requiresGitRef() {
-        this.getPopulatedBuilder().gitRef(null).build();
+        this.getPopulatedForkProjectileBuilder().gitRef(null).build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void requiresGitRefNotEmpty() {
-        this.getPopulatedBuilder().gitRef(EMPTY).build();
+        this.getPopulatedForkProjectileBuilder().gitRef(EMPTY).build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void requiresPipelineTemplatePath() {
-        this.getPopulatedBuilder().pipelineTemplatePath(null).build();
+        this.getPopulatedForkProjectileBuilder().pipelineTemplatePath(null).build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void requiresPipelineTemplatePathNotEmpty() {
-        this.getPopulatedBuilder().pipelineTemplatePath(EMPTY).build();
+        this.getPopulatedForkProjectileBuilder().pipelineTemplatePath(EMPTY).build();
     }
 
     @Test
-    public void createsProjectile() {
-        final Projectile projectile = this.getPopulatedBuilder().build();
+    public void createsForkProjectile() {
+        final ForkProjectile projectile = this.getPopulatedForkProjectileBuilder().build();
         Assert.assertNotNull("projectile should have been created", projectile);
     }
 
     @Test
-    public void createsProjectileWithDefaultedOpenShiftProjectName() {
-        final Projectile projectile = ((ForkProjectileBuilder) this.getPopulatedBuilder().openShiftProjectName(null)).build();
+    public void createsCreateProjectile() {
+        final Projectile projectile = this.getPopulatedCreateProjectileBuilder().build();
+        Assert.assertNotNull("projectile should have been created", projectile);
+    }
+
+    @Test
+    public void githubRepositoryDescriptionShouldHaveBeenSet() {
+        final CreateProjectile projectile = this.getPopulatedCreateProjectileBuilder().gitHubRepositoryDescription("DESCRIPTION").build();
+        Assert.assertEquals("GitHub Repository Description should have been set", "DESCRIPTION", projectile.getGitHubRepositoryDescription());
+    }
+
+
+    @Test
+    public void createsForkProjectileWithDefaultedOpenShiftProjectName() {
+        final Projectile projectile = ((ForkProjectileBuilder) this.getPopulatedForkProjectileBuilder().openShiftProjectName(null)).build();
         Assert.assertEquals("openshiftProjectName was not defaulted correctly", "testrepo", projectile.getOpenShiftProjectName());
     }
 
     @Test
-    public void createsProjectileWithExplicitOpenShiftProjectName() {
-        final Projectile projectile = ((ForkProjectileBuilder) this.getPopulatedBuilder().openShiftProjectName("changedfromtest")).build();
+    public void createsForkProjectileWithExplicitOpenShiftProjectName() {
+        final Projectile projectile = ((ForkProjectileBuilder) this.getPopulatedForkProjectileBuilder().openShiftProjectName("changedfromtest")).build();
         Assert.assertEquals("openshiftProjectName was not set correctly", "changedfromtest", projectile.getOpenShiftProjectName());
     }
 
@@ -95,7 +113,7 @@ public class ProjectileBuilderTest {
     }
 
     private void mustAcceptDashes(final String fullRepoName) {
-        final Projectile projectile = this.getPopulatedBuilder()
+        final Projectile projectile = this.getPopulatedForkProjectileBuilder()
                 .sourceGitHubRepo(fullRepoName)
                 .build();
         Assert.assertNotNull("projectile should have been created", projectile);
@@ -105,7 +123,7 @@ public class ProjectileBuilderTest {
      * @return A builder with all properties set so we can manually
      * set one property to empty and test {@link ForkProjectileBuilder#build()}
      */
-    private ForkProjectileBuilder getPopulatedBuilder() {
+    private ForkProjectileBuilder getPopulatedForkProjectileBuilder() {
         return ProjectileBuilder.newInstance()
                 .openShiftProjectName(SOME_VALUE)
                 .gitHubIdentity(IdentityFactory.createFromToken(SOME_VALUE))
@@ -114,5 +132,18 @@ public class ProjectileBuilderTest {
                 .sourceGitHubRepo(REPO_VALUE)
                 .gitRef(SOME_VALUE)
                 .pipelineTemplatePath(SOME_VALUE);
+    }
+
+    /**
+     * @return A builder with all properties set so we can manually
+     * set one property to empty and test {@link ForkProjectileBuilder#build()}
+     */
+    private CreateProjectileBuilder getPopulatedCreateProjectileBuilder() {
+        return ProjectileBuilder.newInstance()
+                .openShiftProjectName(SOME_VALUE)
+                .gitHubIdentity(IdentityFactory.createFromToken(SOME_VALUE))
+                .openShiftIdentity(IdentityFactory.createFromToken(SOME_VALUE))
+                .createType()
+                .projectLocation(Paths.get("."));
     }
 }

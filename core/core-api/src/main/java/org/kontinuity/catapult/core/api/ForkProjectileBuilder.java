@@ -62,7 +62,7 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
      * @param sourceGitHubRepo
      * @return This builder
      */
-    public org.kontinuity.catapult.core.api.ForkProjectileBuilder sourceGitHubRepo(final String sourceGitHubRepo) {
+    public ForkProjectileBuilder sourceGitHubRepo(final String sourceGitHubRepo) {
         this.sourceGitHubRepo = sourceGitHubRepo;
         return this;
     }
@@ -74,7 +74,7 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
      * @param pipelineTemplatePath
      * @return This builder
      */
-    public org.kontinuity.catapult.core.api.ForkProjectileBuilder pipelineTemplatePath(final String pipelineTemplatePath) {
+    public ForkProjectileBuilder pipelineTemplatePath(final String pipelineTemplatePath) {
         this.pipelineTemplatePath = pipelineTemplatePath;
         return this;
     }
@@ -85,7 +85,7 @@ public class ForkProjectileBuilder extends ProjectileBuilder {
      * @param gitRef
      * @return This builder
      */
-    public org.kontinuity.catapult.core.api.ForkProjectileBuilder gitRef(final String gitRef) {
+    public ForkProjectileBuilder gitRef(final String gitRef) {
         this.gitRef = gitRef;
         return this;
     }
