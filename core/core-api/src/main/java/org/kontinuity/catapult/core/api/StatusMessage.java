@@ -7,7 +7,6 @@ public enum StatusMessage {
 
     GITHUB_CREATE("created github repository"),
     GITHUB_PUSHED("pushed code to github repository"),
-    GITHUB_FORK("forked github repository"),
     GITHUB_WEBHOOK("added webhook to github repository"),
     OPENSHIFT_CREATE("openshift project created"),
     OPENSHIFT_PIPELINE("openshift added pipeline to project");
