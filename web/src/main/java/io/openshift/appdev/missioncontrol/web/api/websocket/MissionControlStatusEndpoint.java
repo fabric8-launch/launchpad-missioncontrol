@@ -1,4 +1,4 @@
-package org.kontinuity.catapult.web.api.websocket;
+package io.openshift.appdev.missioncontrol.web.api.websocket;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -8,7 +8,6 @@ import java.util.WeakHashMap;
 import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
-import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -24,8 +23,8 @@ import org.kontinuity.catapult.core.api.StatusMessageEvent;
  * https://abhirockzz.wordpress.com/2015/02/10/integrating-cdi-and-websockets/
  */
 @ServerEndpoint(value = "/status/{uuid}")
-public class CatapultStatusEndpoint {
-    private static final Logger log = Logger.getLogger(CatapultStatusEndpoint.class.getName());
+public class MissionControlStatusEndpoint {
+    private static final Logger log = Logger.getLogger(MissionControlStatusEndpoint.class.getName());
 
     private static Map<UUID, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
 

@@ -1,4 +1,4 @@
-package org.kontinuity.catapult.test;
+package io.openshift.appdev.missioncontrol.test;
 
 import java.net.URI;
 import java.util.UUID;
@@ -18,17 +18,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kontinuity.catapult.core.api.StatusMessage;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
-import org.kontinuity.catapult.web.api.websocket.CatapultStatusEndpoint;
+import io.openshift.appdev.missioncontrol.web.api.websocket.MissionControlStatusEndpoint;
 
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Validation of the {@link CatapultStatusEndpoint}
+ * Validation of the {@link MissionControlStatusEndpoint}
  */
 @RunWith(Arquillian.class)
-public class CatapultStatusEndpointIT {
+public class MissionControlStatusEndpointIT {
 
     private static final String EXTRA_DATA_KEY = "GitHub project";
 

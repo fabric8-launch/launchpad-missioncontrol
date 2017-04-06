@@ -12,6 +12,8 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -119,7 +121,7 @@ public class MissionControlResource {
         executorService.submit(() -> missionControl.launch(projectile));
         return Json.createObjectBuilder()
                                    .add("uuid", projectile.getId().toString())
-                                   .add("uuid_link", PATH_MISSIONCONTROL + PATH_STATUS + "/" + projectile.getId().toString())
+                                   .add("uuid_link", PATH_STATUS + "/" + projectile.getId().toString())
                                    .build();
     }
 
@@ -158,7 +160,7 @@ public class MissionControlResource {
                             .whenComplete((boom, ex) -> FileUploadHelper.deleteDirectory(tempDir));
                     return Json.createObjectBuilder()
                             .add("uuid", projectile.getId().toString())
-                            .add("uuid_link", PATH_MISSIONCONTROL + PATH_STATUS + "/" + projectile.getId().toString())
+                            .add("uuid_link", PATH_STATUS + "/" + projectile.getId().toString())
                             .build();
                 }
             }
@@ -170,8 +172,12 @@ public class MissionControlResource {
     @GET
     @Path(PATH_STATUS)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response status() {
-        return Response.ok().entity(StatusMessage.values()).build();
+    public JsonArray status() {
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        for (StatusMessage statusMessage : StatusMessage.values()) {
+            builder.add(statusMessage.getMessage());
+        }
+        return builder.build();
     }
 
 

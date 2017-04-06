@@ -1,4 +1,4 @@
-package org.kontinuity.catapult.test;
+package io.openshift.appdev.missioncontrol.test;
 
 import java.util.concurrent.CountDownLatch;
 
