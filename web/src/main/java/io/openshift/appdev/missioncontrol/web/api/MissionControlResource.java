@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -23,21 +20,24 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import io.openshift.appdev.missioncontrol.base.EnvironmentSupport;
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
 import io.openshift.appdev.missioncontrol.base.identity.IdentityFactory;
-import io.openshift.appdev.missioncontrol.core.api.*;
+import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
+import io.openshift.appdev.missioncontrol.core.api.ForkProjectile;
 import io.openshift.appdev.missioncontrol.core.api.MissionControl;
+import io.openshift.appdev.missioncontrol.core.api.ProjectileBuilder;
 import io.openshift.appdev.missioncontrol.service.keycloak.api.KeycloakService;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.kontinuity.catapult.core.api.StatusMessage;
 
 /**
  * Endpoint exposing the {@link MissionControl} over HTTP
@@ -83,9 +83,6 @@ public class MissionControlResource {
 
     @Inject
     private KeycloakService keycloakService;
-
-    @Inject
-    private StatusMessagesService statusMessagesService;
 
     @Resource
     ManagedExecutorService executorService;
@@ -143,9 +140,8 @@ public class MissionControlResource {
             githubIdentity = keycloakService.getGitHubIdentity(authorization);
             openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
         }
-        java.nio.file.Path tempDir = null;
         try {
-            tempDir = Files.createTempDirectory("tmpUpload");
+            final java.nio.file.Path tempDir = Files.createTempDirectory("tmpUpload");
             try (InputStream inputStream = form.getFile()) {
                 FileUploadHelper.unzip(inputStream, tempDir);
                 try (DirectoryStream<java.nio.file.Path> projects = Files.newDirectoryStream(tempDir)) {
@@ -168,20 +164,14 @@ public class MissionControlResource {
             }
         } catch (final IOException e) {
             throw new WebApplicationException("could not unpack zip file into temp folder", e);
-        } finally {
-            try {
-                FileUploadHelper.deleteDirectory(tempDir);
-            } catch (IOException e) {
-                log.log(Level.SEVERE, "Could not delete " + tempDir, e);
-            }
         }
     }
 
     @GET
-    @Path(PATH_STATUS + "/{id}")
+    @Path(PATH_STATUS)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StatusMessageEvent> status(@PathParam("id") String id) {
-        return statusMessagesService.getStatusMessages(UUID.fromString(id));
+    public Response status() {
+        return Response.ok().entity(StatusMessage.values()).build();
     }
 
 
