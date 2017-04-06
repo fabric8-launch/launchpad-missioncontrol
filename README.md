@@ -91,8 +91,8 @@ Prerequisites to Run Integration Tests
 
     * Set up the following environment variables (possibly in your `launchpad-missioncontrol-env.sh` file): 
       ```
-        export LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_URL=http://sso.prod-preview.openshift.io
-        export LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_REALM=fabric8
+        export LAUNCHPAD_KEYCLOAK_URL=http://sso.prod-preview.openshift.io
+        export LAUNCHPAD_KEYCLOAK_REALM=fabric8
       ```
     IMPORTANT: Mission Control will not use the keycloak server if you provide the following environment variables:
       ```    
@@ -111,8 +111,8 @@ export LAUNCHPAD_MISSIONCONTROL_GITHUB_USERNAME=<replace with your github userna
 export LAUNCHPAD_MISSIONCONTROL_GITHUB_TOKEN=<replace with your personal token (see step 1)>
 export LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_API_URL=`minishift console --url`
 export LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_CONSOLE_URL=`minishift console --url`
-export LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_URL=http://sso.prod-preview.openshift.io
-export LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_REALM=fabric8
+export LAUNCHPAD_KEYCLOAK_URL=http://sso.prod-preview.openshift.io
+export LAUNCHPAD_KEYCLOAK_REALM=fabric8
 export LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_USERNAME=developer
 export LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_PASSWORD=developer
 unset LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_TOKEN
