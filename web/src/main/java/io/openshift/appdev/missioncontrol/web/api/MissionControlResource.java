@@ -12,8 +12,6 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -28,7 +26,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import io.openshift.appdev.missioncontrol.base.EnvironmentSupport;
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
@@ -39,7 +36,6 @@ import io.openshift.appdev.missioncontrol.core.api.MissionControl;
 import io.openshift.appdev.missioncontrol.core.api.ProjectileBuilder;
 import io.openshift.appdev.missioncontrol.service.keycloak.api.KeycloakService;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
-import org.kontinuity.catapult.core.api.StatusMessage;
 
 /**
  * Endpoint exposing the {@link MissionControl} over HTTP
@@ -168,18 +164,6 @@ public class MissionControlResource {
             throw new WebApplicationException("could not unpack zip file into temp folder", e);
         }
     }
-
-    @GET
-    @Path(PATH_STATUS)
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonArray status() {
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        for (StatusMessage statusMessage : StatusMessage.values()) {
-            builder.add(statusMessage.getMessage());
-        }
-        return builder.build();
-    }
-
 
     private Identity getDefaultOpenShiftIdentity() {
         // Read from the ENV variables

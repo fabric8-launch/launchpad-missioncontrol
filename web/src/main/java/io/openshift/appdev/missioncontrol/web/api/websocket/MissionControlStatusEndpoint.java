@@ -8,6 +8,9 @@ import java.util.WeakHashMap;
 import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.websocket.OnClose;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -15,6 +18,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.kontinuity.catapult.core.api.StatusMessage;
 import org.kontinuity.catapult.core.api.StatusMessageEvent;
 
 /**
@@ -33,6 +37,13 @@ public class MissionControlStatusEndpoint {
     @OnOpen
     public void onOpen(Session session, @PathParam("uuid") String uuid) {
         peers.put(UUID.fromString(uuid), session);
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        for (StatusMessage statusMessage : StatusMessage.values()) {
+            JsonObjectBuilder object = Json.createObjectBuilder();
+            builder.add(object.add(statusMessage.name(), statusMessage.getMessage()).build());
+        }
+
+        session.getAsyncRemote().sendText(builder.build().toString());
     }
 
     @OnClose
