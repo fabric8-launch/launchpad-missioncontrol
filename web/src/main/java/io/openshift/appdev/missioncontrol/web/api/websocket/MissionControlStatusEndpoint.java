@@ -18,8 +18,8 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.kontinuity.catapult.core.api.StatusMessage;
-import org.kontinuity.catapult.core.api.StatusMessageEvent;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 
 /**
  * A websocket based resource that informs clients about the status of the operations

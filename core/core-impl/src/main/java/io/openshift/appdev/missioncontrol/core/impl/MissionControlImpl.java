@@ -3,7 +3,6 @@ package io.openshift.appdev.missioncontrol.core.impl;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,8 +25,8 @@ import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhook;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhookEvent;
 import io.openshift.appdev.missioncontrol.service.github.spi.GitHubServiceSpi;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
-import org.kontinuity.catapult.core.api.StatusMessage;
-import org.kontinuity.catapult.core.api.StatusMessageEvent;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 
 import static java.util.Collections.singletonMap;
 

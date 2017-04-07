@@ -16,8 +16,8 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kontinuity.catapult.core.api.StatusMessage;
-import org.kontinuity.catapult.core.api.StatusMessageEvent;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 import io.openshift.appdev.missioncontrol.web.api.websocket.MissionControlStatusEndpoint;
 
 import static java.util.Collections.singletonMap;

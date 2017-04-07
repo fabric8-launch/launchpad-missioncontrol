@@ -1,4 +1,4 @@
-package org.kontinuity.catapult.core.api;
+package io.openshift.appdev.missioncontrol.core.api;
 
 /**
  * That holds all status messages that we send to the clients via websockets to inform them about the status of their project

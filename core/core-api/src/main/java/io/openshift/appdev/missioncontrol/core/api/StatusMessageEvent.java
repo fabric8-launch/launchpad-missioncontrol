@@ -1,4 +1,4 @@
-package org.kontinuity.catapult.core.api;
+package io.openshift.appdev.missioncontrol.core.api;
 
 import java.util.Map;
 import java.util.UUID;
