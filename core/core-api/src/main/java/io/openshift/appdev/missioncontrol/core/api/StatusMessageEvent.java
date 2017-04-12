@@ -1,5 +1,6 @@
 package io.openshift.appdev.missioncontrol.core.api;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -10,6 +11,20 @@ public class StatusMessageEvent {
     private UUID id;
     private StatusMessage statusMessage;
     private Map<String, Object> data;
+
+    public StatusMessageEvent(UUID uuid, Throwable e) {
+        this(uuid, null, Collections.singletonMap("error", getCause(e).getMessage()));
+    }
+
+    private static Throwable getCause(Throwable e) {
+        Throwable cause;
+        Throwable result = e;
+
+        while(null != (cause = result.getCause())  && (result != cause) ) {
+            result = cause;
+        }
+        return result;
+    }
 
     public StatusMessageEvent(UUID uuid, StatusMessage statusMessage) {
         this(uuid, statusMessage, null);

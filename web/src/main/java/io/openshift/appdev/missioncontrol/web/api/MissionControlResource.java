@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -34,6 +36,7 @@ import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
 import io.openshift.appdev.missioncontrol.core.api.ForkProjectile;
 import io.openshift.appdev.missioncontrol.core.api.MissionControl;
 import io.openshift.appdev.missioncontrol.core.api.ProjectileBuilder;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 import io.openshift.appdev.missioncontrol.service.keycloak.api.KeycloakService;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
@@ -81,6 +84,9 @@ public class MissionControlResource {
 
     @Inject
     private KeycloakService keycloakService;
+
+    @Inject
+    private Event<StatusMessageEvent> event;
 
     @Resource
     ManagedExecutorService executorService;
@@ -153,7 +159,14 @@ public class MissionControlResource {
                             .build();
                     // Fling it
                     CompletableFuture.supplyAsync(() -> missionControl.launch(projectile), executorService)
-                            .whenComplete((boom, ex) -> FileUploadHelper.deleteDirectory(tempDir));
+                            .whenComplete((boom, ex) -> {
+                                if (ex != null) {
+                                    event.fire(new StatusMessageEvent(projectile.getId(), ex));
+                                    log.log(Level.SEVERE, "Error while launching project", ex);
+                                }
+
+                                FileUploadHelper.deleteDirectory(tempDir);
+                    });
                     return Json.createObjectBuilder()
                             .add("uuid", projectile.getId().toString())
                             .add("uuid_link", PATH_STATUS + "/" + projectile.getId().toString())

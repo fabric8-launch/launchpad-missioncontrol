@@ -46,7 +46,7 @@ public class MissionControlImpl implements MissionControl {
     private GitHubServiceFactory gitHubServiceFactory;
 
     @Inject
-    Event<StatusMessageEvent> event;
+    private Event<StatusMessageEvent> event;
 
     /**
      * {@inheritDoc}
@@ -107,6 +107,7 @@ public class MissionControlImpl implements MissionControl {
         OpenShiftProject createdProject = openShiftService.createProject(projectName);
         event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.OPENSHIFT_CREATE, singletonMap("location", createdProject.getConsoleOverviewUrl())));
         openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());
+        event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.OPENSHIFT_PIPELINE));
 
         GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);
         event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_WEBHOOK));
