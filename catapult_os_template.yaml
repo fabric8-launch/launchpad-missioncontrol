@@ -126,7 +126,7 @@ parameters:
 - description: The URL (without the /auth part) of a Keycloak installation to perform SSO authentication
   displayName: KeyCloak URL
   name: CATAPULT_KEYCLOAK_URL
-  value: http://sso.prod-preview.openshift.io
+  value: https://sso.prod-preview.openshift.io/auth
 - description: The keycloak realm to be used
   displayName: KeyCloak Realm
   name: CATAPULT_KEYCLOAK_REALM

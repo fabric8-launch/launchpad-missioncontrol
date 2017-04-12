@@ -6,18 +6,16 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
 import io.openshift.appdev.missioncontrol.base.identity.IdentityVisitor;
 import io.openshift.appdev.missioncontrol.base.identity.TokenIdentity;
 import io.openshift.appdev.missioncontrol.base.identity.UserPasswordIdentity;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
-import org.kohsuke.github.extras.OkHttpConnector;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactory;
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
 
 /**
  * Implementation of the {@link GitHubServiceFactory}
@@ -46,7 +44,7 @@ public class GitHubServiceFactoryImpl implements GitHubServiceFactory {
             final File githubCacheFolder = GitHubLocalCache.INSTANCE.getCacheFolder();
             final Cache cache = new Cache(githubCacheFolder, TENMB);
             final GitHubBuilder ghb = new GitHubBuilder()
-                    .withConnector(new OkHttpConnector(new OkUrlFactory(new OkHttpClient().setCache(cache))));
+                    .withConnector(new OkHttp3Connector(new OkHttpClient.Builder().cache(cache).build()));
             identity.accept(new IdentityVisitor() {
                 @Override
                 public void visit(TokenIdentity token) {
