@@ -2,9 +2,9 @@ package io.openshift.appdev.missioncontrol.web.api.websocket;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
 import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
@@ -30,7 +30,7 @@ import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 public class MissionControlStatusEndpoint {
     private static final Logger log = Logger.getLogger(MissionControlStatusEndpoint.class.getName());
 
-    private static Map<UUID, Session> peers = Collections.synchronizedMap(new WeakHashMap<>());
+    private static Map<UUID, Session> peers = Collections.synchronizedMap(new HashMap<>());
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
