@@ -13,17 +13,7 @@ public class StatusMessageEvent {
     private Map<String, Object> data;
 
     public StatusMessageEvent(UUID uuid, Throwable e) {
-        this(uuid, null, Collections.singletonMap("error", getCause(e).getMessage()));
-    }
-
-    private static Throwable getCause(Throwable e) {
-        Throwable cause;
-        Throwable result = e;
-
-        while(null != (cause = result.getCause())  && (result != cause) ) {
-            result = cause;
-        }
-        return result;
+        this(uuid, null, Collections.singletonMap("error", e.getMessage()));
     }
 
     public StatusMessageEvent(UUID uuid, StatusMessage statusMessage) {
