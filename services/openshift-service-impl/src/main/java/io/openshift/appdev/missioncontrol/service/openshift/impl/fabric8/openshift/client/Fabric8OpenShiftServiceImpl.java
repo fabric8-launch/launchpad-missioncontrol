@@ -43,6 +43,11 @@ import io.openshift.appdev.missioncontrol.service.openshift.spi.OpenShiftService
  */
 public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, OpenShiftServiceSpi {
 
+    static {
+        // Avoid using ~/.kube/config
+        System.setProperty(Config.KUBERNETES_AUTH_TRYKUBECONFIG_SYSTEM_PROPERTY, "false");
+    }
+
     /**
      * Name of the JSON file containing the template to apply on the OpenShift
      * project after it has been created.
@@ -133,6 +138,27 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
             throw kce;
         }
 
+        // Block until exists
+        int counter = 0;
+        while (true) {
+            counter++;
+            if (projectExists(name)) {
+                // We good
+                break;
+            }
+            if (counter == 10) {
+                throw new IllegalStateException("Newly-created project "
+                                                        + name + " could not be found ");
+            }
+            log.finest("Couldn't find project " + name +
+                               " after creating; waiting and trying again...");
+            try {
+                Thread.sleep(3000);
+            } catch (final InterruptedException ie) {
+                Thread.interrupted();
+                throw new RuntimeException("Someone interrupted thread while finding newly-created project", ie);
+            }
+        }
         // Populate value object and return it
         final String roundtripDisplayName = projectRequest.getMetadata().getName();
         final OpenShiftProject project = new OpenShiftProjectImpl(roundtripDisplayName);
