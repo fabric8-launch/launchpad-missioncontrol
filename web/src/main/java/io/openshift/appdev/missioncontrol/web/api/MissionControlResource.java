@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -83,7 +84,7 @@ public class MissionControlResource {
     private MissionControl missionControl;
 
     @Inject
-    private KeycloakService keycloakService;
+    private Instance<KeycloakService> keycloakServiceInstance;
 
     @Inject
     private Event<StatusMessageEvent> event;
@@ -107,6 +108,7 @@ public class MissionControlResource {
             githubIdentity = getDefaultGithubIdentity();
             openShiftIdentity = getDefaultOpenShiftIdentity();
         } else {
+            KeycloakService keycloakService = this.keycloakServiceInstance.get();
             githubIdentity = keycloakService.getGitHubIdentity(authorization);
             openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
         }
@@ -141,6 +143,7 @@ public class MissionControlResource {
             githubIdentity = getDefaultGithubIdentity();
             openShiftIdentity = getDefaultOpenShiftIdentity();
         } else {
+            KeycloakService keycloakService = this.keycloakServiceInstance.get();
             githubIdentity = keycloakService.getGitHubIdentity(authorization);
             openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
         }

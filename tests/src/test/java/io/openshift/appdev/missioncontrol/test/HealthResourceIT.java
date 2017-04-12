@@ -1,8 +1,16 @@
 package io.openshift.appdev.missioncontrol.test;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.logging.Logger;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+
+import io.openshift.appdev.missioncontrol.web.api.HealthResource;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -11,13 +19,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import io.openshift.appdev.missioncontrol.web.api.HealthResource;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.logging.Logger;
 
 /**
  * Validation of the {@link HealthResource}

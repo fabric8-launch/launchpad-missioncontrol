@@ -2,6 +2,11 @@ apiVersion: v1
 kind: Template
 metadata:
   name: pipeline
+  annotations:
+    description: 'This template creates a Build Configuration that uses a Jenkins pipeline
+      strategy. '
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
 parameters:
 - name: PROJECT
   description: The name assigned to all of the application objects defined in this template.
@@ -16,7 +21,12 @@ objects:
   kind: BuildConfig
   metadata:
     name: ${PROJECT}
+    annotations:
+      pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind":
+        "DeploymentConfig"}]'
   spec:
+    triggers:
+    - type: ConfigChange
     source:
       git:
         ref: master
@@ -26,3 +36,13 @@ objects:
       jenkinsPipelineStrategy:
         jenkinsfilePath: Jenkinsfile
       type: JenkinsPipeline
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: launchpad-maven
+    annotations:
+      openshift.io/display-name: 'Jenkins 2 CentOS 7'
+    labels:
+      role: jenkins-slave
+  spec:
+    dockerImageRepository: openshift/jenkins-slave-maven-centos7
