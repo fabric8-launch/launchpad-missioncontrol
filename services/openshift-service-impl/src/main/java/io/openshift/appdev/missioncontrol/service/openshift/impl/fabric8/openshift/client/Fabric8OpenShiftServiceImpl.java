@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,8 +26,8 @@ import io.openshift.appdev.missioncontrol.base.identity.Identity;
 import io.openshift.appdev.missioncontrol.base.identity.IdentityVisitor;
 import io.openshift.appdev.missioncontrol.base.identity.TokenIdentity;
 import io.openshift.appdev.missioncontrol.base.identity.UserPasswordIdentity;
-import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.DuplicateProjectException;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftResource;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.impl.OpenShiftProjectImpl;
@@ -80,6 +81,7 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
             public void visit(TokenIdentity token) {
                 configBuilder.withOauthToken(token.getToken());
             }
+
             @Override
             public void visit(UserPasswordIdentity userPassword) {
                 configBuilder
@@ -250,8 +252,7 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 template.getParameters().forEach(p -> log.info("\t" + p.getDisplayName() + '=' + p.getValue()));
                 final Controller controller = new Controller(client);
                 controller.setNamespace(project.getName());
-                final KubernetesList processedTemplate = (KubernetesList) controller.processTemplate(template,
-                                                                                                     OPENSHIFT_PROJECT_TEMPLATE);
+                final KubernetesList processedTemplate = (KubernetesList) controller.processTemplate(template, OPENSHIFT_PROJECT_TEMPLATE);
                 controller.apply(processedTemplate, OPENSHIFT_PROJECT_TEMPLATE);
                 // add all template resources into the project
                 processedTemplate.getItems().stream()
@@ -269,5 +270,17 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
 
     private URL getConsoleUrl() {
         return consoleUrl;
+    }
+
+
+    @Override
+    public boolean projectExists(String name) throws IllegalArgumentException {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Project name cannot be empty");
+        }
+        boolean projectExists = client.projects().list().getItems().stream()
+                .map(p -> p.getMetadata().getName())
+                .anyMatch(Predicate.isEqual(name));
+        return projectExists;
     }
 }

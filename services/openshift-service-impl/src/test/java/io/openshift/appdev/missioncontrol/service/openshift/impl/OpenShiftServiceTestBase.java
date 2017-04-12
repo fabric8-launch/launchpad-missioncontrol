@@ -88,6 +88,25 @@ public abstract class OpenShiftServiceTestBase implements OpenShiftServiceContai
         // then using same name should fail with DPE here
     }
 
+    @Test
+    public void projectExists() {
+        // given
+        final OpenShiftProject project = triggerCreateProject(getUniqueProjectName());
+        // when
+        final String name = project.getName();
+        assertTrue(openShiftService.projectExists(name));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void projectExistsShouldFailIfNull() {
+        openShiftService.projectExists(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void projectExistsShouldFailIfEmpty() {
+        openShiftService.projectExists("");
+    }
+
     private String getUniqueProjectName() {
         return PREFIX_NAME_PROJECT + System.currentTimeMillis();
     }

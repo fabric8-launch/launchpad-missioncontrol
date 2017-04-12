@@ -52,4 +52,14 @@ public interface OpenShiftService {
      * @throws IllegalArgumentException If the project is not specified
      */
     URL getWebhookUrl(final OpenShiftProject project) throws IllegalArgumentException;
+
+
+    /**
+     * Check if the specified project name exists
+     *
+     * @param name the project name. Required
+     * @return <code>true</code> if the project name exists in this Openshift
+     * @throws IllegalArgumentException If the project name is not specified
+     */
+    boolean projectExists(String name) throws IllegalArgumentException;
 }
