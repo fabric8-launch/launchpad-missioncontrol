@@ -45,7 +45,7 @@ public final class GitHubServiceCdiIT extends GitHubServiceTestBase {
                 .importRuntimeDependencies().resolve().withTransitivity().asFile();
         // Create deploy file
         WebArchive war = ShrinkWrap.create(WebArchive.class)
-                .addPackage(GitHubServiceFactoryImpl.class.getPackage())
+                .addPackage(KohsukeGitHubServiceFactoryImpl.class.getPackage())
                 .addClass(GitHubTestCredentials.class)
                 .addClass(GitHubServiceSpi.class)
                 // libraries will include all classes/interfaces from the API project.

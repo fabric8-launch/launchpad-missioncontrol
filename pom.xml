@@ -25,7 +25,7 @@
     <version.org.apache.httpcomponents_httpclient>4.3.5</version.org.apache.httpcomponents_httpclient>
     <version.arquillian_universe>1.0.0.Alpha2</version.arquillian_universe>
     <version.org.arquillian.container_arquillian-container-chameleon>1.0.0.Alpha6</version.org.arquillian.container_arquillian-container-chameleon>
-    <version.org.kohsuke_github-api>1.84</version.org.kohsuke_github-api>
+    <version.org.kohsuke_github-api>1.85</version.org.kohsuke_github-api>
     <version.io.fabric8_openshift-client>2.2.13</version.io.fabric8_openshift-client>
     <version.io.fabric8_kubernetes-api>2.2.209</version.io.fabric8_kubernetes-api>
     <version.com.fasterxml.jackson>2.7.7</version.com.fasterxml.jackson>

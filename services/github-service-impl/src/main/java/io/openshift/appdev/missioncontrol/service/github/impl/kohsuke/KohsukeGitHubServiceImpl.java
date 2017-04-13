@@ -374,6 +374,7 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
             log.fine("Deleting repo at " + repo.gitHttpTransportUrl());
             repo.delete();
         } catch (final IOException ioe) {
+            ioe.printStackTrace();
             // Check for repo not found (this is how Kohsuke Java Client reports the error)
             if (isRepoNotFound(ioe)) {
                 throw new NoSuchRepositoryException("Could not remove repository "
