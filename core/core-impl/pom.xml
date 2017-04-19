@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <properties>
+    <version.com.segment.analytics.java_analytics>2.0.0</version.com.segment.analytics.java_analytics>
+  </properties>
+
   <parent>
     <groupId>io.openshift.appdev.missioncontrol</groupId>
     <artifactId>missioncontrol-parent</artifactId>
@@ -32,6 +37,11 @@
       <artifactId>missioncontrol-service-openshift-impl</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.segment.analytics.java</groupId>
+      <artifactId>analytics</artifactId>
+      <version>${version.com.segment.analytics.java_analytics}</version>
     </dependency>
     <dependency>
       <groupId>org.arquillian.container</groupId>

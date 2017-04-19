@@ -30,6 +30,7 @@
     <version.io.fabric8_kubernetes-api>2.2.209</version.io.fabric8_kubernetes-api>
     <version.com.fasterxml.jackson>2.7.7</version.com.fasterxml.jackson>
     <version.com.squareup.okhttp>3.6.0</version.com.squareup.okhttp>
+    <version.com.squareup.okio>1.11.0</version.com.squareup.okio>
     <version.org.jboss.arquillian.extension_arquillian-phantom-driver>1.2.1.Final</version.org.jboss.arquillian.extension_arquillian-phantom-driver>
     <version.ch.qos.logback_logback-classic>1.0.13</version.ch.qos.logback_logback-classic>
     <version.org.assertj_assertj-core>3.4.1</version.org.assertj_assertj-core>
@@ -216,6 +217,11 @@
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>okhttp</artifactId>
         <version>${version.com.squareup.okhttp}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okio</groupId>
+        <artifactId>okio</artifactId>
+        <version>${version.com.squareup.okio}</version>
       </dependency>
       <dependency>
         <groupId>org.arquillian.container</groupId>
