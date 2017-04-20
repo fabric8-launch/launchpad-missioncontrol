@@ -9,6 +9,9 @@
   </parent>
   <artifactId>missioncontrol-web</artifactId>
   <packaging>war</packaging>
+  <properties>
+    <swarm.version>2017.4.0</swarm.version>
+  </properties>
   <build>
     <finalName>launchpad-missioncontrol</finalName>
     <plugins>
@@ -40,7 +43,7 @@
           <plugin>
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>wildfly-swarm-plugin</artifactId>
-            <version>2017.3.2</version>
+            <version>${swarm.version}</version>
             <executions>
               <execution>
                 <goals>
@@ -51,6 +54,33 @@
           </plugin>
         </plugins>
       </build>
+
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>bom-all</artifactId>
+            <version>${swarm.version}</version>
+            <scope>import</scope>
+            <type>pom</type>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.wildfly.swarm</groupId>
+          <artifactId>cdi</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.wildfly.swarm</groupId>
+          <artifactId>jaxrs-jsonp</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.wildfly.swarm</groupId>
+          <artifactId>jaxrs-multipart</artifactId>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 </project>
