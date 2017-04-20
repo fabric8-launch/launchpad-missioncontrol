@@ -310,6 +310,17 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                             ((OpenShiftProjectImpl) project).addResource(resource);
                         });
             }
+
+            // Add Admin role to the jenkins serviceaccount
+            log.info("Adding role admin to jenkins serviceaccount for project '" + project.getName() + "'");
+            client.roleBindings()
+                    .inNamespace(project.getName())
+                    .withName("admin")
+                    .edit()
+                    .addToUserNames("system:serviceaccount:" + project.getName() + ":jenkins")
+                    .addNewSubject().withKind("ServiceAccount").withNamespace(project.getName()).withName("jenkins").endSubject()
+                    .done();
+
         } catch (Exception e) {
             throw new RuntimeException("Could not create OpenShift pipeline", e);
         }
