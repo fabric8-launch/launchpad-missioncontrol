@@ -156,7 +156,9 @@ public class MissionControlResource {
                     CreateProjectile projectile = ProjectileBuilder.newInstance()
                             .gitHubIdentity(githubIdentity)
                             .openShiftIdentity(openShiftIdentity)
+                            .openShiftProjectName(form.getOpenShiftProjectName())
                             .createType()
+                            .gitHubRepositoryName(form.getGitHubRepositoryName())
                             .gitHubRepositoryDescription(form.getGitHubRepositoryDescription())
                             .projectLocation(project)
                             .build();

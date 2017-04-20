@@ -1,8 +1,8 @@
 package io.openshift.appdev.missioncontrol.core.api;
 
-import io.openshift.appdev.missioncontrol.base.identity.Identity;
-
 import java.nio.file.Path;
+
+import io.openshift.appdev.missioncontrol.base.identity.Identity;
 
 
 /**
@@ -24,6 +24,12 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     }
 
     private Path projectLocation;
+
+    /**
+     * The GitHub Repository Name to be used
+     */
+    private String gitHubRepositoryName;
+
     /**
      * The Github Repository Description
      */
@@ -56,7 +62,20 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     }
 
     /**
+     * Sets the GitHub repository name when creating a new repository
+     *
+     * @param gitHubRepositoryName
+     * @return
+     */
+    public CreateProjectileBuilder gitHubRepositoryName(final String gitHubRepositoryName) {
+        this.gitHubRepositoryName = gitHubRepositoryName;
+        return this;
+    }
+
+
+    /**
      * Sets the GitHub repository description when creating a new repository
+     *
      * @param description
      * @return
      */
@@ -64,6 +83,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
         this.gitHubRepositoryDescription = description;
         return this;
     }
+
 
     public String getGitHubRepositoryDescription() {
         return gitHubRepositoryDescription;
@@ -76,9 +96,12 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
         return projectLocation;
     }
 
+    public String getGitHubRepositoryName() {
+        return gitHubRepositoryName;
+    }
+
     @Override
     String createDefaultProjectName() {
-
         return projectLocation.getFileName().toString();
     }
 }

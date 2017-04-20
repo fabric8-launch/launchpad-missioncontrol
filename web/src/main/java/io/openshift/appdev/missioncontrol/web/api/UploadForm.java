@@ -18,6 +18,14 @@ public class UploadForm {
     @NotNull
     private InputStream file;
 
+    @FormParam("openShiftProjectName")
+    @PartType(MediaType.APPLICATION_FORM_URLENCODED)
+    private String openShiftProjectName;
+
+    @FormParam("gitHubRepositoryName")
+    @PartType(MediaType.APPLICATION_FORM_URLENCODED)
+    private String gitHubRepositoryName;
+
     @FormParam("gitHubRepositoryDescription")
     @PartType(MediaType.APPLICATION_FORM_URLENCODED)
     private String gitHubRepositoryDescription;
@@ -36,6 +44,14 @@ public class UploadForm {
 
     public void setGitHubRepositoryDescription(String gitHubRepositoryDescription) {
         this.gitHubRepositoryDescription = gitHubRepositoryDescription;
+    }
+
+    public String getGitHubRepositoryName() {
+        return gitHubRepositoryName;
+    }
+
+    public void setGitHubRepositoryName(String gitHubRepositoryName) {
+        this.gitHubRepositoryName = gitHubRepositoryName;
     }
 
     public InputStream getFile() {
@@ -60,5 +76,13 @@ public class UploadForm {
 
     public void setRuntime(String runtime) {
         this.runtime = runtime;
+    }
+
+    public String getOpenShiftProjectName() {
+        return openShiftProjectName;
+    }
+
+    public void setOpenShiftProjectName(String openShiftProjectName) {
+        this.openShiftProjectName = openShiftProjectName;
     }
 }

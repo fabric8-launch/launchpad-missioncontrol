@@ -114,6 +114,7 @@ public class ProjectileBuilder {
         return new ForkProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName());
     }
 
+
     /**
      * Ensures the specified value is not null or empty, else throws
      * an {@link IllegalArgumentException} citing the specified name

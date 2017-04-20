@@ -11,12 +11,12 @@ import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 
 import io.openshift.appdev.missioncontrol.core.api.Boom;
-import io.openshift.appdev.missioncontrol.core.api.MissionControl;
-import io.openshift.appdev.missioncontrol.core.api.ForkProjectile;
-import io.openshift.appdev.missioncontrol.core.api.Projectile;
-import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
-import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
+import io.openshift.appdev.missioncontrol.core.api.ForkProjectile;
+import io.openshift.appdev.missioncontrol.core.api.MissionControl;
+import io.openshift.appdev.missioncontrol.core.api.Projectile;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 import io.openshift.appdev.missioncontrol.service.github.api.DuplicateWebhookException;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
@@ -24,9 +24,9 @@ import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactor
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhook;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhookEvent;
 import io.openshift.appdev.missioncontrol.service.github.spi.GitHubServiceSpi;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 
 import static java.util.Collections.singletonMap;
 
@@ -97,8 +97,12 @@ public class MissionControlImpl implements MissionControl {
         final GitHubService gitHubService = getGitHubService(projectile);
         String projectName = projectile.getOpenShiftProjectName();
         File path = projectile.getProjectLocation().toFile();
+        String repositoryName = projectile.getGitHubRepositoryName();
+        if (repositoryName == null) {
+            repositoryName = projectName;
+        }
         String repositoryDescription = projectile.getGitHubRepositoryDescription();
-        GitHubRepository gitHubRepository = gitHubService.createRepository(projectName, repositoryDescription);
+        GitHubRepository gitHubRepository = gitHubService.createRepository(repositoryName, repositoryDescription);
         event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_CREATE, singletonMap("location", gitHubRepository.getHomepage())));
         gitHubService.push(gitHubRepository, path);
         event.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_PUSHED));
