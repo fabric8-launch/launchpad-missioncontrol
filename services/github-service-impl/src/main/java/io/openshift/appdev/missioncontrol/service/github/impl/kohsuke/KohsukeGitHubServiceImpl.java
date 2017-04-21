@@ -21,6 +21,7 @@ import io.openshift.appdev.missioncontrol.base.identity.UserPasswordIdentity;
 import io.openshift.appdev.missioncontrol.service.github.api.DuplicateWebhookException;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
+import io.openshift.appdev.missioncontrol.service.github.api.GitHubUser;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhook;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhookEvent;
 import io.openshift.appdev.missioncontrol.service.github.api.NoSuchRepositoryException;
@@ -402,4 +403,13 @@ public final class KohsukeGitHubServiceImpl implements GitHubService, GitHubServ
         return notFound;
     }
 
+
+    @Override
+    public GitHubUser getLoggedUser() {
+        try {
+            return new KohsukeGitHubUser(delegate.getMyself());
+        } catch (IOException e) {
+            throw new RuntimeException("Could not find information about the logged user", e);
+        }
+    }
 }

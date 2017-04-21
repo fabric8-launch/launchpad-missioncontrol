@@ -50,14 +50,4 @@ public interface GitHubServiceSpi extends GitHubService {
      */
     void deleteWebhook(final GitHubRepository repository, GitHubWebhook webhook) throws IllegalArgumentException;
 
-
-    /**
-     * Checks if the repository with the given name exists
-     *
-     * @param repositoryName
-     * @return <code>true</code> if it exists, <code>false</code> otherwise.
-     */
-    boolean repositoryExists(String repositoryName);
-
-
 }

@@ -30,9 +30,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import io.openshift.appdev.missioncontrol.base.EnvironmentSupport;
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
-import io.openshift.appdev.missioncontrol.base.identity.IdentityFactory;
 import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
 import io.openshift.appdev.missioncontrol.core.api.ForkProjectile;
 import io.openshift.appdev.missioncontrol.core.api.MissionControl;
@@ -48,7 +46,7 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
  */
 @Path(MissionControlResource.PATH_MISSIONCONTROL)
 @ApplicationScoped
-public class MissionControlResource {
+public class MissionControlResource extends AbstractResource {
 
     /**
      * Paths
@@ -69,14 +67,6 @@ public class MissionControlResource {
     private static final String QUERY_PARAM_GIT_REF = "gitRef";
 
     private static final String QUERY_PARAM_PIPELINE_TEMPLATE_PATH = "pipelineTemplatePath";
-
-    private static final String LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_USERNAME = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_USERNAME";
-
-    private static final String LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_PASSWORD = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_PASSWORD";
-
-    private static final String LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_TOKEN = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_TOKEN";
-
-    private static final String LAUNCHPAD_MISSIONCONTROL_GITHUB_TOKEN = "LAUNCHPAD_MISSIONCONTROL_GITHUB_TOKEN";
 
     private static Logger log = Logger.getLogger(MissionControlResource.class.getName());
 
@@ -124,9 +114,9 @@ public class MissionControlResource {
         // Fling it
         executorService.submit(() -> missionControl.launch(projectile));
         return Json.createObjectBuilder()
-                                   .add("uuid", projectile.getId().toString())
-                                   .add("uuid_link", PATH_STATUS + "/" + projectile.getId().toString())
-                                   .build();
+                .add("uuid", projectile.getId().toString())
+                .add("uuid_link", PATH_STATUS + "/" + projectile.getId().toString())
+                .build();
     }
 
     @POST
@@ -171,7 +161,7 @@ public class MissionControlResource {
                                 }
 
                                 FileUploadHelper.deleteDirectory(tempDir);
-                    });
+                            });
                     return Json.createObjectBuilder()
                             .add("uuid", projectile.getId().toString())
                             .add("uuid_link", PATH_STATUS + "/" + projectile.getId().toString())
@@ -182,31 +172,4 @@ public class MissionControlResource {
             throw new WebApplicationException("could not unpack zip file into temp folder", e);
         }
     }
-
-    private Identity getDefaultOpenShiftIdentity() {
-        // Read from the ENV variables
-        String token = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_TOKEN);
-        if (token != null) {
-            return IdentityFactory.createFromToken(token);
-        } else {
-            String user = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_USERNAME);
-            String password = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_PASSWORD);
-            return IdentityFactory.createFromUserPassword(user, password);
-        }
-    }
-
-    private Identity getDefaultGithubIdentity() {
-        // Try using the provided Github token
-        String token = EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_GITHUB_TOKEN);
-        return IdentityFactory.createFromToken(token);
-    }
-
-    private boolean useDefaultIdentities() {
-        String user = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_USERNAME);
-        String password = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_PASSWORD);
-        String token = EnvironmentSupport.INSTANCE.getEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_TOKEN);
-
-        return ((user != null && password != null) || token != null);
-    }
-
 }

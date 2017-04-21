@@ -58,4 +58,16 @@ public interface GitHubService {
                                 GitHubWebhookEvent... events)
             throws IllegalArgumentException, DuplicateWebhookException;
 
+    /**
+     * Checks if the repository with the given name exists
+     *
+     * @param repositoryName
+     * @return <code>true</code> if it exists, <code>false</code> otherwise.
+     */
+    boolean repositoryExists(String repositoryName);
+
+    /**
+     * @return the user logged in this {@link GitHubService}
+     */
+    GitHubUser getLoggedUser();
 }

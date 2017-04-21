@@ -23,11 +23,15 @@ public class HttpEndpoints extends Application {
     @Inject
     private HealthResource healthResource;
 
+    @Inject
+    private ValidationResource userResource;
+
     @Override
     public Set<Object> getSingletons() {
         final Set<Object> singletons = new HashSet<>();
         singletons.add(missionControlResource);
         singletons.add(healthResource);
+        singletons.add(userResource);
 
         CorsFilter corsFilter = new CorsFilter();
         corsFilter.getAllowedOrigins().add("*");
