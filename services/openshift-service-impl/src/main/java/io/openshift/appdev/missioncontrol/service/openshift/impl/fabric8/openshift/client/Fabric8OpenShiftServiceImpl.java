@@ -268,13 +268,13 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 final Template template = client.templates().load(pipelineTemplateStream).get();
                 for (Parameter parameter : parameters) {
                     if (parameter.getValue() != null) {
-                        log.info("Setting the '" + parameter.getName() + "' parameter value to '" + parameter.getValue() + "'.");
+                        log.finest("Setting the '" + parameter.getName() + "' parameter value to '" + parameter.getValue() + "'.");
                         template.getParameters().stream().filter(p -> p.getName().equals(parameter.getName()))
                                 .forEach(p -> p.setValue(parameter.getValue()));
                     }
                 }
-                log.info("Deploying template '" + template.getMetadata().getName() + "' with parameters:");
-                template.getParameters().forEach(p -> log.info("\t" + p.getDisplayName() + '=' + p.getValue()));
+                log.finest("Deploying template '" + template.getMetadata().getName() + "' with parameters:");
+                template.getParameters().forEach(p -> log.finest("\t" + p.getDisplayName() + '=' + p.getValue()));
                 final Controller controller = new Controller(client);
                 controller.setNamespace(project.getName());
                 final KubernetesList processedTemplate = (KubernetesList) controller.processTemplate(template, OPENSHIFT_PROJECT_TEMPLATE);
@@ -305,14 +305,14 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                                 }
                         )
                         .forEach(resource -> {
-                            log.info("Adding resource '" + resource.getName() + "' (" + resource.getKind()
+                            log.finest("Adding resource '" + resource.getName() + "' (" + resource.getKind()
                                     + ") to project '" + project.getName() + "'");
                             ((OpenShiftProjectImpl) project).addResource(resource);
                         });
             }
 
             // Add Admin role to the jenkins serviceaccount
-            log.info("Adding role admin to jenkins serviceaccount for project '" + project.getName() + "'");
+            log.finest("Adding role admin to jenkins serviceaccount for project '" + project.getName() + "'");
             client.roleBindings()
                     .inNamespace(project.getName())
                     .withName("admin")
