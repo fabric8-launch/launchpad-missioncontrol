@@ -148,6 +148,8 @@ public class MissionControlResource extends AbstractResource {
                             .openShiftIdentity(openShiftIdentity)
                             .openShiftProjectName(form.getOpenShiftProjectName())
                             .createType()
+                            .mission(form.getMission())
+                            .runtime(form.getRuntime())
                             .gitHubRepositoryName(form.getGitHubRepositoryName())
                             .gitHubRepositoryDescription(form.getGitHubRepositoryDescription())
                             .projectLocation(project)

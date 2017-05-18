@@ -20,11 +20,15 @@ public class CreateProjectile extends Projectile {
         this.projectLocation = builder.getProjectLocation();
         this.gitHubRepositoryName = builder.getGitHubRepositoryName();
         this.gitHubRepositoryDescription = builder.getGitHubRepositoryDescription();
+        this.mission = builder.getMission();
+        this.runtime = builder.getRuntime();
     }
 
     private final Path projectLocation;
     private final String gitHubRepositoryName;
     private final String gitHubRepositoryDescription;
+    private final String mission;
+    private final String runtime;
 
     public Path getProjectLocation() {
         return projectLocation;
@@ -37,4 +41,13 @@ public class CreateProjectile extends Projectile {
     public String getGitHubRepositoryDescription() {
         return gitHubRepositoryDescription;
     }
+
+    public String getMission() {
+        return mission;
+    }
+
+    public String getRuntime() {
+        return runtime;
+    }
+    
 }

@@ -36,6 +36,16 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     private String gitHubRepositoryDescription = " ";
 
     /**
+     * The name of the Mission
+     */
+    private String mission;
+
+    /**
+     * The name of the Runtime
+     */
+    private String runtime;
+
+    /**
      * Creates and returns a new {@link CreateProjectile} instance based on the
      * state of this builder; if any preconditions like missing properties
      * or improper values exist, an {@link IllegalStateException} will be thrown
@@ -62,6 +72,13 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     }
 
     /**
+     * @return the location of the project to "upload" to GitHub.
+     */
+    public Path getProjectLocation() {
+        return projectLocation;
+    }
+
+    /**
      * Sets the GitHub repository name when creating a new repository
      *
      * @param gitHubRepositoryName
@@ -72,6 +89,9 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
         return this;
     }
 
+    public String getGitHubRepositoryName() {
+        return gitHubRepositoryName;
+    }
 
     /**
      * Sets the GitHub repository description when creating a new repository
@@ -90,14 +110,33 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
     }
 
     /**
-     * @return the location of the project to "upload" to GitHub.
+     * Sets the name of the mission of the booster associated with this builder
+     * 
+     * @param mission
+     * @return
      */
-    public Path getProjectLocation() {
-        return projectLocation;
+    public CreateProjectileBuilder mission(String mission) {
+        this.mission = mission;
+        return this;
     }
 
-    public String getGitHubRepositoryName() {
-        return gitHubRepositoryName;
+    public String getMission() {
+        return mission;
+    }
+
+    /**
+     * Sets the name of the runtime of the booster associated with this builder
+     * 
+     * @param runtime
+     * @return
+     */
+    public CreateProjectileBuilder runtime(String runtime) {
+        this.runtime = runtime;
+        return this;
+    }
+
+    public String getRuntime() {
+        return runtime;
     }
 
     @Override
