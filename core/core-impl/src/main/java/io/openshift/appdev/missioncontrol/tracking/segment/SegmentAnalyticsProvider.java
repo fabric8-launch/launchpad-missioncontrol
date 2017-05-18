@@ -6,6 +6,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
@@ -24,6 +26,9 @@ import io.openshift.appdev.missioncontrol.tracking.AnalyticsProviderBase;
  */
 @ApplicationScoped
 public class SegmentAnalyticsProvider extends AnalyticsProviderBase {
+
+    @Resource
+    ManagedExecutorService async;
 
     private static final Logger log = Logger.getLogger(SegmentAnalyticsProvider.class.getName());
 

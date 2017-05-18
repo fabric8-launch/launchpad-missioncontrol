@@ -3,8 +3,6 @@ package io.openshift.appdev.missioncontrol.tracking;
 import java.io.IOException;
 import java.util.UUID;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.event.Observes;
 
 import io.openshift.appdev.missioncontrol.core.api.LaunchEvent;
@@ -16,9 +14,6 @@ import io.openshift.appdev.missioncontrol.core.api.LaunchEvent;
  * @author <a href="mailto:tschotan@redhat.com">Tako Schotanus</a>
  */
 public abstract class AnalyticsProviderBase {
-
-    @Resource
-    protected ManagedExecutorService async;
 
     public void onEvent(@Observes LaunchEvent launch) throws IOException {
         runPostTrackingMessage(
