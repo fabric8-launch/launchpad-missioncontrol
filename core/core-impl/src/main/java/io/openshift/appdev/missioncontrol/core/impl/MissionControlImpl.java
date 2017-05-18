@@ -125,7 +125,7 @@ public class MissionControlImpl implements MissionControl {
 
         GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);
         statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_WEBHOOK));
-        launchEvent.fire(new LaunchEvent(getUserId(projectile), projectile.getId(), gitHubRepository.getFullName(), createdProject.getName()));
+        launchEvent.fire(new LaunchEvent(getUserId(projectile), projectile.getId(), gitHubRepository.getFullName(), createdProject.getName(), projectile.getMission(), projectile.getRuntime()));
         return new BoomImpl(gitHubRepository, createdProject, webhook);
     }
 

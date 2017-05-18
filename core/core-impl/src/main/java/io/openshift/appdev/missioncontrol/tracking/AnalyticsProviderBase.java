@@ -25,7 +25,9 @@ public abstract class AnalyticsProviderBase {
                 launch.getUser(),
                 launch.getId(),
                 launch.getGithubRepo(),
-                launch.getOpenshiftProjectName());
+                launch.getOpenshiftProjectName(),
+                launch.getMission(),
+                launch.getRuntime());
 	}
 
     /*
@@ -38,12 +40,16 @@ public abstract class AnalyticsProviderBase {
     protected void runPostTrackingMessage(final String userId,
                                        final UUID projectileId,
                                        final String githubRepo,
-                                       final String openshiftProjectName) {
+                                       final String openshiftProjectName,
+                                       final String mission,
+                                       final String runtime) {
         postTrackingMessage(
                 userId,
                 projectileId,
                 githubRepo,
-                openshiftProjectName);
+                openshiftProjectName,
+                mission,
+                runtime);
     }
 
     /*
@@ -53,6 +59,8 @@ public abstract class AnalyticsProviderBase {
     protected abstract void postTrackingMessage(final String userId,
                                        final UUID projectileId,
                                        final String githubRepo,
-                                       final String openshiftProjectName);
+                                       final String openshiftProjectName,
+                                       final String mission,
+                                       final String runtime);
 }
 

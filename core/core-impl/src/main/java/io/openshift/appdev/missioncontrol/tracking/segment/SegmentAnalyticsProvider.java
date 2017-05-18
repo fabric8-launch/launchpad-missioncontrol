@@ -30,6 +30,8 @@ public class SegmentAnalyticsProvider extends AnalyticsProviderBase {
     private static final String NAME_EVENT_LAUNCH = "launch";
     private static final String KEY_OPENSHIFT_PROJECT_NAME = "openshiftProjectName";
     private static final String KEY_GITHUB_REPO = "githubRepo";
+    private static final String KEY_MISSION = "mission";
+    private static final String KEY_RUNTIME = "runtime";
 
     private static final String LAUNCHPAD_TRACKER_SEGMENT_TOKEN = "LAUNCHPAD_TRACKER_SEGMENT_TOKEN";
     private static final String LAUNCHPAD_TRACKER_SEGMENT_TOKEN_DEFAULT = "oOlNiAf3K5MDwpd4ErD2ZPRe6z3Ckk7w";
@@ -49,11 +51,15 @@ public class SegmentAnalyticsProvider extends AnalyticsProviderBase {
     protected void postTrackingMessage(final String userId,
                                        final UUID projectileId,
                                        final String githubRepo,
-                                       final String openshiftProjectName) {
+                                       final String openshiftProjectName,
+                                       final String mission,
+                                       final String runtime) {
         // Create properties
         final Map<String, String> props = new HashMap<>();
         props.put(KEY_GITHUB_REPO, githubRepo);
         props.put(KEY_OPENSHIFT_PROJECT_NAME, openshiftProjectName);
+        props.put(KEY_MISSION, mission);
+        props.put(KEY_RUNTIME, runtime);
 
         // Create message
         final MessageBuilder message = TrackMessage.builder(NAME_EVENT_LAUNCH).
@@ -68,7 +74,9 @@ public class SegmentAnalyticsProvider extends AnalyticsProviderBase {
                 "userId: " + userId + ", " +
                 "projectileId: " + projectileId + ", " +
                 "githubRepo: " + githubRepo + ", " +
-                "openshiftProjectName: " + openshiftProjectName);
+                "openshiftProjectName: " + openshiftProjectName + ", " +
+                "mission: " + mission + ", " +
+                "runtime: " + runtime);
     }
 
     @Produces

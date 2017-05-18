@@ -10,13 +10,17 @@ public class LaunchEvent {
     private UUID id;
     private String githubRepo;
     private String openshiftProjectName;
-
-    public LaunchEvent(String user, UUID id, String githubRepo, String openshiftProjectName) {
+    private String mission;
+    private String runtime;
+    
+    public LaunchEvent(String user, UUID id, String githubRepo, String openshiftProjectName, String mission, String runtime) {
         super();
         this.user = user;
         this.id = id;
         this.githubRepo = githubRepo;
         this.openshiftProjectName = openshiftProjectName;
+        this.mission = mission;
+        this.runtime = runtime;
     }
 
     public String getUser() {
@@ -33,6 +37,14 @@ public class LaunchEvent {
 
     public String getOpenshiftProjectName() {
         return openshiftProjectName;
+    }
+
+    public String getMission() {
+        return mission;
+    }
+
+    public String getRuntime() {
+        return runtime;
     }
 
 }
