@@ -21,6 +21,46 @@
   <!-- PatternFly Custom Componets -  Sidebar, Popovers and Datatables Customizations -->
   <!-- Note: jquery.dataTables.js must occur in the html source before patternfly*.js.-->
   <script src="bower_components/patternfly/dist/js/patternfly.min.js"></script>
+
+  <script language="JavaScript">
+    $(function() {
+      $("#flingForm").submit(function(e) {
+        e.preventDefault();
+        var actionUrl = e.currentTarget.action;
+        $.ajax({
+          url: actionUrl,
+          type: 'post',
+          processData: false,
+          contentType: false,
+          data: new FormData(this),
+          success: function(data) {
+            var webSocket = new WebSocket("ws://" + window.location.host + data.uuid_link);
+            var statusList = $("#result");
+            webSocket.onmessage = function (event) {
+              if (statusList.find("li").length === 0) {
+                var values = JSON.parse(event.data);
+                for (var i in values) {
+                  for (var key in values[i]) {
+                    statusList.append('<li class="list-group-item">' + values[i][key] + '</li>');
+                  }
+                }
+              } else {
+                var message = JSON.parse(event.data);
+                var row = statusList.find('li:not(.done):first').addClass(message.data && message.data.error ? 'error' : 'done');
+                $('<span class="pficon pficon-ok pull-right" style="font-size: 2.2em"></span>').appendTo(row);
+                if (statusList.find('li:not(.done):first').length === 0) {
+                  statusList.append('<li id="process-done" class="list-group-item">Your project is ready; now you can launch it.</li>');
+                }
+              }
+            };
+            webSocket.onerror = function (event) {
+              statusList.append('<li class="list-group-item error">' + event.data + '</li>');
+            };
+          }
+        });
+      });
+    });
+  </script>
 </head>
 <body>
 
@@ -90,6 +130,8 @@
       </form>
     </div>
   </div><!--/.row-->
+  <ul class="list-group" id="result">
+  </ul>
 </div><!--/.container-->
 
 

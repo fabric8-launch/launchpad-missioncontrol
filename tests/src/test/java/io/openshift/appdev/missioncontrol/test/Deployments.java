@@ -38,7 +38,7 @@ class Deployments {
                         true,
                         OpenShiftServiceSpi.class.getPackage(),
                         OpenShiftProjectImpl.class.getPackage())
-                .addPackage(WebDriverProviderHack.class.getPackage());
+                .addPackage(TestSupport.class.getPackage());
         final File[] deps = Resolvers.use(MavenResolverSystem.class).
                 loadPomFromFile("../services/openshift-service-impl/pom.xml").
                 importRuntimeAndTestDependencies().
