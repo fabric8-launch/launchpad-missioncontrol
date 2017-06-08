@@ -90,6 +90,11 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
+      <groupId>io.openshift.appdev.missioncontrol</groupId>
+      <artifactId>missioncontrol-service-openshift-impl</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
       <version>1.0.2</version>
