@@ -56,3 +56,13 @@ objects:
       role: jenkins-slave
   spec:
     dockerImageRepository: openshiftio/launchpad-jenkins-slave
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: launchpad-nodejs
+    annotations:
+      openshift.io/display-name: 'Jenkins 2 CentOS 7 NodeJS'
+    labels:
+      role: jenkins-slave
+  spec:
+    dockerImageRepository: bucharestgold/jenkins-slave-nodejs-centos7
