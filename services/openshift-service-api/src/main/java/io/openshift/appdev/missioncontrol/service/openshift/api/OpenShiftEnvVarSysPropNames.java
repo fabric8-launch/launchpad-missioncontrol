@@ -6,8 +6,13 @@ package io.openshift.appdev.missioncontrol.service.openshift.api;
  */
 public interface OpenShiftEnvVarSysPropNames {
 
-    static String OPENSHIFT_API_URL = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_API_URL";
+    String OPENSHIFT_API_URL = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_API_URL";
 
-    static String OPENSHIFT_CONSOLE_URL = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_CONSOLE_URL";
+    String OPENSHIFT_CONSOLE_URL = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_CONSOLE_URL";
+
+    /**
+     * A YAML file containing the supported openshift clusters
+     */
+    String OPENSHIFT_CONFIG_FILE = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_CONFIG_FILE";
 
 }

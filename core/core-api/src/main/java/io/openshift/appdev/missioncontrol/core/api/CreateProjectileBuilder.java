@@ -19,8 +19,8 @@ import io.openshift.appdev.missioncontrol.base.identity.Identity;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class CreateProjectileBuilder extends ProjectileBuilder {
-    CreateProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName) {
-        super(gitHubIdentity, openShiftIdentity, openShiftProjectName);
+    CreateProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName, String openShiftClusterName) {
+        super(gitHubIdentity, openShiftIdentity, openShiftProjectName, openShiftClusterName);
     }
 
     private Path projectLocation;
@@ -111,7 +111,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
 
     /**
      * Sets the name of the mission of the booster associated with this builder
-     * 
+     *
      * @param mission
      * @return
      */
@@ -126,7 +126,7 @@ public class CreateProjectileBuilder extends ProjectileBuilder {
 
     /**
      * Sets the name of the runtime of the booster associated with this builder
-     * 
+     *
      * @param runtime
      * @return
      */

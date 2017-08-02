@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster;
+
 /**
  * Defines our HTTP endpoints as singletons
  *
@@ -26,12 +28,16 @@ public class HttpEndpoints extends Application {
     @Inject
     private ValidationResource userResource;
 
+    @Inject
+    private OpenShiftResource openShiftResource;
+
     @Override
     public Set<Object> getSingletons() {
         final Set<Object> singletons = new HashSet<>();
         singletons.add(missionControlResource);
         singletons.add(healthResource);
         singletons.add(userResource);
+        singletons.add(openShiftResource);
 
         CorsFilter corsFilter = new CorsFilter();
         corsFilter.getAllowedOrigins().add("*");

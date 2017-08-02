@@ -23,10 +23,11 @@ public class ProjectileBuilder {
         // No external instances
     }
 
-    ProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName) {
+    ProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName, String openShiftClusterName) {
         this.gitHubIdentity = gitHubIdentity;
         this.openShiftIdentity = openShiftIdentity;
         this.openShiftProjectName = openShiftProjectName;
+        this.openShiftClusterName = openShiftClusterName;
     }
 
     private Identity gitHubIdentity;
@@ -37,6 +38,11 @@ public class ProjectileBuilder {
      * the name of OpenShift project to create.
      */
     private String openShiftProjectName;
+
+    /**
+     * The OpenShift cluster name
+     */
+    private String openShiftClusterName;
 
     /**
      * Creates and returns a new instance with uninitialized values
@@ -106,12 +112,16 @@ public class ProjectileBuilder {
         return openShiftProjectName;
     }
 
+    public String getOpenShiftClusterName() {
+        return openShiftClusterName;
+    }
+
     public CreateProjectileBuilder createType() {
-        return new CreateProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName());
+        return new CreateProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName(), getOpenShiftClusterName());
     }
 
     public ForkProjectileBuilder forkType() {
-        return new ForkProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName());
+        return new ForkProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName(), getOpenShiftClusterName());
     }
 
 
@@ -128,7 +138,7 @@ public class ProjectileBuilder {
                                final Object value) throws IllegalStateException {
         assert name != null && !name.isEmpty() : "name is required";
 
-        if (value == null || (value instanceof String && ((String)value).isEmpty())) {
+        if (value == null || (value instanceof String && ((String) value).isEmpty())) {
             throw new IllegalStateException(name + " must be specified");
         }
     }

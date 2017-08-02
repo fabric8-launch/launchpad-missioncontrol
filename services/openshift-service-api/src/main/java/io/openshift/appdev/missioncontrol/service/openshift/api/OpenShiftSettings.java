@@ -41,6 +41,16 @@ public class OpenShiftSettings {
         return getOpenShiftUrl(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONSOLE_URL);
     }
 
+    /**
+     * The URL to the supported OpenShift configs
+     *
+     * @return
+     */
+    public static String getOpenShiftConfigFileUrl() {
+        return System.getProperty(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONFIG_FILE,
+                                  System.getenv(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONFIG_FILE));
+    }
+
     private static String getOpenShiftUrl(final String envVarOrSysPropName) {
         assert envVarOrSysPropName != null && !envVarOrSysPropName.isEmpty();
         if (isSystemPropertySet(envVarOrSysPropName)) {

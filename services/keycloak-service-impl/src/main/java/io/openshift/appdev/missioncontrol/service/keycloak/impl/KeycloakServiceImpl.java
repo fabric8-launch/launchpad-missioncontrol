@@ -1,8 +1,13 @@
 package io.openshift.appdev.missioncontrol.service.keycloak.impl;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,11 +28,17 @@ import okhttp3.Response;
 @ApplicationScoped
 public class KeycloakServiceImpl implements KeycloakService {
 
+    private static final Logger logger = Logger.getLogger(KeycloakServiceImpl.class.getName());
+
     private static final String TOKEN_URL_TEMPLATE = "%s/realms/%s/broker/%s/token";
 
     public static final String LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_URL = "LAUNCHPAD_KEYCLOAK_URL";
 
     public static final String LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_REALM = "LAUNCHPAD_KEYCLOAK_REALM";
+
+    private final String keyCloakURL;
+
+    private final String realm;
 
     private final String gitHubURL;
 
@@ -35,12 +46,15 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     private final OkHttpClient httpClient;
 
+    @Inject
     public KeycloakServiceImpl() {
         this(EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_URL),
              EnvironmentSupport.INSTANCE.getRequiredEnvVarOrSysProp(LAUNCHPAD_MISSIONCONTROL_KEYCLOAK_REALM));
     }
 
     public KeycloakServiceImpl(String keyCloakURL, String realm) {
+        this.keyCloakURL = keyCloakURL;
+        this.realm = realm;
         this.gitHubURL = buildURL(keyCloakURL, realm, "github");
         this.openShiftURL = buildURL(keyCloakURL, realm, "openshift-v3");
 
@@ -71,6 +85,21 @@ public class KeycloakServiceImpl implements KeycloakService {
         return IdentityFactory.createFromToken(getToken(gitHubURL, keycloakAccessToken));
     }
 
+
+    @Override
+    public Optional<Identity> getIdentity(String provider, String token) {
+        String url = buildURL(keyCloakURL, realm, provider);
+        Identity identity = null;
+        try {
+            String providerToken = getToken(url, token);
+            identity = IdentityFactory.createFromToken(providerToken);
+        } catch (Exception e) {
+            logger.log(Level.FINE, "Error while grabbing token from provider " + provider, e);
+        }
+        return Optional.ofNullable(identity);
+
+    }
+
     /**
      * GET https://sso.openshift.io/auth/realms/launchpad/broker/{brokerType}/token
      * Authorization: Bearer <keycloakAccessToken>
@@ -85,7 +114,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         }
         Request request = new Request.Builder()
                 .url(url)
-                .header("Authorization", token)
+                .header(HttpHeaders.AUTHORIZATION, token)
                 .build();
         Call call = httpClient.newCall(request);
         try {
@@ -116,7 +145,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         }
     }
 
-    static String buildURL(String host, String realm, String broker) {
-        return String.format(TOKEN_URL_TEMPLATE, host, realm, broker);
+    static String buildURL(String host, String realm, String provider) {
+        return String.format(TOKEN_URL_TEMPLATE, host, realm, provider);
     }
 }

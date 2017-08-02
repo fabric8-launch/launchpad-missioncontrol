@@ -38,6 +38,10 @@ public class UploadForm {
     @PartType(MediaType.APPLICATION_FORM_URLENCODED)
     private String runtime;
 
+    @FormParam("openShiftCluster")
+    @PartType(MediaType.APPLICATION_FORM_URLENCODED)
+    private String openShiftCluster;
+
     public String getGitHubRepositoryDescription() {
         return gitHubRepositoryDescription;
     }
@@ -84,5 +88,13 @@ public class UploadForm {
 
     public void setOpenShiftProjectName(String openShiftProjectName) {
         this.openShiftProjectName = openShiftProjectName;
+    }
+
+    public String getOpenShiftCluster() {
+        return openShiftCluster;
+    }
+
+    public void setOpenShiftCluster(String openShiftCluster) {
+        this.openShiftCluster = openShiftCluster;
     }
 }

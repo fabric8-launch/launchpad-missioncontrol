@@ -9,6 +9,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +35,8 @@ import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactor
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhook;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhookEvent;
 import io.openshift.appdev.missioncontrol.service.github.spi.GitHubServiceSpi;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftClusterRegistry;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
@@ -53,6 +57,9 @@ public class MissionControlImpl implements MissionControl {
 
     @Inject
     private OpenShiftServiceFactory openShiftServiceFactory;
+
+    @Inject
+    private OpenShiftClusterRegistry openShiftClusterRegistry;
 
     @Inject
     private GitHubServiceFactory gitHubServiceFactory;
@@ -83,7 +90,9 @@ public class MissionControlImpl implements MissionControl {
         /*
           TODO Figure how to best handle possible DuplicateProjectException, but has to be handled to the user at some intelligent level
          */
-        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
+        Optional<OpenShiftCluster> cluster = openShiftClusterRegistry.findClusterById(projectile.getOpenShiftClusterName());
+        assert cluster.isPresent() : "OpenShift Cluster not found: " + projectile.getOpenShiftClusterName();
+        OpenShiftService openShiftService = openShiftServiceFactory.create(cluster.get(), projectile.getOpenShiftIdentity());
         final OpenShiftProject createdProject = openShiftService.createProject(projectName);
 
         /*
@@ -110,6 +119,10 @@ public class MissionControlImpl implements MissionControl {
     @Override
     public Boom launch(CreateProjectile projectile) throws IllegalArgumentException {
         final GitHubService gitHubService = getGitHubService(projectile);
+        Optional<OpenShiftCluster> cluster = openShiftClusterRegistry.findClusterById(projectile.getOpenShiftClusterName());
+        assert cluster.isPresent() : "OpenShift Cluster not found: " + projectile.getOpenShiftClusterName();
+        OpenShiftService openShiftService = openShiftServiceFactory.create(cluster.get(), projectile.getOpenShiftIdentity());
+
         String projectName = projectile.getOpenShiftProjectName();
         File path = projectile.getProjectLocation().toFile();
         String repositoryName = projectile.getGitHubRepositoryName();
@@ -137,7 +150,6 @@ public class MissionControlImpl implements MissionControl {
         gitHubService.push(gitHubRepository, path);
         statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_PUSHED));
 
-        OpenShiftService openShiftService = openShiftServiceFactory.create(projectile.getOpenShiftIdentity());
         OpenShiftProject createdProject = openShiftService.createProject(projectName);
         statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.OPENSHIFT_CREATE, singletonMap("location", createdProject.getConsoleOverviewUrl())));
         openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());

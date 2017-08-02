@@ -1,9 +1,9 @@
 package io.openshift.appdev.missioncontrol.core.api;
 
-import io.openshift.appdev.missioncontrol.base.identity.Identity;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.openshift.appdev.missioncontrol.base.identity.Identity;
 
 /**
  * DSL builder for creating {@link ForkProjectile} objects.  Responsible for
@@ -17,8 +17,8 @@ import java.util.regex.Pattern;
  * Each property's valid value and purpose is documented in its setter method.
  */
 public class ForkProjectileBuilder extends ProjectileBuilder {
-    ForkProjectileBuilder(Identity gitHubAccessToken, Identity openshiftAccessToken, String openShiftProjectName) {
-        super(gitHubAccessToken, openshiftAccessToken, openShiftProjectName);
+    ForkProjectileBuilder(Identity gitHubAccessToken, Identity openshiftAccessToken, String openShiftProjectName, String openShiftClusterName) {
+        super(gitHubAccessToken, openshiftAccessToken, openShiftProjectName, openShiftClusterName);
     }
 
     private static final Pattern REPO_PATTERN = Pattern.compile("^[a-zA-Z_0-9\\-]+/[a-zA-Z_0-9\\-]+");

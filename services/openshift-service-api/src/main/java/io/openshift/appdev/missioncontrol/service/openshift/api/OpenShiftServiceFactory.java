@@ -18,10 +18,10 @@ public interface OpenShiftServiceFactory {
     OpenShiftService create(Identity identity);
 
     /**
-     * Returns an {@link OpenShiftService} given it's API and Console URLs and OAuth token
+     * Returns an {@link OpenShiftService} given it's {@link OpenShiftCluster} and OAuth token
      *
      * @param identity an identity
      * @return an {@link OpenShiftService}
      */
-    OpenShiftService create(String apiUrl, String consoleUrl, Identity identity);
+    OpenShiftService create(OpenShiftCluster cluster, Identity identity);
 }

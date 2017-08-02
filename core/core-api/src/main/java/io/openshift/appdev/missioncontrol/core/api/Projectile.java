@@ -20,6 +20,8 @@ public abstract class Projectile {
 
     private final String openShiftProjectName;
 
+    private final String openShiftClusterName;
+
     /**
      * Package-level access; to be invoked by {@link ProjectileBuilder}
      * and all precondition checks are its responsibility
@@ -28,6 +30,7 @@ public abstract class Projectile {
         this.gitHubIdentity = builder.getGitHubIdentity();
         this.openShiftIdentity = builder.getOpenShiftIdentity();
         this.openShiftProjectName = builder.getOpenShiftProjectName();
+        this.openShiftClusterName = builder.getOpenShiftClusterName();
     }
 
     /**
@@ -56,5 +59,13 @@ public abstract class Projectile {
      */
     public String getOpenShiftProjectName() {
         return openShiftProjectName;
+    }
+
+    /**
+     *
+     * @return The OpenShift cluster to deploy
+     */
+    public String getOpenShiftClusterName() {
+        return openShiftClusterName;
     }
 }
