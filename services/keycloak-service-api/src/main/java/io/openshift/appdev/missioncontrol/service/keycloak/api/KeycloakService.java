@@ -14,8 +14,6 @@ public interface KeycloakService {
     /**
      * Returns the Openshift v3 {@link Identity} used for authenticating with the Openshift console
      *
-     * This returns the
-     *
      * @param token the keycloak access token
      * @return the openshift v3 token assigned to the given keycloak access token
      */
