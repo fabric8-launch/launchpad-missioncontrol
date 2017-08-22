@@ -192,7 +192,7 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
         List<Parameter> parameters = Arrays.asList(
                 createParameter("SOURCE_REPOSITORY_URL", sourceRepositoryUri.toString()),
                 createParameter("PROJECT", project.getName()),
-                createParameter("GITHUB_WEBHOOK_SECRET", new Long(System.currentTimeMillis()).toString()));
+                createParameter("GITHUB_WEBHOOK_SECRET", Long.toString(System.currentTimeMillis())));
         configureProject(project, pipelineTemplateStream, parameters);
     }
 
