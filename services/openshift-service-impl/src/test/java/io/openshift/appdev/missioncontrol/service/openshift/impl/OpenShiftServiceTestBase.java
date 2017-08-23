@@ -12,13 +12,13 @@ import io.openshift.appdev.missioncontrol.service.openshift.api.DuplicateProject
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftSettings;
-import io.openshift.appdev.missioncontrol.service.openshift.spi.OpenShiftServiceSpi;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -95,18 +95,35 @@ public abstract class OpenShiftServiceTestBase implements OpenShiftServiceContai
         final OpenShiftProject project = triggerCreateProject(getUniqueProjectName());
         // when
         final String name = project.getName();
-        assertTrue(((OpenShiftServiceSpi) openShiftService).projectExists(name));
+        assertTrue(openShiftService.projectExists(name));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void projectExistsShouldFailIfNull() {
-        ((OpenShiftServiceSpi) openShiftService).projectExists(null);
+        openShiftService.projectExists(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void projectExistsShouldFailIfEmpty() {
-        ((OpenShiftServiceSpi) openShiftService).projectExists("");
+        openShiftService.projectExists("");
     }
+
+
+    @Test
+    public void findProject() {
+        // given
+        String projectName = getUniqueProjectName();
+        final OpenShiftProject project = triggerCreateProject(projectName);
+        // when
+        final String name = project.getName();
+        assertTrue(openShiftService.findProject(name).isPresent());
+    }
+
+    @Test
+    public void findProjectWithInexistentName() {
+        assertFalse(openShiftService.findProject("foo-project").isPresent());
+    }
+
 
     private String getUniqueProjectName() {
         return PREFIX_NAME_PROJECT + System.currentTimeMillis();

@@ -170,6 +170,15 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
     }
 
     @Override
+    public Optional<OpenShiftProject> findProject(String name) throws IllegalArgumentException {
+        assert name != null : "Project name cannot be null";
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Project name cannot be empty");
+        }
+        return Optional.ofNullable(projectExists(name) ? new OpenShiftProjectImpl(name) : null);
+    }
+
+    @Override
     public void configureProject(final OpenShiftProject project,
                                  final URI sourceRepositoryUri,
                                  final String gitRef,
@@ -306,30 +315,30 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 // add all template resources into the project
                 processedTemplate.getItems().stream()
                         .map(item -> {
-                                    String gitHubWebHookSecret = null;
-                                    if (item instanceof BuildConfig) {
-                                        final BuildConfig bc = (BuildConfig) item;
-                                        gitHubWebHookSecret = bc.getSpec().
-                                                getTriggers().
-                                                stream().
-                                                filter(
-                                                        r -> r.getGithub() != null).
-                                                findFirst().
-                                                get().
-                                                getGithub().
-                                                getSecret();
-                                    }
-                                    final OpenShiftResource resource = new OpenShiftResourceImpl(
-                                            item.getMetadata().getName(),
-                                            item.getKind(),
-                                            project,
-                                            gitHubWebHookSecret);
-                                    return resource;
-                                }
+                                 String gitHubWebHookSecret = null;
+                                 if (item instanceof BuildConfig) {
+                                     final BuildConfig bc = (BuildConfig) item;
+                                     gitHubWebHookSecret = bc.getSpec().
+                                             getTriggers().
+                                             stream().
+                                             filter(
+                                                     r -> r.getGithub() != null).
+                                             findFirst().
+                                             get().
+                                             getGithub().
+                                             getSecret();
+                                 }
+                                 final OpenShiftResource resource = new OpenShiftResourceImpl(
+                                         item.getMetadata().getName(),
+                                         item.getKind(),
+                                         project,
+                                         gitHubWebHookSecret);
+                                 return resource;
+                             }
                         )
                         .forEach(resource -> {
                             log.finest("Adding resource '" + resource.getName() + "' (" + resource.getKind()
-                                    + ") to project '" + project.getName() + "'");
+                                               + ") to project '" + project.getName() + "'");
                             ((OpenShiftProjectImpl) project).addResource(resource);
                         });
             }

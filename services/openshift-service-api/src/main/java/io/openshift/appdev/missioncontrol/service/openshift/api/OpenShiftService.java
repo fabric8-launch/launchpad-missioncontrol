@@ -2,6 +2,7 @@ package io.openshift.appdev.missioncontrol.service.openshift.api;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.Optional;
 
 /**
  * Defines the operations we support with the OpenShift backend
@@ -20,6 +21,16 @@ public interface OpenShiftService {
      */
     OpenShiftProject createProject(String name)
             throws DuplicateProjectException, IllegalArgumentException;
+
+
+    /**
+     * Finds an {@link OpenShiftProject} with the specified, required name
+     *
+     * @param name the name of the project to find
+     * @return an {@link Optional} with an existing {@link OpenShiftProject}
+     * @throws IllegalArgumentException if the name is not specified
+     */
+    Optional<OpenShiftProject> findProject(String name) throws IllegalArgumentException;
 
     /**
      * Creates all resources for the given {@code project}, using the given {@code projectTemplate}.
@@ -61,5 +72,4 @@ public interface OpenShiftService {
      * @throws IllegalArgumentException If the project name is not specified
      */
     boolean projectExists(String name) throws IllegalArgumentException;
-
 }

@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftClusterRegistry;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 import io.openshift.appdev.missioncontrol.service.openshift.impl.fabric8.openshift.client.Fabric8OpenShiftServiceImpl;
@@ -13,6 +15,7 @@ import io.openshift.appdev.missioncontrol.service.openshift.test.OpenShiftTestCr
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.runner.RunWith;
@@ -20,7 +23,7 @@ import org.junit.runner.RunWith;
 /**
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  * @author <a href="mailto:rmartine@redhat.com">Ricardo Martinelli de
- *         Oliveira</a>
+ * Oliveira</a>
  * @author <a href="mailto:xcoulon@redhat.com">Xavier Coulon</a>
  */
 @RunWith(Arquillian.class)
@@ -47,7 +50,9 @@ public class OpenShiftServiceCdiIT extends OpenShiftServiceTestBase {
                 .addClass(DeleteOpenShiftProjectRule.class)
                 .addClass(OpenShiftServiceSpi.class)
                 .addClass(OpenShiftTestCredentials.class)
+                .addClasses(OpenShiftCluster.class, OpenShiftClusterRegistry.class, OpenShiftClusterRegistryImpl.class, OpenShiftClusterConstructor.class)
                 .addAsResource("openshift-project-template.json")
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource("META-INF/jboss-deployment-structure.xml", "jboss-deployment-structure.xml")
                 .addAsLibraries(dependencies);
         // Show the deployed structure

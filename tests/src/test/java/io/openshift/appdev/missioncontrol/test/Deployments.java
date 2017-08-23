@@ -9,6 +9,7 @@ import io.openshift.appdev.missioncontrol.service.github.spi.GitHubServiceSpi;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 import io.openshift.appdev.missioncontrol.service.openshift.spi.OpenShiftServiceSpi;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.Resolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
@@ -67,6 +68,7 @@ class Deployments {
                 resolve().
                 withTransitivity().
                 asFile();
+        archive.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         archive.addAsLibraries(depsOpenshift);
         archive.addAsLibraries(depsGithub);
         archive.addAsLibraries(ourTestDeps);

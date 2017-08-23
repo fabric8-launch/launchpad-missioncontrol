@@ -21,8 +21,12 @@ public class Fabric8OpenShiftServiceFactory implements OpenShiftServiceFactory {
 
     private Logger log = Logger.getLogger(Fabric8OpenShiftServiceFactory.class.getName());
 
+    private final OpenShiftClusterRegistry clusterRegistry;
+
     @Inject
-    OpenShiftClusterRegistry clusterRegistry;
+    public Fabric8OpenShiftServiceFactory(OpenShiftClusterRegistry clusterRegistry) {
+        this.clusterRegistry = clusterRegistry;
+    }
 
     /**
      * Creates a new {@link OpenShiftService} with the specified credentials
