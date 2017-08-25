@@ -1,5 +1,6 @@
 package io.openshift.appdev.missioncontrol.service.openshift.api;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -64,12 +65,23 @@ public interface OpenShiftService {
     void configureProject(OpenShiftProject project, URI sourceRepositoryUri);
 
     /**
-     * @param project The project for which to construct a webhook URL
-     * @return the webhook URL associated with the Build Configuration, which
-     * GitHub can use to trigger a build upon change pushes.
+     * Creates all resources for the given {@code project}, using a standard project template.
+     * The project template creates an S2I build for the passed {@code sourceRepositoryUri}
+     *
+     * @param project             the project in which the pipeline will be created
+     * @param sourceRepositoryUri the location of the source repository to build the OpenShift application from
+     * @param sourceRepositoryContextDir the location within the source repository where the application source can be found
+     * @param boosterAppName      The name of the booster application
+     */
+    void configureProject(OpenShiftProject project, InputStream templateStream, URI sourceRepositoryUri, String sourceRepositoryContextDir);
+
+    /**
+     * @param project The project for which to construct webhook URLs
+     * @return the list of webhook URLs associated with the Build Configuration, which
+     * GitHub can use to trigger a build upon change pushes (if any).
      * @throws IllegalArgumentException If the project is not specified
      */
-    URL getWebhookUrl(final OpenShiftProject project) throws IllegalArgumentException;
+    List<URL> getWebhookUrls(final OpenShiftProject project) throws IllegalArgumentException;
 
     /**
      * Check if the specified project name exists

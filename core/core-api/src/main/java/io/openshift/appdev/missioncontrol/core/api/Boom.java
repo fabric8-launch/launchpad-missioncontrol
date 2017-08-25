@@ -2,6 +2,9 @@ package io.openshift.appdev.missioncontrol.core.api;
 
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhook;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
+
+import java.util.List;
+
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 
 /**
@@ -23,9 +26,9 @@ public interface Boom {
     OpenShiftProject getCreatedProject();
 
     /**
-     * @return the webhook created on the forked repo on GitHub to trigger
+     * @return the list of webhooks created on the forked repo on GitHub to trigger
      * builds on OpenShift.
      */
-    GitHubWebhook getGitHubWebhook();
+    List<GitHubWebhook> getGitHubWebhooks();
 
 }
