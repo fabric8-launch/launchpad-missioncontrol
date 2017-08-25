@@ -76,7 +76,8 @@ public abstract class OpenShiftServiceTestBase implements OpenShiftServiceContai
         assertEquals("returned project did not have expected name", projectName, actualName);
         Assertions.assertThat(project.getResources()).isNotNull().hasSize(1);
         assertTrue(project.getResources().get(0).getKind().equals("BuildConfig"));
-        assertEquals(openShiftService.getWebhookUrl(project),
+        assertEquals(openShiftService.getWebhookUrls(project).size(), 1);
+        assertEquals(openShiftService.getWebhookUrls(project).get(0),
                      new URL(OpenShiftSettings.getOpenShiftConsoleUrl()
                                      + "/oapi/v1/namespaces/" + project.getName() + "/buildconfigs/helloworld-pipeline/webhooks/kontinu8/github"));
     }

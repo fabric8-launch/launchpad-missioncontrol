@@ -1,5 +1,8 @@
 package io.openshift.appdev.missioncontrol.core.impl;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,10 +10,6 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
-import com.google.common.io.Files;
-import io.openshift.appdev.missioncontrol.core.api.*;
-import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
-import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -23,19 +22,25 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.google.common.io.Files;
+
+import io.openshift.appdev.missioncontrol.core.api.Boom;
+import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
+import io.openshift.appdev.missioncontrol.core.api.ForkProjectile;
 import io.openshift.appdev.missioncontrol.core.api.MissionControl;
+import io.openshift.appdev.missioncontrol.core.api.ProjectileBuilder;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactory;
 import io.openshift.appdev.missioncontrol.service.github.api.NoSuchRepositoryException;
 import io.openshift.appdev.missioncontrol.service.github.spi.GitHubServiceSpi;
 import io.openshift.appdev.missioncontrol.service.github.test.GitHubTestCredentials;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 import io.openshift.appdev.missioncontrol.service.openshift.spi.OpenShiftServiceSpi;
 import io.openshift.appdev.missioncontrol.service.openshift.test.OpenShiftTestCredentials;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test cases for the {@link MissionControl}
@@ -195,7 +200,7 @@ public class MissionControlIT {
         Assertions.assertThat(createdProject.getResources()).isNotNull().hasSize(2);
         assertTrue(createdProject.getResources().get(0).getKind().equals("ImageStream"));
         assertTrue(createdProject.getResources().get(1).getKind().equals("BuildConfig"));
-        assertThat(boom.getGitHubWebhook()).isNotNull();
+        assertFalse(boom.getGitHubWebhooks().isEmpty());
     }
 
     private String getUniqueProjectName() {

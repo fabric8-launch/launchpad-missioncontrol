@@ -202,6 +202,7 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 createParameter("GIT_URL", sourceRepositoryUri.toString()),
                 createParameter("GIT_REF", gitRef));
         configureProject(project, pipelineTemplateStream, parameters);
+        fixJenkinsServiceAccount(project);
     }
 
     @Override
@@ -212,36 +213,50 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 createParameter("PROJECT", project.getName()),
                 createParameter("GITHUB_WEBHOOK_SECRET", Long.toString(System.currentTimeMillis())));
         configureProject(project, pipelineTemplateStream, parameters);
+        fixJenkinsServiceAccount(project);
+    }
+
+    @Override
+    public void configureProject(final OpenShiftProject project, InputStream templateStream, final URI sourceRepositoryUri, final String sourceRepositoryContextDir) {
+        List<Parameter> parameters = Arrays.asList(
+                createParameter("SOURCE_REPOSITORY_URL", sourceRepositoryUri.toString()),
+                createParameter("SOURCE_REPOSITORY_DIR", sourceRepositoryContextDir),
+                createParameter("PROJECT", project.getName()),
+                createParameter("GITHUB_WEBHOOK_SECRET", Long.toString(System.currentTimeMillis())));
+        configureProject(project, templateStream, parameters);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public URL getWebhookUrl(final OpenShiftProject project) throws IllegalArgumentException {
-        final URL openshiftConsoleUrl = this.getConsoleUrl();
-        final Optional<OpenShiftResource> optionalBuildConfig = project.getResources().stream()
-                .filter(r -> r.getKind()
-                        .equals("BuildConfig")).findFirst();
-        if (optionalBuildConfig.isPresent()) {
-            final OpenShiftResource buildConfig = optionalBuildConfig.get();
-            // Construct a URL in form:
-            // https://<OS_IP>:<OS_PORT>/oapi/v1/namespaces/<project>/buildconfigs/<BC-name/webhooks/<secret>/github
-            final String secret = buildConfig.getGitHubWebhookSecret();
-            final String webhookContext = new StringBuilder().append("/oapi/v1/namespaces/")
-                    .append(project.getName()).append("/buildconfigs/")
-                    .append(buildConfig.getName()).append("/webhooks/").append(secret).append("/github")
-                    .toString();
-            try {
-                return new URL(openshiftConsoleUrl.getProtocol(), openshiftConsoleUrl.getHost(),
-                               openshiftConsoleUrl.getPort(), webhookContext);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException("Failed to create Webhook URL for project '" + project.getName()
-                                                   + "' using the OpenShift API URL '" + openshiftConsoleUrl.toExternalForm()
-                                                   + "' and the webhook context '" + webhookContext + "'", e);
-            }
+    public List<URL> getWebhookUrls(final OpenShiftProject project) throws IllegalArgumentException {
+        if (project == null) {
+            throw new IllegalArgumentException("project must be specified");
         }
-        return null;
+        final URL openshiftConsoleUrl = this.getConsoleUrl();
+        List<URL> result = project.getResources().stream()
+                .filter(r -> r.getKind().equals("BuildConfig"))
+                .map(item -> {
+                    final OpenShiftResource buildConfig = item;
+                    // Construct a URL in form:
+                    // https://<OS_IP>:<OS_PORT>/oapi/v1/namespaces/<project>/buildconfigs/<BC-name/webhooks/<secret>/github
+                    final String secret = buildConfig.getGitHubWebhookSecret();
+                    final String webhookContext = new StringBuilder().append("/oapi/v1/namespaces/")
+                            .append(project.getName()).append("/buildconfigs/")
+                            .append(buildConfig.getName()).append("/webhooks/").append(secret).append("/github")
+                            .toString();
+                    try {
+                        return new URL(openshiftConsoleUrl.getProtocol(), openshiftConsoleUrl.getHost(),
+                                       openshiftConsoleUrl.getPort(), webhookContext);
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException("Failed to create Webhook URL for project '" + project.getName()
+                                                           + "' using the OpenShift API URL '" + openshiftConsoleUrl.toExternalForm()
+                                                           + "' and the webhook context '" + webhookContext + "'", e);
+                    }
+                })
+                .collect(Collectors.toList());
+        return result;
     }
 
     /**
@@ -324,49 +339,50 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 // add all template resources into the project
                 processedTemplate.getItems().stream()
                         .map(item -> {
-                                 String gitHubWebHookSecret = null;
-                                 if (item instanceof BuildConfig) {
-                                     final BuildConfig bc = (BuildConfig) item;
-                                     gitHubWebHookSecret = bc.getSpec().
-                                             getTriggers().
-                                             stream().
-                                             filter(
-                                                     r -> r.getGithub() != null).
-                                             findFirst().
-                                             get().
-                                             getGithub().
-                                             getSecret();
-                                 }
-                                 final OpenShiftResource resource = new OpenShiftResourceImpl(
-                                         item.getMetadata().getName(),
-                                         item.getKind(),
-                                         project,
-                                         gitHubWebHookSecret);
-                                 return resource;
-                             }
-                        )
+                            String gitHubWebHookSecret = null;
+                            if (item instanceof BuildConfig) {
+                                final BuildConfig bc = (BuildConfig) item;
+                                gitHubWebHookSecret = bc.getSpec().
+                                        getTriggers().
+                                        stream().
+                                        filter(
+                                                r -> r.getGithub() != null).
+                                        findFirst().
+                                        get().
+                                        getGithub().
+                                        getSecret();
+                            }
+                            final OpenShiftResource resource = new OpenShiftResourceImpl(
+                                    item.getMetadata().getName(),
+                                    item.getKind(),
+                                    project,
+                                    gitHubWebHookSecret);
+                            return resource;
+                        })
                         .forEach(resource -> {
                             log.finest("Adding resource '" + resource.getName() + "' (" + resource.getKind()
                                                + ") to project '" + project.getName() + "'");
                             ((OpenShiftProjectImpl) project).addResource(resource);
                         });
             }
-
-            // Add Admin role to the jenkins serviceaccount
-            log.finest("Adding role admin to jenkins serviceaccount for project '" + project.getName() + "'");
-            client.roleBindings()
-                    .inNamespace(project.getName())
-                    .withName("admin")
-                    .edit()
-                    .addToUserNames("system:serviceaccount:" + project.getName() + ":jenkins")
-                    .addNewSubject().withKind("ServiceAccount").withNamespace(project.getName()).withName("jenkins").endSubject()
-                    .done();
-
         } catch (Exception e) {
             throw new RuntimeException("Could not create OpenShift pipeline", e);
         }
     }
 
+    private void fixJenkinsServiceAccount(final OpenShiftProject project) {
+        // Add Admin role to the jenkins serviceaccount
+        log.finest("Adding role admin to jenkins serviceaccount for project '" + project.getName() + "'");
+        client.roleBindings()
+                .inNamespace(project.getName())
+                .withName("admin")
+                .edit()
+                .addToUserNames("system:serviceaccount:" + project.getName() + ":jenkins")
+                .addNewSubject().withKind("ServiceAccount").withNamespace(project.getName()).withName("jenkins").endSubject()
+                .done();
+
+    }
+    
     private URL getConsoleUrl() {
         return consoleUrl;
     }

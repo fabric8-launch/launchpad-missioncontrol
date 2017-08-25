@@ -2,6 +2,9 @@ package io.openshift.appdev.missioncontrol.core.impl;
 
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubWebhook;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
+
+import java.util.List;
+
 import io.openshift.appdev.missioncontrol.core.api.Boom;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 
@@ -18,19 +21,19 @@ public final class BoomImpl implements Boom {
      * @param openShiftProject the project created on OpenShift. Required
      * @param webhook          the webhook created on the forked repo on GitHub to trigger builds on OpenShift. Optional
      */
-    BoomImpl(final GitHubRepository gitHubRepository, final OpenShiftProject openShiftProject, final GitHubWebhook webhook) {
+    BoomImpl(final GitHubRepository gitHubRepository, final OpenShiftProject openShiftProject, final List<GitHubWebhook> webhooks) {
         assert gitHubRepository != null : "gitHubRepository must be specified";
         assert openShiftProject != null : "openShiftProject must be specified";
         this.gitHubRepository = gitHubRepository;
         this.openShiftProject = openShiftProject;
-        this.webhook = webhook;
+        this.webhooks = webhooks;
     }
 
     private final GitHubRepository gitHubRepository;
 
     private final OpenShiftProject openShiftProject;
 
-    private final GitHubWebhook webhook;
+    private final List<GitHubWebhook> webhooks;
 
     @Override
     public GitHubRepository getCreatedRepository() {
@@ -43,7 +46,7 @@ public final class BoomImpl implements Boom {
     }
 
     @Override
-    public GitHubWebhook getGitHubWebhook() {
-        return this.webhook;
+    public List<GitHubWebhook> getGitHubWebhooks() {
+        return this.webhooks;
     }
 }
