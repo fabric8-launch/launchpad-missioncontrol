@@ -24,17 +24,27 @@ public class OpenShiftProjectImplTest {
 
     @BeforeClass
     public static void initProject() {
-        project = new OpenShiftProjectImpl(PROJECT_NAME);
+        project = new OpenShiftProjectImpl(PROJECT_NAME, OpenShiftSettings.getOpenShiftConsoleUrl());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nameCannotBeNull() {
-        new OpenShiftProjectImpl(null);
+        new OpenShiftProjectImpl(null, "foo");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nameCannotBeEmpty() {
-        new OpenShiftProjectImpl("");
+        new OpenShiftProjectImpl("", "foo");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void consoleUrlCannotBeNull() {
+        new OpenShiftProjectImpl("foo", null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void consoleUrlCannotBeEmpty() {
+        new OpenShiftProjectImpl("foo", "");
     }
 
     @Test

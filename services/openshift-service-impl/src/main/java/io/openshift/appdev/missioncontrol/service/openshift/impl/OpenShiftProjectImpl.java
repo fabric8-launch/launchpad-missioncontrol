@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
-import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftSettings;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftResource;
 
 /**
@@ -23,11 +22,15 @@ public final class OpenShiftProjectImpl implements OpenShiftProject {
      * @param name
      * @throws IllegalArgumentException
      */
-    public OpenShiftProjectImpl(final String name) throws IllegalArgumentException {
+    public OpenShiftProjectImpl(final String name, final String consoleUrl) throws IllegalArgumentException {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("name is required");
         }
+        if (consoleUrl == null || consoleUrl.isEmpty()) {
+            throw new IllegalArgumentException("consoleUrl is required");
+        }
         this.name = name;
+        this.consoleUrl = consoleUrl;
     }
 
     private static final String CONSOLE_OVERVIEW_URL_PREFIX = "/console/project/";
@@ -35,6 +38,8 @@ public final class OpenShiftProjectImpl implements OpenShiftProject {
     private static final String CONSOLE_OVERVIEW_URL_SUFFIX = "/overview/";
 
     private final String name;
+
+    private final String consoleUrl;
 
     private final List<OpenShiftResource> resources = new ArrayList<>();
 
@@ -52,7 +57,7 @@ public final class OpenShiftProjectImpl implements OpenShiftProject {
     @Override
     public URL getConsoleOverviewUrl() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(OpenShiftSettings.getOpenShiftConsoleUrl());
+        sb.append(consoleUrl);
         sb.append(CONSOLE_OVERVIEW_URL_PREFIX);
         sb.append(this.getName());
         sb.append(CONSOLE_OVERVIEW_URL_SUFFIX);
