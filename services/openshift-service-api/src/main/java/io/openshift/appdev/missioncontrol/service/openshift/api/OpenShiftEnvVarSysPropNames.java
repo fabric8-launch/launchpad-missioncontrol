@@ -13,6 +13,6 @@ public interface OpenShiftEnvVarSysPropNames {
     /**
      * A YAML file containing the supported openshift clusters
      */
-    String OPENSHIFT_CONFIG_FILE = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_CONFIG_FILE";
+    String OPENSHIFT_CLUSTERS_CONFIG_FILE = "LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_CLUSTERS_FILE";
 
 }

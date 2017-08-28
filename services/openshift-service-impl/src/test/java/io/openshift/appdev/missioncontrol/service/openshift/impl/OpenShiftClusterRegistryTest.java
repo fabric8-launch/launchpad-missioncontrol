@@ -18,7 +18,7 @@ public class OpenShiftClusterRegistryTest {
 
     @Before
     public void setUp() {
-        System.setProperty(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONFIG_FILE, "src/test/resources/openshift-config.yaml");
+        System.setProperty(OpenShiftEnvVarSysPropNames.OPENSHIFT_CLUSTERS_CONFIG_FILE, "src/test/resources/openshift-clusters.yaml");
         registry = new OpenShiftClusterRegistryImpl();
     }
 
@@ -53,6 +53,6 @@ public class OpenShiftClusterRegistryTest {
 
     @After
     public void tearDown() {
-        System.getProperties().remove(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONFIG_FILE);
+        System.getProperties().remove(OpenShiftEnvVarSysPropNames.OPENSHIFT_CLUSTERS_CONFIG_FILE);
     }
 }

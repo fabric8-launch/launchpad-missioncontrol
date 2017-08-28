@@ -46,9 +46,9 @@ public class OpenShiftSettings {
      *
      * @return
      */
-    public static String getOpenShiftConfigFileUrl() {
-        return System.getProperty(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONFIG_FILE,
-                                  System.getenv(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONFIG_FILE));
+    public static String getOpenShiftClustersConfigFile() {
+        return System.getProperty(OpenShiftEnvVarSysPropNames.OPENSHIFT_CLUSTERS_CONFIG_FILE,
+                                  System.getenv(OpenShiftEnvVarSysPropNames.OPENSHIFT_CLUSTERS_CONFIG_FILE));
     }
 
     private static String getOpenShiftUrl(final String envVarOrSysPropName) {

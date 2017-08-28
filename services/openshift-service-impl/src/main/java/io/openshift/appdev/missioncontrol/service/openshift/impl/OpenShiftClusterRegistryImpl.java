@@ -29,19 +29,19 @@ public class OpenShiftClusterRegistryImpl implements OpenShiftClusterRegistry {
 
     public OpenShiftClusterRegistryImpl() {
         Set<OpenShiftCluster> clusters = new LinkedHashSet<>();
-        String configFileUrl = OpenShiftSettings.getOpenShiftConfigFileUrl();
-        if (configFileUrl == null) {
+        String configFile = OpenShiftSettings.getOpenShiftClustersConfigFile();
+        if (configFile == null) {
             defaultCluster = new OpenShiftCluster("openshift-v3",
                                                   OpenShiftSettings.getOpenShiftApiUrl(),
                                                   OpenShiftSettings.getOpenShiftConsoleUrl());
             clusters.add(defaultCluster);
         } else {
-            Path configFilePath = Paths.get(configFileUrl);
+            Path configFilePath = Paths.get(configFile);
             try (BufferedReader reader = Files.newBufferedReader(configFilePath)) {
                 Yaml yaml = new Yaml(new OpenShiftClusterConstructor());
                 List<OpenShiftCluster> configClusters = (List<OpenShiftCluster>) yaml.loadAs(reader, List.class);
-                assert configClusters != null : "Config file " + configFileUrl + " is an invalid YAML file";
-                assert configClusters.size() > 0 : "No entries found in " + configFileUrl;
+                assert configClusters != null : "Config file " + configFile + " is an invalid YAML file";
+                assert configClusters.size() > 0 : "No entries found in " + configFile;
                 clusters.addAll(configClusters);
                 defaultCluster = configClusters.get(0);
             } catch (IOException e) {
