@@ -117,8 +117,7 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .build();
         Call call = httpClient.newCall(request);
-        try {
-            Response response = call.execute();
+        try (Response response = call.execute()) {
             String content = response.body().string();
             // Keycloak does not respect the content-type
             if (content.startsWith("{")) {
