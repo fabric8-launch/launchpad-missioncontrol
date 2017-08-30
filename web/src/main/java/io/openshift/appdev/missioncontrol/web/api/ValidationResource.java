@@ -1,5 +1,7 @@
 package io.openshift.appdev.missioncontrol.web.api;
 
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -16,6 +18,8 @@ import io.openshift.appdev.missioncontrol.base.identity.Identity;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactory;
 import io.openshift.appdev.missioncontrol.service.keycloak.api.KeycloakService;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftClusterRegistry;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 
@@ -40,6 +44,8 @@ public class ValidationResource extends AbstractResource {
     @Inject
     private OpenShiftServiceFactory openShiftServiceFactory;
 
+    @Inject
+    private OpenShiftClusterRegistry clusterRegistry;
 
     @HEAD
     @Path("/repository/{repo}")
@@ -76,8 +82,9 @@ public class ValidationResource extends AbstractResource {
                 openShiftIdentity = keycloakService.getIdentity(cluster, authorization).get();
             }
         }
-
-        OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftIdentity);
+        Optional<OpenShiftCluster> openShiftCluster = clusterRegistry.findClusterById(cluster);
+        assert openShiftCluster.isPresent() : "Cluster not found: " + cluster;
+        OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftCluster.get(), openShiftIdentity);
         if (openShiftService.projectExists(project)) {
             return Response.ok().build();
         } else {
