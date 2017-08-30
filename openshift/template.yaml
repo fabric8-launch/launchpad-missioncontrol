@@ -140,11 +140,3 @@ objects:
       deploymentconfig: launchpad-missioncontrol
     sessionAffinity: None
     type: ClusterIP
-- kind: Route
-  apiVersion: v1
-  metadata:
-    name: launchpad-missioncontrol
-  spec:
-    to:
-      kind: Service
-      name: launchpad-missioncontrol
