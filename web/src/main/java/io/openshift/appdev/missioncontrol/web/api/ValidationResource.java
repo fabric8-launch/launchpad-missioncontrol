@@ -63,13 +63,18 @@ public class ValidationResource extends AbstractResource {
     @HEAD
     @Path("/project/{project}")
     public Response projectExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
-                                  @NotNull @PathParam("project") String project) {
+                                  @NotNull @PathParam("project") String project,
+                                  @QueryParam("cluster") String cluster) {
         Identity openShiftIdentity;
         if (useDefaultIdentities()) {
             openShiftIdentity = getDefaultOpenShiftIdentity();
         } else {
             KeycloakService keycloakService = this.keycloakServiceInstance.get();
-            openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
+            if (cluster == null) {
+                openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
+            } else {
+                openShiftIdentity = keycloakService.getIdentity(cluster, authorization).get();
+            }
         }
 
         OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftIdentity);
