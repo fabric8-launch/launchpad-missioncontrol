@@ -9,7 +9,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -150,15 +149,15 @@ public class MissionControlImpl implements MissionControl {
         gitHubService.push(gitHubRepository, path);
         statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_PUSHED));
 
-        OpenShiftProject createdProject = openShiftService.createProject(projectName);
-        statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.OPENSHIFT_CREATE, singletonMap("location", createdProject.getConsoleOverviewUrl())));
-        openShiftService.configureProject(createdProject, gitHubRepository.getGitCloneUri());
+        OpenShiftProject openShiftProject = openShiftService.findProject(projectName).orElseGet(() -> openShiftService.createProject(projectName));
+        statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.OPENSHIFT_CREATE, singletonMap("location", openShiftProject.getConsoleOverviewUrl())));
+        openShiftService.configureProject(openShiftProject, gitHubRepository.getGitCloneUri());
         statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.OPENSHIFT_PIPELINE));
 
-        GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, createdProject);
+        GitHubWebhook webhook = getGitHubWebhook(gitHubService, openShiftService, gitHubRepository, openShiftProject);
         statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_WEBHOOK));
-        launchEvent.fire(new LaunchEvent(getUserId(projectile), projectile.getId(), gitHubRepository.getFullName(), createdProject.getName(), projectile.getMission(), projectile.getRuntime()));
-        return new BoomImpl(gitHubRepository, createdProject, webhook);
+        launchEvent.fire(new LaunchEvent(getUserId(projectile), projectile.getId(), gitHubRepository.getFullName(), openShiftProject.getName(), projectile.getMission(), projectile.getRuntime()));
+        return new BoomImpl(gitHubRepository, openShiftProject, webhook);
     }
 
     private String getUserId(Projectile projectile) {
