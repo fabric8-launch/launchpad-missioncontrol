@@ -8,6 +8,7 @@ import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
@@ -81,22 +82,27 @@ public class ValidationResource extends AbstractResource {
 
     @HEAD
     @Path("/token/openshift")
-    public Response openShiftTokenExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization) {
-        Identity openShiftIdentity;
+    public Response openShiftTokenExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
+                                         @QueryParam("cluster") String cluster) {
+        boolean tokenExists;
         try {
             if (useDefaultIdentities()) {
-                openShiftIdentity = getDefaultOpenShiftIdentity();
+                tokenExists = getDefaultOpenShiftIdentity() != null;
             } else {
                 KeycloakService keycloakService = this.keycloakServiceInstance.get();
-                openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
+                if (cluster == null) {
+                    tokenExists = keycloakService.getOpenShiftIdentity(authorization) != null;
+                } else {
+                    tokenExists = keycloakService.getIdentity(cluster, authorization).isPresent();
+                }
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
-            openShiftIdentity = null;
+            tokenExists = false;
         }
-        if (openShiftIdentity == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } else {
+        if (tokenExists) {
             return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
