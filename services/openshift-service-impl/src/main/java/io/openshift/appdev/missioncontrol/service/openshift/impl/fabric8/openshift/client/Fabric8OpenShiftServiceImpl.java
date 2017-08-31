@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -176,6 +177,16 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
             throw new IllegalArgumentException("Project name cannot be empty");
         }
         return Optional.ofNullable(projectExists(name) ? new OpenShiftProjectImpl(name, consoleUrl.toString()) : null);
+    }
+
+    @Override
+    public List<OpenShiftProject> listProjects() {
+        List<OpenShiftProject> result = new ArrayList<>();
+        client.projects().list().getItems().forEach(project -> {
+            result.add(new OpenShiftProjectImpl(project.getMetadata().getName(), consoleUrl.toString()));
+        });
+
+        return result;
     }
 
     @Override

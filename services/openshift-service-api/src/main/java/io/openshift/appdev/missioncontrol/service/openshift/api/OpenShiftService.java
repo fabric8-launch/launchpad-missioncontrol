@@ -2,6 +2,7 @@ package io.openshift.appdev.missioncontrol.service.openshift.api;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,6 +32,12 @@ public interface OpenShiftService {
      * @throws IllegalArgumentException if the name is not specified
      */
     Optional<OpenShiftProject> findProject(String name) throws IllegalArgumentException;
+
+    /**
+     * Returns all the projects in the users namespace.
+     * @return the list of projects or empty if there are none
+     */
+    List<OpenShiftProject> listProjects();
 
     /**
      * Creates all resources for the given {@code project}, using the given {@code projectTemplate}.
