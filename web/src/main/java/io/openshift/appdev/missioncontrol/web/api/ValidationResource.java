@@ -5,13 +5,19 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
@@ -20,6 +26,7 @@ import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactor
 import io.openshift.appdev.missioncontrol.service.keycloak.api.KeycloakService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftClusterRegistry;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 
@@ -71,17 +78,7 @@ public class ValidationResource extends AbstractResource {
     public Response projectExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
                                   @NotNull @PathParam("project") String project,
                                   @QueryParam("cluster") String cluster) {
-        Identity openShiftIdentity;
-        if (useDefaultIdentities()) {
-            openShiftIdentity = getDefaultOpenShiftIdentity();
-        } else {
-            KeycloakService keycloakService = this.keycloakServiceInstance.get();
-            if (cluster == null) {
-                openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
-            } else {
-                openShiftIdentity = keycloakService.getIdentity(cluster, authorization).get();
-            }
-        }
+        Identity openShiftIdentity = getOpenShiftIdentity(authorization, cluster);
         Optional<OpenShiftCluster> openShiftCluster = clusterRegistry.findClusterById(cluster);
         assert openShiftCluster.isPresent() : "Cluster not found: " + cluster;
         OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftCluster.get(), openShiftIdentity);
@@ -92,22 +89,28 @@ public class ValidationResource extends AbstractResource {
         }
     }
 
+    @GET
+    @Path("/projects")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonArray projectList(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
+                                 @QueryParam("cluster") String cluster) {
+        Identity openShiftIdentity = getOpenShiftIdentity(authorization, cluster);
+        Optional<OpenShiftCluster> openShiftCluster = clusterRegistry.findClusterById(cluster);
+        assert openShiftCluster.isPresent() : "Cluster not found: " + cluster;
+        OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftCluster.get(), openShiftIdentity);
+
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        openShiftService.listProjects().stream().map(OpenShiftProject::getName).forEach(arrayBuilder::add);
+        return arrayBuilder.build();
+    }
+
     @HEAD
     @Path("/token/openshift")
     public Response openShiftTokenExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
                                          @QueryParam("cluster") String cluster) {
         boolean tokenExists;
         try {
-            if (useDefaultIdentities()) {
-                tokenExists = getDefaultOpenShiftIdentity() != null;
-            } else {
-                KeycloakService keycloakService = this.keycloakServiceInstance.get();
-                if (cluster == null) {
-                    tokenExists = keycloakService.getOpenShiftIdentity(authorization) != null;
-                } else {
-                    tokenExists = keycloakService.getIdentity(cluster, authorization).isPresent();
-                }
-            }
+            tokenExists = getOpenShiftIdentity(authorization, cluster) != null;
         } catch (IllegalArgumentException | IllegalStateException e) {
             tokenExists = false;
         }
@@ -116,6 +119,23 @@ public class ValidationResource extends AbstractResource {
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+    }
+
+    private Identity getOpenShiftIdentity(String authorization, String cluster) {
+        Identity openShiftIdentity;
+        if (useDefaultIdentities()) {
+            openShiftIdentity = getDefaultOpenShiftIdentity();
+        } else {
+            KeycloakService keycloakService = this.keycloakServiceInstance.get();
+            if (cluster == null) {
+                openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
+            } else {
+                Optional<Identity> identityOptional = keycloakService.getIdentity(cluster, authorization);
+                if (!identityOptional.isPresent()) throw new IllegalArgumentException("openshift identity not present");
+                openShiftIdentity = identityOptional.get();
+            }
+        }
+        return openShiftIdentity;
     }
 
     @HEAD

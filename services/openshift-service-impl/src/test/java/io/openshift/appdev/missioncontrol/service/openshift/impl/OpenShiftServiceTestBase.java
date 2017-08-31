@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +20,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -117,6 +119,20 @@ public abstract class OpenShiftServiceTestBase implements OpenShiftServiceContai
         // when
         final String name = project.getName();
         assertTrue(openShiftService.findProject(name).isPresent());
+    }
+
+    @Test
+    public void listProjects() {
+        // given
+        triggerCreateProject(getUniqueProjectName());
+
+        // when
+        List<OpenShiftProject> projects = openShiftService.listProjects();
+
+        //then
+        assertNotNull(projects);
+        assertEquals(1, projects.size());
+        assertTrue(projects.get(0).getName().startsWith(PREFIX_NAME_PROJECT));
     }
 
     @Test
