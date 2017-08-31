@@ -79,21 +79,6 @@ public class ValidationResource extends AbstractResource {
         }
     }
 
-    @GET
-    @Path("/projects")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonArray projectList(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
-                                 @QueryParam("cluster") String cluster) {
-        Identity openShiftIdentity = getOpenShiftIdentity(authorization, cluster);
-        Optional<OpenShiftCluster> openShiftCluster = clusterRegistry.findClusterById(cluster);
-        assert openShiftCluster.isPresent() : "Cluster not found: " + cluster;
-        OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftCluster.get(), openShiftIdentity);
-
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        openShiftService.listProjects().stream().map(OpenShiftProject::getName).forEach(arrayBuilder::add);
-        return arrayBuilder.build();
-    }
-
     @HEAD
     @Path("/token/openshift")
     public Response openShiftTokenExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
