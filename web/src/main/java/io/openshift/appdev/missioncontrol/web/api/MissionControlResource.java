@@ -12,7 +12,6 @@ import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -74,9 +73,6 @@ public class MissionControlResource extends AbstractResource {
     private MissionControl missionControl;
 
     @Inject
-    private Instance<KeycloakService> keycloakServiceInstance;
-
-    @Inject
     private Event<StatusMessageEvent> event;
 
     @Resource
@@ -85,6 +81,7 @@ public class MissionControlResource extends AbstractResource {
     @GET
     @Path(PATH_LAUNCH)
     @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
     public JsonObject fling(
             @Context final HttpServletRequest request,
             @NotNull @QueryParam(QUERY_PARAM_SOURCE_REPO) final String sourceGitHubRepo,
@@ -127,16 +124,8 @@ public class MissionControlResource extends AbstractResource {
             @HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
             @MultipartForm UploadForm form) {
 
-        Identity githubIdentity;
-        Identity openShiftIdentity;
-        if (useDefaultIdentities()) {
-            githubIdentity = getDefaultGithubIdentity();
-            openShiftIdentity = getDefaultOpenShiftIdentity();
-        } else {
-            KeycloakService keycloakService = this.keycloakServiceInstance.get();
-            githubIdentity = keycloakService.getGitHubIdentity(authorization);
-            openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
-        }
+        Identity githubIdentity = getGitHubIdentity(authorization);
+        Identity openShiftIdentity = getOpenShiftIdentity(authorization, form.getOpenShiftCluster());
         try {
             final java.nio.file.Path tempDir = Files.createTempDirectory("tmpUpload");
             try (InputStream inputStream = form.getFile()) {

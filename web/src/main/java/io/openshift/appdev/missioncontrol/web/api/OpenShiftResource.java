@@ -31,9 +31,6 @@ public class OpenShiftResource extends AbstractResource {
     @Inject
     OpenShiftClusterRegistry clusterRegistry;
 
-    @Inject
-    Instance<KeycloakService> keycloakServiceInstance;
-
     @GET
     @Path("/clusters")
     @Produces(MediaType.APPLICATION_JSON)

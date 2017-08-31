@@ -3,7 +3,6 @@ package io.openshift.appdev.missioncontrol.web.api;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -43,9 +42,6 @@ public class ValidationResource extends AbstractResource {
     static final String PATH_RESOURCE = "/validate";
 
     @Inject
-    private Instance<KeycloakService> keycloakServiceInstance;
-
-    @Inject
     private GitHubServiceFactory gitHubServiceFactory;
 
     @Inject
@@ -58,13 +54,7 @@ public class ValidationResource extends AbstractResource {
     @Path("/repository/{repo}")
     public Response repositoryExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
                                      @NotNull @PathParam("repo") String repository) {
-        Identity githubIdentity;
-        if (useDefaultIdentities()) {
-            githubIdentity = getDefaultGithubIdentity();
-        } else {
-            KeycloakService keycloakService = this.keycloakServiceInstance.get();
-            githubIdentity = keycloakService.getGitHubIdentity(authorization);
-        }
+        Identity githubIdentity = getGitHubIdentity(authorization);
         GitHubService gitHubService = gitHubServiceFactory.create(githubIdentity);
         if (gitHubService.repositoryExists(gitHubService.getLoggedUser().getLogin() + "/" + repository)) {
             return Response.ok().build();
@@ -121,41 +111,19 @@ public class ValidationResource extends AbstractResource {
         }
     }
 
-    private Identity getOpenShiftIdentity(String authorization, String cluster) {
-        Identity openShiftIdentity;
-        if (useDefaultIdentities()) {
-            openShiftIdentity = getDefaultOpenShiftIdentity();
-        } else {
-            KeycloakService keycloakService = this.keycloakServiceInstance.get();
-            if (cluster == null) {
-                openShiftIdentity = keycloakService.getOpenShiftIdentity(authorization);
-            } else {
-                Optional<Identity> identityOptional = keycloakService.getIdentity(cluster, authorization);
-                if (!identityOptional.isPresent()) throw new IllegalArgumentException("openshift identity not present");
-                openShiftIdentity = identityOptional.get();
-            }
-        }
-        return openShiftIdentity;
-    }
-
     @HEAD
     @Path("/token/github")
     public Response gitHubTokenExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization) {
-        Identity githubIdentity;
+        boolean tokenExists;
         try {
-            if (useDefaultIdentities()) {
-                githubIdentity = getDefaultGithubIdentity();
-            } else {
-                KeycloakService keycloakService = this.keycloakServiceInstance.get();
-                githubIdentity = keycloakService.getGitHubIdentity(authorization);
-            }
+            tokenExists = getGitHubIdentity(authorization) != null;
         } catch (IllegalArgumentException | IllegalStateException e) {
-            githubIdentity = null;
+            tokenExists = false;
         }
-        if (githubIdentity == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } else {
+        if (tokenExists) {
             return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 }
