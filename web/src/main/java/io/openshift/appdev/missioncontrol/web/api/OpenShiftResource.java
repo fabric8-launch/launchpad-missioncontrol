@@ -22,6 +22,7 @@ import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftClusterRegistry;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
+import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
 
 /**
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
@@ -31,6 +32,9 @@ import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService
 public class OpenShiftResource extends AbstractResource {
 
     static final String PATH_RESOURCE = "/openshift";
+
+    @Inject
+    private OpenShiftServiceFactory openShiftServiceFactory;
 
     @Inject
     OpenShiftClusterRegistry clusterRegistry;
