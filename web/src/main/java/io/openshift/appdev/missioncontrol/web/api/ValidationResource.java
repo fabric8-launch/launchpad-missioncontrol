@@ -78,7 +78,7 @@ public class ValidationResource extends AbstractResource {
     public Response projectExists(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
                                   @NotNull @PathParam("project") String project,
                                   @QueryParam("cluster") String cluster) {
-        Identity openShiftIdentity = getIdentity(authorization, cluster);
+        Identity openShiftIdentity = getOpenShiftIdentity(authorization, cluster);
         Optional<OpenShiftCluster> openShiftCluster = clusterRegistry.findClusterById(cluster);
         assert openShiftCluster.isPresent() : "Cluster not found: " + cluster;
         OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftCluster.get(), openShiftIdentity);
@@ -94,7 +94,7 @@ public class ValidationResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public JsonArray projectList(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
                                  @QueryParam("cluster") String cluster) {
-        Identity openShiftIdentity = getIdentity(authorization, cluster);
+        Identity openShiftIdentity = getOpenShiftIdentity(authorization, cluster);
         Optional<OpenShiftCluster> openShiftCluster = clusterRegistry.findClusterById(cluster);
         assert openShiftCluster.isPresent() : "Cluster not found: " + cluster;
         OpenShiftService openShiftService = openShiftServiceFactory.create(openShiftCluster.get(), openShiftIdentity);
@@ -110,7 +110,7 @@ public class ValidationResource extends AbstractResource {
                                          @QueryParam("cluster") String cluster) {
         boolean tokenExists;
         try {
-            tokenExists = getIdentity(authorization, cluster) != null;
+            tokenExists = getOpenShiftIdentity(authorization, cluster) != null;
         } catch (IllegalArgumentException | IllegalStateException e) {
             tokenExists = false;
         }
@@ -121,7 +121,7 @@ public class ValidationResource extends AbstractResource {
         }
     }
 
-    private Identity getIdentity(String authorization, String cluster) {
+    private Identity getOpenShiftIdentity(String authorization, String cluster) {
         Identity openShiftIdentity;
         if (useDefaultIdentities()) {
             openShiftIdentity = getDefaultOpenShiftIdentity();
