@@ -37,6 +37,7 @@ public class OpenShiftClusterRegistryImpl implements OpenShiftClusterRegistry {
             clusters.add(defaultCluster);
         } else {
             Path configFilePath = Paths.get(configFile);
+            assert Files.isRegularFile(configFilePath) : "Config file " + configFile + " is not a regular file";
             try (BufferedReader reader = Files.newBufferedReader(configFilePath)) {
                 Yaml yaml = new Yaml(new OpenShiftClusterConstructor());
                 List<OpenShiftCluster> configClusters = (List<OpenShiftCluster>) yaml.loadAs(reader, List.class);
