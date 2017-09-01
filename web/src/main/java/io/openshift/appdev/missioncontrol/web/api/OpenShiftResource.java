@@ -37,7 +37,7 @@ public class OpenShiftResource extends AbstractResource {
     private OpenShiftServiceFactory openShiftServiceFactory;
 
     @Inject
-    OpenShiftClusterRegistry clusterRegistry;
+    private OpenShiftClusterRegistry clusterRegistry;
 
     @GET
     @Path("/clusters")
@@ -46,7 +46,7 @@ public class OpenShiftResource extends AbstractResource {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         Set<OpenShiftCluster> clusters = clusterRegistry.getClusters();
         if (useDefaultIdentities()) {
-            // Return all identities
+            // Return all clusters
             clusters
                     .stream()
                     .map(OpenShiftCluster::getId)
