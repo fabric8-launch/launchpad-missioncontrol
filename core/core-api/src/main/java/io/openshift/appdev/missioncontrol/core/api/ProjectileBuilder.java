@@ -65,6 +65,16 @@ public class ProjectileBuilder {
         return this;
     }
 
+    /**
+     * Sets the name of the OpenShift cluster to be used. Optional
+     *
+     * @param openShiftClusterName
+     * @return This builder
+     */
+    public ProjectileBuilder openShiftClusterName(final String openShiftClusterName) {
+        this.openShiftClusterName = openShiftClusterName;
+        return this;
+    }
     /*
      * Builder methods
      */
