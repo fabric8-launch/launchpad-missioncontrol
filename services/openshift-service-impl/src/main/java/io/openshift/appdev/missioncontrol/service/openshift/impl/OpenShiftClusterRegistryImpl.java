@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Singleton;
@@ -33,7 +34,7 @@ public class OpenShiftClusterRegistryImpl implements OpenShiftClusterRegistry {
         Set<OpenShiftCluster> clusters = new LinkedHashSet<>();
         String apiUrl = OpenShiftSettings.getOpenShiftApiUrl();
         String consoleUrl = OpenShiftSettings.getOpenShiftConsoleUrl();
-        if (apiUrl == null || consoleUrl == null) {
+        if (Objects.toString(apiUrl, "").isEmpty() || Objects.toString(consoleUrl, "").isEmpty()) {
             // If API or the console URL are not specified, use config file
             String configFile = OpenShiftSettings.getOpenShiftClustersConfigFile();
             assert configFile != null : "Env var " + OPENSHIFT_CLUSTERS_CONFIG_FILE + " must be set";
