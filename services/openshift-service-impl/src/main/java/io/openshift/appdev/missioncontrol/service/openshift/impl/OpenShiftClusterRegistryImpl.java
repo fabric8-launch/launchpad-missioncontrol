@@ -17,6 +17,8 @@ import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftSettings;
 import org.yaml.snakeyaml.Yaml;
 
+import static io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftEnvVarSysPropNames.OPENSHIFT_CLUSTERS_CONFIG_FILE;
+
 /**
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
@@ -29,13 +31,12 @@ public class OpenShiftClusterRegistryImpl implements OpenShiftClusterRegistry {
 
     public OpenShiftClusterRegistryImpl() {
         Set<OpenShiftCluster> clusters = new LinkedHashSet<>();
-        String configFile = OpenShiftSettings.getOpenShiftClustersConfigFile();
-        if (configFile == null) {
-            defaultCluster = new OpenShiftCluster("openshift-v3",
-                                                  OpenShiftSettings.getOpenShiftApiUrl(),
-                                                  OpenShiftSettings.getOpenShiftConsoleUrl());
-            clusters.add(defaultCluster);
-        } else {
+        String apiUrl = OpenShiftSettings.getOpenShiftApiUrl();
+        String consoleUrl = OpenShiftSettings.getOpenShiftConsoleUrl();
+        if (apiUrl == null || consoleUrl == null) {
+            // If API or the console URL are not specified, use config file
+            String configFile = OpenShiftSettings.getOpenShiftClustersConfigFile();
+            assert configFile != null : "Env var " + OPENSHIFT_CLUSTERS_CONFIG_FILE + " must be set";
             Path configFilePath = Paths.get(configFile);
             assert Files.isRegularFile(configFilePath) : "Config file " + configFile + " is not a regular file";
             try (BufferedReader reader = Files.newBufferedReader(configFilePath)) {
@@ -48,6 +49,11 @@ public class OpenShiftClusterRegistryImpl implements OpenShiftClusterRegistry {
             } catch (IOException e) {
                 throw new IllegalStateException("Error while reading OpenShift Config file", e);
             }
+        } else {
+            defaultCluster = new OpenShiftCluster("openshift-v3",
+                                                  apiUrl,
+                                                  consoleUrl);
+            clusters.add(defaultCluster);
         }
         CLUSTERS = Collections.unmodifiableSet(clusters);
     }

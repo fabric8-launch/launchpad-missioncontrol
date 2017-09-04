@@ -24,8 +24,6 @@ public class OpenShiftUrlTest {
 
     private static final String TEST_OPENSHIFT_URL = "https://katapult-it-test:8443";
 
-    private static final String DEFAULT_OPENSHIFT_URL = "https://localhost:8443";
-
     @Test
     public void openShiftApiUrlFromEnvVar() {
         String oldOpenShiftUrlEnv = System.getenv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL);
@@ -106,38 +104,6 @@ public class OpenShiftUrlTest {
             Assert.assertEquals(TEST_OPENSHIFT_URL, getOpenShiftConsoleUrl());
         } finally {
             if (oldOpenShiftProperty != null) {
-                System.setProperty(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL, oldOpenShiftProperty);
-            }
-            setEnv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL, oldOpenShiftUrlEnv);
-        }
-    }
-
-    @Test
-    public void openShiftApiUrlFromDefaultOnNoSysPropOrEnvVar() {
-        String oldOpenShiftProperty = System.getProperty(ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL);
-        String oldOpenShiftUrlEnv = System.getenv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL);
-        try {
-            setEnv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL, "");
-            System.setProperty(ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL, "");
-            Assert.assertEquals(DEFAULT_OPENSHIFT_URL, getOpenShiftApiUrl());
-        } finally {
-            if (oldOpenShiftProperty != null && !oldOpenShiftProperty.isEmpty()) {
-                System.setProperty(ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL, oldOpenShiftProperty);
-            }
-            setEnv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_API_URL, oldOpenShiftUrlEnv);
-        }
-    }
-
-    @Test
-    public void openShiftConsoleUrlFromDefaultOnNoSysPropOrEnvVar() {
-        String oldOpenShiftProperty = System.getProperty(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL);
-        String oldOpenShiftUrlEnv = System.getenv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL);
-        try {
-            setEnv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL, "");
-            System.setProperty(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL, "");
-            Assert.assertEquals(DEFAULT_OPENSHIFT_URL, getOpenShiftConsoleUrl());
-        } finally {
-            if (oldOpenShiftProperty != null && !oldOpenShiftProperty.isEmpty()) {
                 System.setProperty(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL, oldOpenShiftProperty);
             }
             setEnv(ENV_VAR_SYSPROP_NAME_OPENSHIFT_CONSOLE_URL, oldOpenShiftUrlEnv);

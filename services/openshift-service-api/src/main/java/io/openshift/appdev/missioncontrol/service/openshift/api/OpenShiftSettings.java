@@ -5,7 +5,6 @@ package io.openshift.appdev.missioncontrol.service.openshift.api;
  * <p>
  * 1) System Property
  * 2) Environment Variable
- * 3) {@link OpenShiftSettings#DEFAULT_OPENSHIFT_URL}
  *
  * @author <a href="mailto:alr@redhat.com">Andrew Lee Rubinger</a>
  */
@@ -17,14 +16,11 @@ public class OpenShiftSettings {
     private OpenShiftSettings() {
     }
 
-    private static final String DEFAULT_OPENSHIFT_URL = "https://localhost:8443";
-
     /**
-     * @return The URL Catapult should use to call the OpenShift API
+     * @return The URL the client should use to call the OpenShift API
      * from the environment variable or system properties value for
      * {@link OpenShiftEnvVarSysPropNames#OPENSHIFT_API_URL} or
-     * {@link OpenShiftSettings#DEFAULT_OPENSHIFT_URL} if no specific
-     * value was set.
+     * {@code null} if no specific value was set.
      */
     public static String getOpenShiftApiUrl() {
         return getOpenShiftUrl(OpenShiftEnvVarSysPropNames.OPENSHIFT_API_URL);
@@ -34,8 +30,7 @@ public class OpenShiftSettings {
      * @return The URL the client should use to access the OpenShift Console
      * from the environment variable or system properties value for
      * {@link OpenShiftEnvVarSysPropNames#OPENSHIFT_CONSOLE_URL} or
-     * {@link OpenShiftSettings#DEFAULT_OPENSHIFT_URL} if no specific
-     * value was set.
+     * {@code null} if no specific value was set.
      */
     public static String getOpenShiftConsoleUrl() {
         return getOpenShiftUrl(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONSOLE_URL);
@@ -44,7 +39,10 @@ public class OpenShiftSettings {
     /**
      * The URL to the supported OpenShift configs
      *
-     * @return
+     * @return The URL the client should use to call the OpenShift API
+     * from the environment variable or system properties value for
+     * {@link OpenShiftEnvVarSysPropNames#OPENSHIFT_CLUSTERS_CONFIG_FILE} or
+     * {@code null} if no specific value was set.
      */
     public static String getOpenShiftClustersConfigFile() {
         return System.getProperty(OpenShiftEnvVarSysPropNames.OPENSHIFT_CLUSTERS_CONFIG_FILE,
@@ -59,7 +57,7 @@ public class OpenShiftSettings {
             return System.getenv(envVarOrSysPropName);
         }
 
-        return DEFAULT_OPENSHIFT_URL;
+        return null;
     }
 
     private static boolean isEnvVarSet(final String name) {
