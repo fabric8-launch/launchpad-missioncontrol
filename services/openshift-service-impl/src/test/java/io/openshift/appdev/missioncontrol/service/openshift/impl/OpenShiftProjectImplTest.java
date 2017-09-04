@@ -24,7 +24,7 @@ public class OpenShiftProjectImplTest {
 
     @BeforeClass
     public static void initProject() {
-        project = new OpenShiftProjectImpl(PROJECT_NAME, OpenShiftSettings.getOpenShiftConsoleUrl());
+        project = new OpenShiftProjectImpl(PROJECT_NAME, "http://localhost:8443");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -54,7 +54,7 @@ public class OpenShiftProjectImplTest {
 
     @Test
     public void consoleOverviewUrl() throws MalformedURLException {
-        final String expectedUrl = OpenShiftSettings.getOpenShiftConsoleUrl() +
+        final String expectedUrl = "http://localhost:8443" +
                 "/console/project/" +
                 PROJECT_NAME +
                 "/overview/";
