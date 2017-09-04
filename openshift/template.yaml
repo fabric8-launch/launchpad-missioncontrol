@@ -91,6 +91,8 @@ objects:
               configMapKeyRef:
                 name: launchpad
                 key: launchpad.tracker.segment.token
+          - name: LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_CLUSTERS_FILE
+            value: /etc/openshift-clusters.yaml
           image: ${IMAGE}:${IMAGE_TAG}
           imagePullPolicy: Always
           name: launchpad-missioncontrol
@@ -99,6 +101,10 @@ objects:
             protocol: TCP
           resources: {}
           terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /etc/openshift-clusters.yaml
+            subPath: openshift-clusters.yaml
+            name: configmap-volume
           readinessProbe:
             httpGet:
               path: /api/health/ready
@@ -123,6 +129,10 @@ objects:
         restartPolicy: Always
         securityContext: {}
         terminationGracePeriodSeconds: 30
+        volumes:
+        - name: configmap-volume
+          configMap:
+            name: launchpad-missioncontrol
     test: false
     triggers:
     - type: ConfigChange
