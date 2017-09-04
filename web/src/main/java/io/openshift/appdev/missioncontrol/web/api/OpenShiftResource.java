@@ -53,7 +53,7 @@ public class OpenShiftResource extends AbstractResource {
                     .forEach(arrayBuilder::add);
         } else {
             final KeycloakService keycloakService = this.keycloakServiceInstance.get();
-            clusters.stream().map(OpenShiftCluster::getId)
+            clusters.parallelStream().map(OpenShiftCluster::getId)
                     .forEach(clusterId ->
                                      keycloakService.getIdentity(clusterId, authorization)
                                              .ifPresent(token -> arrayBuilder.add(clusterId)));
