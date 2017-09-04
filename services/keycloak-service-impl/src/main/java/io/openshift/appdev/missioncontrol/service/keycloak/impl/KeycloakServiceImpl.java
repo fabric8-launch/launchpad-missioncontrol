@@ -1,7 +1,6 @@
 package io.openshift.appdev.missioncontrol.service.keycloak.impl;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,7 +15,6 @@ import io.openshift.appdev.missioncontrol.base.EnvironmentSupport;
 import io.openshift.appdev.missioncontrol.base.identity.Identity;
 import io.openshift.appdev.missioncontrol.base.identity.IdentityFactory;
 import io.openshift.appdev.missioncontrol.service.keycloak.api.KeycloakService;
-import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -60,14 +58,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         this.gitHubURL = buildURL(keyCloakURL, realm, "github");
         this.openShiftURL = buildURL(keyCloakURL, realm, "openshift-v3");
 
-        int cacheSize = 100 * 1024 * 1024; // 100 MiB
-        Cache cache = null;
-        try {
-            cache = new Cache(Files.createTempDirectory("httpCacheDir").toFile(), cacheSize);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not create temp dir", e);
-        }
-        httpClient = new OkHttpClient.Builder().cache(cache).build();
+        httpClient = new OkHttpClient.Builder().build();
     }
 
     /**
