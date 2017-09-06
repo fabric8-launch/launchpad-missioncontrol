@@ -1,5 +1,6 @@
 package io.openshift.appdev.missioncontrol.service.openshift.impl;
 
+import io.openshift.appdev.missioncontrol.base.test.EnvironmentVariableController;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftClusterRegistry;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftEnvVarSysPropNames;
@@ -19,6 +20,8 @@ public class OpenShiftClusterRegistryTest {
     @Before
     public void setUp() {
         System.setProperty(OpenShiftEnvVarSysPropNames.OPENSHIFT_CLUSTERS_CONFIG_FILE, "src/test/resources/openshift-clusters.yaml");
+        EnvironmentVariableController.setEnv(OpenShiftEnvVarSysPropNames.OPENSHIFT_API_URL, null);
+        EnvironmentVariableController.setEnv(OpenShiftEnvVarSysPropNames.OPENSHIFT_CONSOLE_URL, null);
         registry = new OpenShiftClusterRegistryImpl();
     }
 
