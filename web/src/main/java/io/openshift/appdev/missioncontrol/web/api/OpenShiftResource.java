@@ -8,11 +8,13 @@ import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
@@ -42,10 +44,11 @@ public class OpenShiftResource extends AbstractResource {
     @GET
     @Path("/clusters")
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonArray getSupportedOpenShiftClusters(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization) {
+    public JsonArray getSupportedOpenShiftClusters(@HeaderParam(HttpHeaders.AUTHORIZATION) final String authorization,
+                                                   @Context HttpServletRequest request) {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         Set<OpenShiftCluster> clusters = clusterRegistry.getClusters();
-        if (useDefaultIdentities()) {
+        if (request.getParameterMap().containsKey("all") || useDefaultIdentities()) {
             // Return all clusters
             clusters
                     .stream()
