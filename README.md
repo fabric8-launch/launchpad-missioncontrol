@@ -158,7 +158,7 @@ Testing manually
   curl -F "file=@demo.zip" http://localhost:8080/api/missioncontrol/upload
 ```
 
-IMPORTANT: The `Authorization` header is needed, but it won't be used if you provided the `LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_USERNAME` and `LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_PASSWORD` env vars. 
+IMPORTANT: The `Authorization` header is needed, but it won't be used if you provided the `LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_USERNAME` and `LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_PASSWORD` or the `LAUNCHPAD_MISSIONCONTROL_OPENSHIFT_TOKEN` env vars. 
 Therefore run the command as-is.
         
 Contributing
