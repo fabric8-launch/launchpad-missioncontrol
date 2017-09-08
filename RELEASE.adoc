@@ -4,9 +4,9 @@
 
 Let Maven do component upgrades and version bumping.  Replace the `tag`, `developmentVersion`, and `releaseVersion` parameters as necessary.  Please keep tags to form `vX` where `v` is always a `v` and `X` is the release number.
 ```
-mvn release:clean release:prepare -DdevelopmentVersion=2-SNAPSHOT -DreleaseVersion=1 -Dtag=v1
-mvn release:clean
+mvn release:prepare release:clean -DdevelopmentVersion=2-SNAPSHOT -DreleaseVersion=1 -Dtag=v1
 git push upstream master --tags
+git push upstream master
 ```
 
 Check out the tag locally
