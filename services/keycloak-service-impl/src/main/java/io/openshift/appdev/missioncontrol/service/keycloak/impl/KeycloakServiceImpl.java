@@ -94,7 +94,7 @@ public class KeycloakServiceImpl implements KeycloakService {
             String providerToken = getToken(url, token);
             identity = IdentityFactory.createFromToken(providerToken);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while grabbing token from provider " + provider, e);
+            logger.log(Level.FINE, "Error while grabbing token from provider " + provider, e);
         }
         return Optional.ofNullable(identity);
 
