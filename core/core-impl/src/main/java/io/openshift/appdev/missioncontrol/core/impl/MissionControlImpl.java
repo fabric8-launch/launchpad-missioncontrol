@@ -272,7 +272,7 @@ public class MissionControlImpl implements MissionControl {
     private List<File> listYamlFiles(File dir) {
         File[] ymls = dir.listFiles(f -> {
             String name = f.getName();
-            return (name.startsWith("application.") || name.startsWith("service."))
+            return (name.startsWith("application.") || name.startsWith("service.") || name.startsWith("resource."))
                     && (name.endsWith(".yml") || name.endsWith(".yaml"));
         });
         return ymls != null ? Arrays.asList(ymls) : Collections.emptyList();
