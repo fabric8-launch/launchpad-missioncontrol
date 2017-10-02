@@ -150,7 +150,7 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 // We good
                 break;
             }
-            if (counter == 10) {
+            if (counter == 20) {
                 throw new IllegalStateException("Newly-created project "
                                                         + name + " could not be found ");
             }
