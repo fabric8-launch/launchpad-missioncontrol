@@ -52,9 +52,9 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git://github.com/openshiftio/launchpad-missioncontrol.git</connection>
-    <developerConnection>scm:git:git@github.com:openshiftio/launchpad-missioncontrol.git</developerConnection>
-    <url>http://github.com/openshiftio/launchpad-missioncontrol</url>
+    <connection>scm:git:git://github.com/fabric8-launch/launchpad-missioncontrol.git</connection>
+    <developerConnection>scm:git:git@github.com:fabric8-launch/launchpad-missioncontrol.git</developerConnection>
+    <url>http://github.com/fabric8-launch/launchpad-missioncontrol</url>
     <tag>HEAD</tag>
   </scm>
   <distributionManagement>
