@@ -211,6 +211,7 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
         List<Parameter> parameters = Arrays.asList(
                 createParameter("SOURCE_REPOSITORY_URL", sourceRepositoryUri.toString()),
                 createParameter("PROJECT", project.getName()),
+                createParameter("OPENSHIFT_CONSOLE_URL", this.getConsoleUrl().toString()),
                 createParameter("GITHUB_WEBHOOK_SECRET", Long.toString(System.currentTimeMillis())));
         configureProject(project, pipelineTemplateStream, parameters);
         fixJenkinsServiceAccount(project);
@@ -222,6 +223,7 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                 createParameter("SOURCE_REPOSITORY_URL", sourceRepositoryUri.toString()),
                 createParameter("SOURCE_REPOSITORY_DIR", sourceRepositoryContextDir),
                 createParameter("PROJECT", project.getName()),
+                createParameter("OPENSHIFT_CONSOLE_URL", this.getConsoleUrl().toString()),
                 createParameter("GITHUB_WEBHOOK_SECRET", Long.toString(System.currentTimeMillis())));
         configureProject(project, templateStream, parameters);
     }
