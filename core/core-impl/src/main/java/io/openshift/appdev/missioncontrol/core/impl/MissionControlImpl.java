@@ -168,14 +168,18 @@ public class MissionControlImpl implements MissionControl {
         } else {
             // Use S2I builder templates
             for (AppInfo app : apps) {
-                for (File tpl : app.templates) {
-                    try (FileInputStream fis = new FileInputStream(tpl)) {
-                        openShiftService.configureProject(openShiftProject, fis, gitHubRepository.getGitCloneUri(), app.contextDir);
-                    } catch (FileNotFoundException e) {
-                        throw new IllegalStateException("Could not apply services template", e);
-                    } catch (IOException e) {
-                        throw new IllegalStateException("Could not read services template", e);
-                    }
+                for (File tpl : app.resources) {
+                    applyTemplate(openShiftService, gitHubRepository, openShiftProject, app, tpl);
+                }
+            }
+            for (AppInfo app : apps) {
+                for (File tpl : app.services) {
+                    applyTemplate(openShiftService, gitHubRepository, openShiftProject, app, tpl);
+                }
+            }
+            for (AppInfo app : apps) {
+                for (File tpl : app.apps) {
+                    applyTemplate(openShiftService, gitHubRepository, openShiftProject, app, tpl);
                 }
             }
         }
@@ -185,6 +189,17 @@ public class MissionControlImpl implements MissionControl {
         statusEvent.fire(new StatusMessageEvent(projectile.getId(), StatusMessage.GITHUB_WEBHOOK));
         launchEvent.fire(new LaunchEvent(getUserId(projectile), projectile.getId(), gitHubRepository.getFullName(), openShiftProject.getName(), projectile.getMission(), projectile.getRuntime()));
         return new BoomImpl(gitHubRepository, openShiftProject, webhooks);
+    }
+
+    private void applyTemplate(OpenShiftService openShiftService, GitHubRepository gitHubRepository,
+            OpenShiftProject openShiftProject, AppInfo app, File tpl) {
+        try (FileInputStream fis = new FileInputStream(tpl)) {
+            openShiftService.configureProject(openShiftProject, fis, gitHubRepository.getGitCloneUri(), app.contextDir);
+        } catch (FileNotFoundException e) {
+            throw new IllegalStateException("Could not apply services template", e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read services template", e);
+        }
     }
 
     private String getUserId(Projectile projectile) {
@@ -244,10 +259,12 @@ public class MissionControlImpl implements MissionControl {
                             && file.getName().equals(".openshiftio"))
                     .map(file -> {
                         File contextDir = getContextDir(file.getParentFile(), projectDir);
-                        List<File> templates = listYamlFiles(file);
-                        if (contextDir != null && !contextDir.toString().isEmpty()
-                                && !templates.isEmpty()) {
-                            return new AppInfo(contextDir.toString(), templates);
+                        List<File> resources = listYamlFiles(file, "resource.");
+                        List<File> services = listYamlFiles(file, "service.");
+                        List<File> apps = listYamlFiles(file, "application.");
+                        boolean hasTemplates = !resources.isEmpty() || !services.isEmpty() || !apps.isEmpty();
+                        if (contextDir != null && !contextDir.toString().isEmpty() && hasTemplates) {
+                            return new AppInfo(contextDir.toString(), apps, resources, services);
                         } else {
                             return null;
                         }
@@ -269,10 +286,10 @@ public class MissionControlImpl implements MissionControl {
         }
     }
 
-    private List<File> listYamlFiles(File dir) {
+    private List<File> listYamlFiles(File dir, String prefix) {
         File[] ymls = dir.listFiles(f -> {
             String name = f.getName();
-            return (name.startsWith("application.") || name.startsWith("service.") || name.startsWith("resource."))
+            return name.startsWith(prefix)
                     && (name.endsWith(".yml") || name.endsWith(".yaml"));
         });
         return ymls != null ? Arrays.asList(ymls) : Collections.emptyList();
@@ -281,11 +298,15 @@ public class MissionControlImpl implements MissionControl {
     private class AppInfo {
         public final String contextDir;
 
-        public final List<File> templates;
+        public final List<File> apps;
+        public final List<File> resources;
+        public final List<File> services;
 
-        public AppInfo(String contextDir, List<File> templates) {
+        public AppInfo(String contextDir, List<File> apps, List<File> resources, List<File> services) {
             this.contextDir = contextDir;
-            this.templates = new ArrayList<>(templates);
+            this.apps = new ArrayList<>(apps);
+            this.resources = new ArrayList<>(resources);
+            this.services = new ArrayList<>(services);
         }
     }
 
