@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.Controller;
@@ -110,6 +112,9 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
     private static final int CODE_DUPLICATE_PROJECT = 409;
 
     private static final String STATUS_REASON_DUPLICATE_PROJECT = "AlreadyExists";
+    
+    private static final Pattern PARAM_VAR_PATTERN = Pattern.compile("\\{\\{(.*?)/(.*?)\\[(.*)\\]\\}\\}");
+
 
     private final OpenShiftClient client;
 
@@ -316,23 +321,8 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
                     }
                 }
                 
-                // Handle special ROUTE_HOST_ parameters
-                RouteList routes = null;
-                for (Parameter p : template.getParameters()) {
-                    if (p.getName().startsWith("ROUTE_HOST_")) {
-                        // Change XXX_YYY_ZZZ into xxx-yyy-zzz
-                        String routeName = p.getName().substring(11).toLowerCase().replace('_', '-');
-                        // Try to find a Route with that name and use its host name
-                        if (routes == null) {
-                            routes = client.routes().inNamespace(project.getName()).list();
-                        }
-                        routes.getItems().stream()
-                            .filter(r -> routeName.equals(r.getMetadata().getName()))
-                            .map(r -> r.getSpec().getHost())
-                            .filter(Objects::nonNull)
-                            .forEach(host -> p.setValue(host));
-                    }
-                }
+                // Handle parameters with special "fabric8-value" properties
+                applyParameterValueProperties(project, template);
                 
                 log.finest("Deploying template '" + template.getMetadata().getName() + "' with parameters:");
                 template.getParameters().forEach(p -> log.finest("\t" + p.getDisplayName() + '=' + p.getValue()));
@@ -393,6 +383,51 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
             }
         } catch (Exception e) {
             throw new RuntimeException("Could not create OpenShift pipeline", e);
+        }
+    }
+
+    // This function looks for any parameters in the template that have the special
+    // property "fabric8-value". If it encounters one it will take the property's
+    // value string and look for any variables to replace.
+    // The variables have the format <code>{{TYPE/NAME[PROPERTY_PATH]}}</code> where
+    // <code>TYPE</code> is an OpenShift object type (like "route") and <code>NAME</code>
+    // is the name of the object to look for and <code>PROPERTY_PATH</code> is the
+    // property to get from that object (eg ".spec.host").
+    // The variable will be replaced with the value obtained from the indicated
+    // object property.
+    private void applyParameterValueProperties(final OpenShiftProject project, final Template template) {
+        RouteList routes = null;
+        for (Parameter parameter : template.getParameters()) {
+            // Find any parameters with special "fabric8-value" properties
+            if (parameter.getAdditionalProperties().containsKey("fabric8-value")
+                    && parameter.getValue() == null) {
+                String value = parameter.getAdditionalProperties().get("fabric8-value").toString();
+                Matcher m = PARAM_VAR_PATTERN.matcher(value);
+                StringBuffer newval = new StringBuffer();
+                while (m.find()) {
+                    String type = m.group(1);
+                    String routeName = m.group(2);
+                    String propertyPath = m.group(3);
+                    String propertyValue = "";
+                    // We only support "route/XXX[.spec.host]" for now,
+                    // but we're prepared for future expansion
+                    if ("route".equals(type) && ".spec.host".equals(propertyPath)) {
+                        // Try to find a Route with that name and use its host name
+                        if (routes == null) {
+                            routes = client.routes().inNamespace(project.getName()).list();
+                        }
+                        propertyValue = routes.getItems().stream()
+                            .filter(r -> routeName.equals(r.getMetadata().getName()))
+                            .map(r -> r.getSpec().getHost())
+                            .filter(Objects::nonNull)
+                            .findAny()
+                            .orElse(propertyValue);
+                    }
+                    m.appendReplacement(newval, Matcher.quoteReplacement(propertyValue));
+                }
+                m.appendTail(newval);
+                parameter.setValue(newval.toString());
+            }
         }
     }
 
