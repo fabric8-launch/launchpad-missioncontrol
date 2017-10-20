@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -21,6 +22,7 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.openshift.api.model.BuildConfig;
 import io.fabric8.openshift.api.model.Parameter;
 import io.fabric8.openshift.api.model.ProjectRequest;
+import io.fabric8.openshift.api.model.RouteList;
 import io.fabric8.openshift.api.model.Template;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
@@ -303,13 +305,35 @@ public final class Fabric8OpenShiftServiceImpl implements OpenShiftService, Open
         try {
             try (final InputStream pipelineTemplateStream = templateStream) {
                 final Template template = client.templates().load(pipelineTemplateStream).get();
+                
+                // Apply passed parameters to template
                 for (Parameter parameter : parameters) {
                     if (parameter.getValue() != null) {
                         log.finest("Setting the '" + parameter.getName() + "' parameter value to '" + parameter.getValue() + "'.");
-                        template.getParameters().stream().filter(p -> p.getName().equals(parameter.getName()))
+                        template.getParameters().stream()
+                                .filter(p -> p.getName().equals(parameter.getName()))
                                 .forEach(p -> p.setValue(parameter.getValue()));
                     }
                 }
+                
+                // Handle special ROUTE_HOST_ parameters
+                RouteList routes = null;
+                for (Parameter p : template.getParameters()) {
+                    if (p.getName().startsWith("ROUTE_HOST_")) {
+                        // Change XXX_YYY_ZZZ into xxx-yyy-zzz
+                        String routeName = p.getName().substring(11).toLowerCase().replace('_', '-');
+                        // Try to find a Route with that name and use its host name
+                        if (routes == null) {
+                            routes = client.routes().inNamespace(project.getName()).list();
+                        }
+                        routes.getItems().stream()
+                            .filter(r -> routeName.equals(r.getMetadata().getName()))
+                            .map(r -> r.getSpec().getHost())
+                            .filter(Objects::nonNull)
+                            .forEach(host -> p.setValue(host));
+                    }
+                }
+                
                 log.finest("Deploying template '" + template.getMetadata().getName() + "' with parameters:");
                 template.getParameters().forEach(p -> log.finest("\t" + p.getDisplayName() + '=' + p.getValue()));
                 final Controller controller = new Controller(client);
