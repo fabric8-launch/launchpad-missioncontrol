@@ -45,6 +45,11 @@ public class ProjectileBuilder {
     private String openShiftClusterName;
 
     /**
+     * Number of the step to continue the flow with.
+     */
+    private int startOfStep;
+
+    /**
      * Creates and returns a new instance with uninitialized values
      *
      * @return a new instance of the {@link ProjectileBuilder}
@@ -104,6 +109,16 @@ public class ProjectileBuilder {
     }
 
     /**
+     * Set the step to start the flow with {@see StatusMessage}
+     * @param startOfStep the number the first step to retry
+     * @return the builder
+     */
+    public ProjectileBuilder startOfStep(final int startOfStep) {
+        this.startOfStep = startOfStep;
+        return this;
+    }
+
+    /**
      * @return the GitHub access token we have obtained from the user as part of
      * the OAuth process
      */
@@ -124,6 +139,10 @@ public class ProjectileBuilder {
 
     public String getOpenShiftClusterName() {
         return openShiftClusterName;
+    }
+
+    public int getStartOfStep() {
+        return startOfStep;
     }
 
     public CreateProjectileBuilder createType() {
