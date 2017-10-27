@@ -23,11 +23,12 @@ public class ProjectileBuilder {
         // No external instances
     }
 
-    ProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName, String openShiftClusterName) {
+    ProjectileBuilder(Identity gitHubIdentity, Identity openShiftIdentity, String openShiftProjectName, String openShiftClusterName, int startOfStep) {
         this.gitHubIdentity = gitHubIdentity;
         this.openShiftIdentity = openShiftIdentity;
         this.openShiftProjectName = openShiftProjectName;
         this.openShiftClusterName = openShiftClusterName;
+        this.startOfStep = startOfStep;
     }
 
     private Identity gitHubIdentity;
@@ -146,7 +147,7 @@ public class ProjectileBuilder {
     }
 
     public CreateProjectileBuilder createType() {
-        return new CreateProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName(), getOpenShiftClusterName());
+        return new CreateProjectileBuilder(getGitHubIdentity(), getOpenShiftIdentity(), getOpenShiftProjectName(), getOpenShiftClusterName(), getStartOfStep());
     }
 
     public ForkProjectileBuilder forkType() {
