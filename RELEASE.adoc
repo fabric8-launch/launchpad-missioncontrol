@@ -4,19 +4,5 @@
 
 Let Maven do component upgrades and version bumping.  Replace the `tag`, `developmentVersion`, and `releaseVersion` parameters as necessary.  Please keep tags to form `vX` where `v` is always a `v` and `X` is the release number.
 ```
-mvn release:prepare release:clean -DdevelopmentVersion=2-SNAPSHOT -DreleaseVersion=1 -Dtag=v1
-git push upstream master --tags
-git push upstream master
-```
-
-Check out the tag locally
-```
-git checkout -b v1 refs/tags/v1
-```
-
-Build and deploy docker image to Docker Hub (requires permissions)
-```
-mvn clean install
-docker build -t openshiftio/launchpad-missioncontrol:v1 -f Dockerfile.deploy .
-docker push openshiftio/launchpad-missioncontrol:v1
+mvn release:prepare release:perform -DdevelopmentVersion=2-SNAPSHOT -DreleaseVersion=1 -Dtag=v1
 ```
