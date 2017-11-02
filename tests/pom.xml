@@ -40,11 +40,6 @@
     <dependency>
       <groupId>io.openshift.appdev.missioncontrol</groupId>
       <artifactId>missioncontrol-web</artifactId>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>io.openshift.appdev.missioncontrol</groupId>
-      <artifactId>missioncontrol-web</artifactId>
       <classifier>classes</classifier>
     </dependency>
     <dependency>
