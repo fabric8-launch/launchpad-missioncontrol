@@ -2,15 +2,19 @@ package io.openshift.appdev.missioncontrol.core.impl.commands;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusEventType;
 import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
-import io.openshift.appdev.missioncontrol.core.api.commands.AbstractCommand;
+import io.openshift.appdev.missioncontrol.core.api.Step;
+import io.openshift.appdev.missioncontrol.core.api.AbstractCommand;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactory;
+
+import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.GITHUB_CREATE;
 
 /**
  * Command that creates a github repo
@@ -27,12 +31,11 @@ public class GitHubCreateCommand extends AbstractCommand {
     }
 
     @Override
-    public StatusMessage getStatusMessage() {
-        return StatusMessage.GITHUB_CREATE;
+    protected StatusEventType getStatusEventType() {
+        return StatusEventType.GITHUB_CREATE;
     }
 
-    @Override
-    public void execute(CreateProjectile projectile) {
+    public void execute(@Observes @Step(GITHUB_CREATE) CreateProjectile projectile) {
         String repositoryDescription = projectile.getGitHubRepositoryDescription();
         String repositoryName = projectile.getGitHubRepositoryName();
         if (repositoryName == null) {

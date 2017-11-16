@@ -1,18 +1,15 @@
-package io.openshift.appdev.missioncontrol.core.api.commands;
+package io.openshift.appdev.missioncontrol.core.api;
 
-import java.util.Map;
 import java.util.UUID;
 
 import javax.enterprise.event.Event;
-
-import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 
 import static java.util.Collections.singletonMap;
 
 /**
  * Abstract command that can fire CDI events
  */
-public abstract class AbstractCommand implements Command {
+public abstract class AbstractCommand {
 
     private Event<StatusMessageEvent> statusEvent;
 
@@ -21,10 +18,12 @@ public abstract class AbstractCommand implements Command {
     }
 
     protected void fireEvent(UUID id, Object result) {
-        statusEvent.fire(new StatusMessageEvent(id, getStatusMessage(), singletonMap("location", result)));
+        statusEvent.fire(new StatusMessageEvent(id, getStatusEventType(), singletonMap("location", result)));
     }
 
     protected void fireEvent(UUID id) {
-        statusEvent.fire(new StatusMessageEvent(id, getStatusMessage()));
+        statusEvent.fire(new StatusMessageEvent(id, getStatusEventType()));
     }
+
+    protected abstract StatusEventType getStatusEventType();
 }

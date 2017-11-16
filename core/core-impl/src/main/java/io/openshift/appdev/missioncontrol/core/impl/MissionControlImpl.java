@@ -1,29 +1,15 @@
 package io.openshift.appdev.missioncontrol.core.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 
@@ -35,9 +21,8 @@ import io.openshift.appdev.missioncontrol.core.api.ForkProjectile;
 import io.openshift.appdev.missioncontrol.core.api.LaunchEvent;
 import io.openshift.appdev.missioncontrol.core.api.MissionControl;
 import io.openshift.appdev.missioncontrol.core.api.Projectile;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
-import io.openshift.appdev.missioncontrol.core.api.commands.Command;
+import io.openshift.appdev.missioncontrol.core.api.StatusEventType;
+import io.openshift.appdev.missioncontrol.core.api.Step;
 import io.openshift.appdev.missioncontrol.service.github.api.DuplicateWebhookException;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
@@ -50,9 +35,6 @@ import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
-import org.apache.commons.lang.text.StrSubstitutor;
-
-import static java.util.Collections.singletonMap;
 
 /**
  * Implementation of the {@link MissionControl} interface.
@@ -75,28 +57,10 @@ public class MissionControlImpl implements MissionControl {
     private GitHubServiceFactory gitHubServiceFactory;
 
     @Inject
-    private Event<StatusMessageEvent> statusEvent;
+    private Event<Projectile> projectileEvent;
 
     @Inject
     private Event<LaunchEvent> launchEvent;
-
-    @Inject
-    private Instance<Command> injectedCommands;
-    private Command[] commands;
-
-    @PostConstruct
-    void init() {
-        List<Command> commandList = new ArrayList<>();
-        for (Command command : injectedCommands) {
-            commandList.add(command);
-        }
-        commandList.sort((c1, c2) -> {
-            int x = c1.getStatusMessage().ordinal();
-            int y = c2.getStatusMessage().ordinal();
-            return (x < y) ? -1 : ((x == y) ? 0 : 1);
-        });
-        commands = commandList.toArray(new Command[commandList.size()]);
-    }
 
     /**
      * {@inheritDoc}
@@ -147,9 +111,11 @@ public class MissionControlImpl implements MissionControl {
     @Override
     public Boom launch(CreateProjectile projectile) throws IllegalArgumentException {
         int startIndex = projectile.getStartOfStep();
-        for (int i = startIndex; i < commands.length; i++) {
-            Command command = commands[i];
-            command.execute(projectile);
+
+        StatusEventType[] statusEventTypes = StatusEventType.values();
+
+        for (int i = startIndex; i < statusEventTypes.length; i++) {
+            this.projectileEvent.select(new Step.Literal(statusEventTypes[i])).fire(projectile);
         }
         launchEvent.fire(new LaunchEvent(getUserId(projectile), projectile.getId(), projectile.getGitHubRepositoryName(),
                                          projectile.getOpenShiftProjectName(), projectile.getMission(), projectile.getRuntime()));

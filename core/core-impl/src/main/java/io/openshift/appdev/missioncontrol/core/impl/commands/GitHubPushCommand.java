@@ -10,16 +10,20 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusEventType;
 import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
-import io.openshift.appdev.missioncontrol.core.api.commands.AbstractCommand;
+import io.openshift.appdev.missioncontrol.core.api.Step;
+import io.openshift.appdev.missioncontrol.core.api.AbstractCommand;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactory;
 import org.apache.commons.lang.text.StrSubstitutor;
+
+import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.GITHUB_PUSHED;
 
 /**
  * Command that creates a github repo
@@ -37,12 +41,11 @@ public class GitHubPushCommand extends AbstractCommand {
     }
 
     @Override
-    public StatusMessage getStatusMessage() {
-        return StatusMessage.GITHUB_PUSHED;
+    protected StatusEventType getStatusEventType() {
+        return StatusEventType.GITHUB_PUSHED;
     }
 
-    @Override
-    public void execute(CreateProjectile projectile) {
+    public void execute(@Observes @Step(GITHUB_PUSHED) CreateProjectile projectile) {
         GitHubService gitHubService = gitHubServiceFactory.create(projectile.getGitHubIdentity());
         GitHubRepository gitHubRepository = gitHubService.getRepository(projectile.getGitHubRepositoryName());
         File path = projectile.getProjectLocation().toFile();

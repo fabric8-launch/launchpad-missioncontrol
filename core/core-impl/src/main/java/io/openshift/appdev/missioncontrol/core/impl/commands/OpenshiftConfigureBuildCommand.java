@@ -18,12 +18,14 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusEventType;
 import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
-import io.openshift.appdev.missioncontrol.core.api.commands.AbstractCommand;
+import io.openshift.appdev.missioncontrol.core.api.Step;
+import io.openshift.appdev.missioncontrol.core.api.AbstractCommand;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactory;
@@ -32,6 +34,8 @@ import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftCluster
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftProject;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftService;
 import io.openshift.appdev.missioncontrol.service.openshift.api.OpenShiftServiceFactory;
+
+import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.OPENSHIFT_PIPELINE;
 
 /**
  * Setup build either using s2i or jenkins pipeline.
@@ -58,12 +62,11 @@ public class OpenshiftConfigureBuildCommand extends AbstractCommand {
     }
 
     @Override
-    public StatusMessage getStatusMessage() {
-        return StatusMessage.OPENSHIFT_PIPELINE;
+    protected StatusEventType getStatusEventType() {
+        return StatusEventType.OPENSHIFT_PIPELINE;
     }
 
-    @Override
-    public void execute(CreateProjectile projectile) {
+    public void execute(@Observes @Step(OPENSHIFT_PIPELINE)CreateProjectile projectile) {
         Optional<OpenShiftCluster> cluster = openShiftClusterRegistry.findClusterById(projectile.getOpenShiftClusterName());
         OpenShiftService openShiftService = openShiftServiceFactory.create(cluster.get(), projectile.getOpenShiftIdentity());
 
