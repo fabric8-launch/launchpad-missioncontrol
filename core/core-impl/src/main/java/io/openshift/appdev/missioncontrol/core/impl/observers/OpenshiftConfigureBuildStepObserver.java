@@ -22,10 +22,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import io.openshift.appdev.missioncontrol.core.api.CreateProjectile;
-import io.openshift.appdev.missioncontrol.core.api.StatusEventType;
 import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 import io.openshift.appdev.missioncontrol.core.api.Step;
-import io.openshift.appdev.missioncontrol.core.api.AbstractCommand;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubRepository;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubService;
 import io.openshift.appdev.missioncontrol.service.github.api.GitHubServiceFactory;
@@ -41,7 +39,7 @@ import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.OPENSH
  * Setup build either using s2i or jenkins pipeline.
  */
 @ApplicationScoped
-public class OpenshiftConfigureBuildStepObserver extends AbstractCommand {
+public class OpenshiftConfigureBuildStepObserver {
 
     private Logger log = Logger.getLogger(OpenshiftConfigureBuildStepObserver.class.getName());
 
@@ -51,20 +49,18 @@ public class OpenshiftConfigureBuildStepObserver extends AbstractCommand {
 
     private final GitHubServiceFactory gitHubServiceFactory;
 
+    private final Event<StatusMessageEvent> statusEvent;
+
     @Inject
     public OpenshiftConfigureBuildStepObserver(OpenShiftServiceFactory openShiftServiceFactory,
                                                OpenShiftClusterRegistry openShiftClusterRegistry,
                                                GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
-        super(statusEvent);
+        this.statusEvent = statusEvent;
         this.openShiftServiceFactory = openShiftServiceFactory;
         this.openShiftClusterRegistry = openShiftClusterRegistry;
         this.gitHubServiceFactory = gitHubServiceFactory;
     }
 
-    @Override
-    protected StatusEventType getStatusEventType() {
-        return StatusEventType.OPENSHIFT_PIPELINE;
-    }
 
     public void execute(@Observes @Step(OPENSHIFT_PIPELINE)CreateProjectile projectile) {
         Optional<OpenShiftCluster> cluster = openShiftClusterRegistry.findClusterById(projectile.getOpenShiftClusterName());
@@ -98,7 +94,7 @@ public class OpenshiftConfigureBuildStepObserver extends AbstractCommand {
             }
         }
 
-        fireEvent(projectile.getId());
+        statusEvent.fire(new StatusMessageEvent(projectile.getId(), OPENSHIFT_PIPELINE));
     }
 
     private List<AppInfo> findProjectApps(File projectDir) {
