@@ -1,4 +1,4 @@
-package io.openshift.appdev.missioncontrol.core.impl.commands;
+package io.openshift.appdev.missioncontrol.core.impl.observers;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -29,9 +29,9 @@ import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.GITHUB
  * Creates a webhook on the github repo to fire a build / deploy when changes happen on the project.
  */
 @ApplicationScoped
-public class GitHubWebhookCommand extends AbstractCommand {
+public class GitHubWebhookStepObserver extends AbstractCommand {
 
-    private Logger log = Logger.getLogger(GitHubWebhookCommand.class.getName());
+    private Logger log = Logger.getLogger(GitHubWebhookStepObserver.class.getName());
 
     private final OpenShiftServiceFactory openShiftServiceFactory;
 
@@ -40,9 +40,9 @@ public class GitHubWebhookCommand extends AbstractCommand {
     private final GitHubServiceFactory gitHubServiceFactory;
 
     @Inject
-    public GitHubWebhookCommand(OpenShiftServiceFactory openShiftServiceFactory,
-                                OpenShiftClusterRegistry openShiftClusterRegistry,
-                                GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
+    public GitHubWebhookStepObserver(OpenShiftServiceFactory openShiftServiceFactory,
+                                     OpenShiftClusterRegistry openShiftClusterRegistry,
+                                     GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
         super(statusEvent);
         this.openShiftServiceFactory = openShiftServiceFactory;
         this.openShiftClusterRegistry = openShiftClusterRegistry;

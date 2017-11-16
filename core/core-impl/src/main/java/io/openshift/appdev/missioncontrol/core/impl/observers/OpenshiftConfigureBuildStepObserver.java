@@ -1,4 +1,4 @@
-package io.openshift.appdev.missioncontrol.core.impl.commands;
+package io.openshift.appdev.missioncontrol.core.impl.observers;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,9 +41,9 @@ import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.OPENSH
  * Setup build either using s2i or jenkins pipeline.
  */
 @ApplicationScoped
-public class OpenshiftConfigureBuildCommand extends AbstractCommand {
+public class OpenshiftConfigureBuildStepObserver extends AbstractCommand {
 
-    private Logger log = Logger.getLogger(OpenshiftConfigureBuildCommand.class.getName());
+    private Logger log = Logger.getLogger(OpenshiftConfigureBuildStepObserver.class.getName());
 
     private final OpenShiftServiceFactory openShiftServiceFactory;
 
@@ -52,9 +52,9 @@ public class OpenshiftConfigureBuildCommand extends AbstractCommand {
     private final GitHubServiceFactory gitHubServiceFactory;
 
     @Inject
-    public OpenshiftConfigureBuildCommand(OpenShiftServiceFactory openShiftServiceFactory,
-                                          OpenShiftClusterRegistry openShiftClusterRegistry,
-                                          GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
+    public OpenshiftConfigureBuildStepObserver(OpenShiftServiceFactory openShiftServiceFactory,
+                                               OpenShiftClusterRegistry openShiftClusterRegistry,
+                                               GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
         super(statusEvent);
         this.openShiftServiceFactory = openShiftServiceFactory;
         this.openShiftClusterRegistry = openShiftClusterRegistry;

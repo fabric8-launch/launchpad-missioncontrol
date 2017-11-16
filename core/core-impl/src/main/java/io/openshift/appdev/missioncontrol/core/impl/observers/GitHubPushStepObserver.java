@@ -1,4 +1,4 @@
-package io.openshift.appdev.missioncontrol.core.impl.commands;
+package io.openshift.appdev.missioncontrol.core.impl.observers;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +29,13 @@ import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.GITHUB
  * Command that creates a github repo
  */
 @ApplicationScoped
-public class GitHubPushCommand extends AbstractCommand {
+public class GitHubPushStepObserver extends AbstractCommand {
 
-    private static final Logger log = Logger.getLogger(GitHubPushCommand.class.getName());
+    private static final Logger log = Logger.getLogger(GitHubPushStepObserver.class.getName());
     private final GitHubServiceFactory gitHubServiceFactory;
 
     @Inject
-    GitHubPushCommand(GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
+    GitHubPushStepObserver(GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
         super(statusEvent);
         this.gitHubServiceFactory = gitHubServiceFactory;
     }

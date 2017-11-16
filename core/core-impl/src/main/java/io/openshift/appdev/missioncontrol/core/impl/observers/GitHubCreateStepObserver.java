@@ -1,4 +1,4 @@
-package io.openshift.appdev.missioncontrol.core.impl.commands;
+package io.openshift.appdev.missioncontrol.core.impl.observers;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -20,12 +20,12 @@ import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.GITHUB
  * Command that creates a github repo
  */
 @ApplicationScoped
-public class GitHubCreateCommand extends AbstractCommand {
+public class GitHubCreateStepObserver extends AbstractCommand {
 
     private GitHubServiceFactory gitHubServiceFactory;
 
     @Inject
-    public GitHubCreateCommand(GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
+    public GitHubCreateStepObserver(GitHubServiceFactory gitHubServiceFactory, Event<StatusMessageEvent> statusEvent) {
         super(statusEvent);
         this.gitHubServiceFactory = gitHubServiceFactory;
     }

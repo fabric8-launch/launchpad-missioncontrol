@@ -122,9 +122,9 @@ var fallthroughStylePatterns = [
          // A line comment that starts with ;
          [PR['PR_COMMENT'],     /^;[^\r\n]*/, null, ';'],
          // Add intrinsic variables and functions as declarations, there not really but it mean
-         // they will hilighted differently from commands.
+         // they will hilighted differently from observers.
          [PR['PR_DECLARATION'], new RegExp('^(?:\\$(?:' + intrinsic + '))\\b', 'i'), null],
-         // Add commands as keywords
+         // Add observers as keywords
          [PR['PR_KEYWORD'], new RegExp('^(?:[^\\$]' + commands + ')\\b', 'i'), null],
          // A number is a decimal real literal or in scientific notation. 
          [PR['PR_LITERAL'],

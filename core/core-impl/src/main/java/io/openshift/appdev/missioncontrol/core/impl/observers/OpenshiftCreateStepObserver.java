@@ -1,4 +1,4 @@
-package io.openshift.appdev.missioncontrol.core.impl.commands;
+package io.openshift.appdev.missioncontrol.core.impl.observers;
 
 import java.util.Optional;
 
@@ -24,15 +24,15 @@ import static io.openshift.appdev.missioncontrol.core.api.StatusEventType.OPENSH
  * Creates an Openshift project if the project doesn't exist.
  */
 @ApplicationScoped
-public class OpenshiftCreateCommand extends AbstractCommand {
+public class OpenshiftCreateStepObserver extends AbstractCommand {
 
     private final OpenShiftServiceFactory openShiftServiceFactory;
 
     private final OpenShiftClusterRegistry openShiftClusterRegistry;
 
     @Inject
-    public OpenshiftCreateCommand(OpenShiftServiceFactory openShiftServiceFactory,
-                                  OpenShiftClusterRegistry openShiftClusterRegistry, Event<StatusMessageEvent> statusEvent) {
+    public OpenshiftCreateStepObserver(OpenShiftServiceFactory openShiftServiceFactory,
+                                       OpenShiftClusterRegistry openShiftClusterRegistry, Event<StatusMessageEvent> statusEvent) {
         super(statusEvent);
         this.openShiftServiceFactory = openShiftServiceFactory;
         this.openShiftClusterRegistry = openShiftClusterRegistry;
