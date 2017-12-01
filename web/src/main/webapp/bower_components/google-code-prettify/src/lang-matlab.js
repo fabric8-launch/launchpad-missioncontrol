@@ -89,7 +89,7 @@
     // single-line comments
     [PR.PR_COMMENT, /^%[^\r\n]*/, null, "%"],
 
-    // system commands
+    // system observers
     [PR_SYSCMD, /^![^\r\n]*/, null, "!"]
   ];
 

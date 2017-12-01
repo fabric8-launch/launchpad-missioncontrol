@@ -40,7 +40,7 @@ PR['registerLangHandler'](
          // numeric measurement values with attached units
          [PR['PR_LITERAL'],
           /[+-]?(?:\.\d+|\d+(?:\.\d*)?)(cm|em|ex|in|pc|pt|bp|mm)/i],
-         // punctuation usually occurring within commands
+         // punctuation usually occurring within observers
          [PR['PR_PUNCTUATION'], /^[{}()\[\]=]+/]
         ]),
     ['latex', 'tex']);

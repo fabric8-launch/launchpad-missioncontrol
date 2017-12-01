@@ -21,7 +21,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.openshift.appdev.missioncontrol.core.api.StatusMessage;
+import io.openshift.appdev.missioncontrol.core.api.StatusEventType;
 import io.openshift.appdev.missioncontrol.core.api.StatusMessageEvent;
 
 /**
@@ -44,9 +44,9 @@ public class MissionControlStatusEndpoint {
         UUID key = UUID.fromString(uuid);
         peers.put(key, session);
         JsonArrayBuilder builder = Json.createArrayBuilder();
-        for (StatusMessage statusMessage : StatusMessage.values()) {
+        for (StatusEventType statusEventType : StatusEventType.values()) {
             JsonObjectBuilder object = Json.createObjectBuilder();
-            builder.add(object.add(statusMessage.name(), statusMessage.getMessage()).build());
+            builder.add(object.add(statusEventType.name(), statusEventType.getMessage()).build());
         }
 
         RemoteEndpoint.Async asyncRemote = session.getAsyncRemote();
